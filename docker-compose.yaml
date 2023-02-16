@@ -74,6 +74,6 @@ services:
 #    portainer_data:
 #
 
-networks:
-  traefik:
-    external: true
+#networks:
+#  traefik:
+#    external: true
