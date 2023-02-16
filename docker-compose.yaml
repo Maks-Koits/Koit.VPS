@@ -5,12 +5,13 @@ services:
     image: traefik:latest
     container_name: traefik
     command:
+      - "--api=true"
       - "--api.dashboard"
       - "--api.insecure=true"
       - "--providers.docker=true" # Включаем докер провайдер. После этого traefik будет следить за появлением специальных меток на других контейнерах и перенастраивать все согласно этим меткам.
       - "--providers.docker.exposedbydefault=false" # Запрещаем автоматическое добавление HTTP сервисов и HTTP маршрутов в traefik. Если этого не сделать, то traefik опубликует все docker контейнеры, в которых есть expose порта наружу автоматически. В качестве доменного имени он будет использовать имя контейнера.
       - "--entrypoints.web.address=:80"
-#      - "--entrypoints.web.address=:8080"
+#      - "--entrypoints.traefik.address=:8080"
 #      - "--entrypoints.web.http.redirections.entryPoint.to=websecure" # Перенаправление с HTTP на HTTPS
 #      - "--entrypoints.websecure.address=:443" # Создали entrypoint
 #      - "--certificatesresolvers.myresolver.acme.httpchallenge=true" # Настраиваем режим выдачи сертификатов Let’s Encrypt через http challenge
@@ -30,6 +31,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.traefik.rule=Host(`traefik.maks-koits.click`)"
       - "traefik.http.routers.traefik.entrypoints=web"
+      - "traefik.http.routers.traefik.service=api@internal"
     restart: unless-stopped
     networks:
       - traefik
