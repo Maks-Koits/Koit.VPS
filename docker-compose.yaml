@@ -66,7 +66,6 @@ services:
 networks:
   traefik:
     driver: bridge
-    external: true
 
 #portainer_data:/data
 #volumes:
