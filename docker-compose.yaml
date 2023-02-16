@@ -10,19 +10,19 @@ services:
        # специальных меток на других контейнерах и перенастраивать все согласно этим меткам.
       - "--providers.docker.exposedbydefault=false" # Запрещаем автоматическое добавление HTTP сервисов и HTTP
        # маршрутов в traefik. Если этого не сделать, то traefik опубликует все docker контейнеры, в которых есть
-        # expose порта наружу автоматически. В качестве доменного имени он будет использовать имя контейнера.
+       # expose порта наружу автоматически. В качестве доменного имени он будет использовать имя контейнера.
       - "--entrypoints.web.address=:80"
-      - "--entrypoints.web.http.redirections.entryPoint.to=websecure" # Перенаправление с HTTP на HTTPS
-      - "--entrypoints.websecure.address=:443" # Создали entrypoint
-      - "--certificatesresolvers.myresolver.acme.httpchallenge=true" # Настраиваем режим выдачи сертификатов
-       # Let’s Encrypt через http challenge
-      - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web" # Настраиваем entrypoint для
-       # http challenge
-      - "--certificatesresolvers.myresolver.acme.email=<EMAIL>" # Настраиваем <email> адрес для регистрации в центре
-       # сертификации
-      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json" # Меняем стандартное расположение
-       # файла acme.json. В этот файл будут записываться выданные сертификаты. Дело в том, что стандартное расположение
-        #файла “/acme.json" в корне не позволяет хранить этот файл на подключенном томе.
+#      - "--entrypoints.web.http.redirections.entryPoint.to=websecure" # Перенаправление с HTTP на HTTPS
+#      - "--entrypoints.websecure.address=:443" # Создали entrypoint
+#      - "--certificatesresolvers.myresolver.acme.httpchallenge=true" # Настраиваем режим выдачи сертификатов
+#       # Let’s Encrypt через http challenge
+#      - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web" # Настраиваем entrypoint для
+#       # http challenge
+#      - "--certificatesresolvers.myresolver.acme.email=<EMAIL>" # Настраиваем <email> адрес для регистрации в центре
+#       # сертификации
+#      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json" # Меняем стандартное расположение
+#       # файла acme.json. В этот файл будут записываться выданные сертификаты. Дело в том, что стандартное расположение
+#        #файла “/acme.json" в корне не позволяет хранить этот файл на подключенном томе.
     ports:
       - 80:80
       - 8080:8080
