@@ -5,7 +5,7 @@ services:
     image: traefik:v1.7.34-alpine #v3.0
     container_name: traefik
     command:
-      - "--api.insecure=true"
+      - "--api=true"
       - "--providers.docker=true" # Включаем докер провайдер. После этого traefik будет следить за появлением специальных меток на других контейнерах и перенастраивать все согласно этим меткам.
       - "--providers.docker.exposedbydefault=false" # Запрещаем автоматическое добавление HTTP сервисов и HTTP маршрутов в traefik. Если этого не сделать, то traefik опубликует все docker контейнеры, в которых есть expose порта наружу автоматически. В качестве доменного имени он будет использовать имя контейнера.
       - "--entrypoints.web.address=:80"
@@ -44,7 +44,7 @@ services:
 
   maks-koits.github.io:
     image: nginx:stable-alpine
-    container_name: "maks-koits"
+    container_name: "maks-koits.github.io"
 #    ports:
 #      - 80:80
     volumes:
@@ -52,8 +52,8 @@ services:
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.maks-koits.rule=Host(`maks-koits.click`)"
-      - "traefik.http.routers.maks-koits.entrypoints=web"
+      - "traefik.http.routers.maks-koits.github.io.rule=Host(`maks-koits.click`)"
+      - "traefik.http.routers.maks-koits.github.io.entrypoints=web"
     networks:
       - traefik
 
