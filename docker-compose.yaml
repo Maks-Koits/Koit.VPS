@@ -51,12 +51,12 @@ services:
 #      - "traefik.docker.network=traefik"
 
   maks-koits.github.io:
-    image: httpd:alpine3.17
+    image: nginx:stable-alpine
     container_name: "maks-koits"
     ports:
       - 80:80
       volumes:
-        - /app/Maks-Koits.github.io:/usr/local/apache2/htdocs
+        - /app/Maks-Koits.github.io:/usr/share/nginx/html
     restart: unless-stopped
     labels:
       - "traefik.enable=true"

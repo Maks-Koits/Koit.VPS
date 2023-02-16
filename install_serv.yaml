@@ -80,6 +80,7 @@ cd /app
 git clone https://github.com/Maks-Koits/Maks-Koits.github.io.git
 
 docker run -d --name maks-koits -p 80:80 -v /app/Maks-Koits.github.io:/usr/local/apache2/htdocs --restart=unless-stopped httpd:alpine3.17
+docker run -d --name maks-koits -p 80:80 -v /app/Maks-Koits.github.io:/usr/share/nginx/html --restart=unless-stopped nginx:stable-alpine
 
 ###################### Установка mc ncdu net-tools speedtest
 curl -s https://packagecloud.io/install/repositories/ookla/speedtest-cli/script.deb.sh | sudo bash
