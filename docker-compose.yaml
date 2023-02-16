@@ -28,8 +28,8 @@ services:
       - 8080:8080
       - 443:443
      # - 9000:9000
-    networks:
-      - traefik
+#    networks:
+#      - traefik
     volumes:
       - /app/letsencrypt:/letsencrypt
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -74,6 +74,6 @@ services:
 #    portainer_data:
 #
 
-networks:
-  traefik:
-    external: true
+#networks:
+#  traefik:
+#    external: true
