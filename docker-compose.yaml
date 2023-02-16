@@ -53,8 +53,8 @@ services:
   maks-koits.github.io:
     image: nginx:stable-alpine
     container_name: "maks-koits"
-    ports:
-      - 80:80
+#    ports:
+#      - 80:80
     volumes:
         - /app/Maks-Koits.github.io:/usr/share/nginx/html
     restart: unless-stopped
