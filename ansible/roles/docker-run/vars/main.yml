@@ -1,0 +1,4 @@
+---
+# vars file for docker-run
+files_path_source: /pldvstrn/14
+files_path_destination: /pldvstrn

@@ -1,0 +1,110 @@
+---
+генерим ключи
+
+################# перевесить ssh на другой порт
+sudo nano /etc/ssh/sshd_config
+
+Include /etc/ssh/sshd_config.d/*.conf
+Port 8299 # перевесить ssh на другой порт
+PermitRootLogin yes
+PasswordAuthentication no # отключить коннект по паролю
+KbdInteractiveAuthentication no
+UsePAM yes
+X11Forwarding yes
+PrintMotd no
+AcceptEnv LANG LC_*
+Subsystem       sftp    /usr/lib/openssh/sftp-server
+
+
+sudo systemctl restart ssh
+
+################# открыть определённые порты
+sudo ufw status
+
+sudo ufw default allow outgoing
+sudo ufw default deny incoming
+sudo ufw allow 80
+sudo ufw allow 51820 # wireguard-vpn
+sudo ufw allow 1194 # open-vpn
+sudo ufw allow 8000 # portainer-agent
+sudo ufw allow 9000 # portainer
+sudo ufw allow 9443 # ssl portainer
+sudo ufw allow 3000 # open VScode
+sudo ufw allow 8299 # ssh
+sudo ufw allow 10050 # zabbix Для timeweb
+sudo ufw allow ssh # для openssh
+
+sudo ufw enable
+sudo ufw status
+sudo systemctl status ufw.service
+
+netstat -tulpn
+
+############# Заменяем стандартный bashrc файл
+cp ./.bashrc /root/.bashrc
+sudo chmod 644 /root/.bashrc
+
+################## копируем скрипт обновления и очистки
+bash clean+update.sh
+
+######################### Установка Docker
+sudo apt-get update
+ sudo apt-get install \
+    ca-certificates \
+    curl \
+    gnupg \
+    lsb-release
+
+sudo mkdir -p /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+
+sudo chmod a+r /etc/apt/keyrings/docker.gpg
+sudo apt-get update
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+sudo systemctl enable docker
+
+sudo groupadd docker
+sudo usermod -aG docker $USER
+
+######################### Установка Portainer
+docker volume create portainer_data
+docker run -d -p 9443:9443 -p 8000:8000 -p 9000:9000 --name=portainer --restart=unless-stopped -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce:linux-amd64
+
+######################### установка vscode
+docker run -it --name=vscode --init -d --user root -p 3000:3000 -v /root/vscode:/home/workspace:cached -v /app:/app -v /var/run/docker.sock:/var/run/docker.sock gitpod/openvscode-server:nightly
+
+###################### Установка GIT + разворачивание сайта
+sudo apt install git
+mkdir /app
+cd /app
+git clone https://github.com/Maks-Koits/Maks-Koits.github.io.git
+
+docker run -d --name maks-koits -p 80:80 -v /app/Maks-Koits.github.io:/usr/local/apache2/htdocs --restart=unless-stopped httpd:alpine3.17
+
+###################### Установка mc ncdu net-tools speedtest
+curl -s https://packagecloud.io/install/repositories/ookla/speedtest-cli/script.deb.sh | sudo bash
+sudo apt install mc ncdu net-tools speedtest
+
+###################### Назначение Swap-файла
+sudo fallocate -l 1G /swapfile
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+sudo echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+sudo swapon --show
+
+####################### полная копия системы
+ssh root@90.156.228.116 "-S dd if=/dev/vda1 bs=512k status=progress | gzip -1 -" | dd of=image.gz bs=512k
+
+
+backup
+dpkg --get-selections > list.txt
+dpkg --clear-selections
+sudo dpkg --set-selections < list.txt
+sudo apt-get autoremove
+
+apt-mark showmanual > list-manually-installed.txt
+
+journald | grep 'docker'
+cat /var/log/auth.log
+

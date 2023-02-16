@@ -1,0 +1,68 @@
+---
+# tasks file for docker-install
+
+- block:
+    - name: Add Docker GPG apt Key
+      apt_key:
+          url: https://download.docker.com/linux/ubuntu/gpg
+          state: present
+    - name: Add Docker Repository
+      apt_repository:
+          repo: deb https://download.docker.com/linux/ubuntu focal stable
+          state: present
+    - name: Install required system packages
+      apt:
+          name: "{{ packages }}"
+          state: latest
+      vars:
+          packages:
+            - apt-transport-https
+            - ca-certificates
+            - curl
+            - software-properties-common
+            - python3-pip
+            - virtualenv
+            - python3-setuptools
+            - docker-ce
+          state: latest
+          update_cache: true
+    - name: Install Docker Module for Python
+      pip:
+          name: docker
+    - name: Clean ubuntu apk cache
+      apt:
+        autoremove: true
+  when: ansible_os_family == "Debian"
+
+- block: #amazon
+    - name: Add extras repository
+      shell: yum-config-manager --enable extras
+    - name: Enable Some packages from amazon-linux-extras packages
+      shell: "amazon-linux-extras enable python3.8 ansible2 docker"
+      args:
+        warn: false
+    - name: Ensure a list of yum packages are installed
+      yum:
+        name: "{{ packages }}"
+        state: latest
+        update_cache: yes
+      vars:
+        packages:
+          - python-pip
+          - yum-utils
+          - device-mapper-persistent-data
+          - lvm2
+          - amazon-linux-extras
+          - python3.8
+          - ansible
+          - docker
+    - name: Clean yum cache
+      yum:
+        autoremove: true
+  when: ansible_os_family == "RedHat"
+
+- name: Enable Docker CE service at startup
+  service:
+    name: docker
+    state: started
+    enabled: yes

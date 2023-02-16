@@ -1,0 +1,10 @@
+---
+# tasks file for docker-run
+- name: Copy files
+  copy: src={{ files_path_source }} dest={{ files_path_destination }} mode=0555
+- name: Create docker image
+  shell: "docker build -t playsdev-site /pldvstrn/14"
+  ignore_errors: yes
+- name: Run docker container
+  shell: "docker run -it -p 80:80 -p 83:83 -p 5555:5555 -p 5556:5556 -d playsdev-site"
+  ignore_errors: yes

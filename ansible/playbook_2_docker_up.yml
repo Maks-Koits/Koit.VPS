@@ -1,0 +1,49 @@
+---
+- name: Koit.VPS_configure
+  hosts: all
+  become: yes
+
+  vars:
+    files_path_source: /Koit.VPS/ansible
+    files_path_destination: /pldvstrn
+
+  tasks: #ubuntu
+  - block:
+      - name: Add docker GPG apt Key
+        apt_key:
+            url: https://download.docker.com/linux/ubuntu/gpg
+            state: present
+      - name: Add Docker Repository
+        apt_repository:
+            repo: deb https://download.docker.com/linux/ubuntu focal stable
+            state: present
+      - name: Install required system packages
+        apt:
+            name: "{{ packages }}"
+            state: latest
+        vars:
+            packages:
+              - python3-pip
+              - virtualenv
+              - python3-setuptools
+              - docker-ce
+            state: latest
+            update_cache: true
+      - name: Install Docker Module for Python
+        pip:
+            name: docker
+      - name: Clean ubuntu apk cache
+        apt:
+          autoremove: true
+    when: ansible_os_family == "Debian"
+
+  - name: Copy files
+    copy: src={{ files_path_source }} dest={{ files_path_destination }} mode=0555
+  - name: Create docker image
+    shell: "docker build -t playsdev-site /pldvstrn/14"
+    ignore_errors: yes
+  - name: Run docker container
+    shell: "docker run -it -p 80:80 -p 83:83 -p 5555:5555 -p 5556:5556 -d playsdev-site"
+    ignore_errors: yes
+
+

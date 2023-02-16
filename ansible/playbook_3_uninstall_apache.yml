@@ -1,0 +1,15 @@
+---
+- name: Uninstall apache
+  hosts: all
+  become: yes
+
+  tasks:
+  - block: #ubuntu
+      - name: Uninstall apache on ubuntu
+        shell: "apt remove -y apache2"
+    when: ansible_os_family == "Debian"
+
+  - block: #amazon
+      - name: Install apache on amazon
+        shell: "yum remove -y httpd"
+    when: ansible_os_family == "RedHat"

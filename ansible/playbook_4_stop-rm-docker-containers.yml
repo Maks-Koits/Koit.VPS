@@ -1,0 +1,9 @@
+---
+- name: rm docker containers
+  hosts: all
+  become: yes
+
+  tasks:
+   - name: Get a list of all running containers
+     shell: "docker stop $(docker ps -aq) ; docker rm -f $(docker ps -a -q) ; docker rmi $(docker images -q)"
+     ignore_errors: yes
