@@ -2,13 +2,12 @@ version: "3.9"
 
 services:
   traefik:
-    image: traefik:v1.7.34-alpine #v3.0
+    image: traefik:v3.0
     container_name: traefik
     command:
-      - "--api"
       - "--api.dashboard"
-      - "--api.insecure"
-      - "--providers.docker" # Включаем докер провайдер. После этого traefik будет следить за появлением специальных меток на других контейнерах и перенастраивать все согласно этим меткам.
+      - "--api.insecure=true"
+      - "--providers.docker=true" # Включаем докер провайдер. После этого traefik будет следить за появлением специальных меток на других контейнерах и перенастраивать все согласно этим меткам.
 #      - "--providers.docker.exposedbydefault=false" # Запрещаем автоматическое добавление HTTP сервисов и HTTP маршрутов в traefik. Если этого не сделать, то traefik опубликует все docker контейнеры, в которых есть expose порта наружу автоматически. В качестве доменного имени он будет использовать имя контейнера.
       - "--entrypoints.web.address=:80"
 #      - "--entrypoints.web.address=:8080"
