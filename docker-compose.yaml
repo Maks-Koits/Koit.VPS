@@ -55,7 +55,7 @@ services:
     container_name: "maks-koits"
     ports:
       - 80:80
-      volumes:
+    volumes:
         - /app/Maks-Koits.github.io:/usr/share/nginx/html
     restart: unless-stopped
     labels:
