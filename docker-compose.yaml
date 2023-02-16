@@ -28,6 +28,7 @@ services:
       - "traefik.http.routers.traefik.rule=Host(`traefik.maks-koits.click`)"
       - "traefik.http.routers.traefik.entrypoints=web"
       - "traefik.http.routers.traefik.service=api@internal"
+    restart: unless-stopped
     networks:
       - traefik
 
@@ -63,7 +64,9 @@ services:
       - traefik
 
 networks:
-  traefik: {}
+  traefik:
+    driver: bridge
+    external: true
 
 #portainer_data:/data
 #volumes:
