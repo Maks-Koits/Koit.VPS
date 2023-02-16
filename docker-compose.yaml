@@ -71,9 +71,6 @@ networks:
   traefik:
     driver: bridge
 
-providers:
-  docker: {}
-
 #portainer_data:/data
 #volumes:
 #    portainer_data:
