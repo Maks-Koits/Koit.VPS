@@ -23,7 +23,7 @@ services:
     volumes:
       - /app/letsencrypt:/letsencrypt
       - /var/run/docker.sock:/var/run/docker.sock:ro
-    label:
+    labels:
       - "traefik.enable=true"
       - "traefik.http.routers.traefik.rule=Host(`traefik.maks-koits.click`)"
       - "traefik.http.routers.traefik.entrypoints=web"
