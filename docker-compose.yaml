@@ -5,7 +5,7 @@ services:
     image: traefik:v1.7.34-alpine #v3.0
     container_name: traefik
     command:
-      - "--api=true"
+      - "--api.dashboard=true"
       - "--providers.docker=true" # Включаем докер провайдер. После этого traefik будет следить за появлением специальных меток на других контейнерах и перенастраивать все согласно этим меткам.
       - "--providers.docker.exposedbydefault=false" # Запрещаем автоматическое добавление HTTP сервисов и HTTP маршрутов в traefik. Если этого не сделать, то traefik опубликует все docker контейнеры, в которых есть expose порта наружу автоматически. В качестве доменного имени он будет использовать имя контейнера.
       - "--entrypoints.web.address=:80"
@@ -18,17 +18,18 @@ services:
 #      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json" # Меняем стандартное расположение файла acme.json. В этот файл будут записываться выданные сертификаты. Дело в том, что стандартное расположение файла “/acme.json" в корне не позволяет хранить этот файл на подключенном томе.
     ports:
       - 80:80
-      - 8080:8080
+#      - 8080:8080
 #      - 443:443
 #      - 9000:9000
     volumes:
       - /app/letsencrypt:/letsencrypt
       - /var/run/docker.sock:/var/run/docker.sock:ro
+#      - /path/to/docker/traefik/acme.json:/acme.json
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.traefik.rule=Host(`traefik.maks-koits.click`)"
-      - "traefik.http.routers.traefik.entrypoints=web"
-      - "traefik.http.routers.traefik.service=api@internal"
+      - "traefik.http.routers.api.rule=Host(`traefik.maks-koits.click`)"
+      - "traefik.http.routers.api.entrypoints=web"
+      - "traefik.http.routers.api.service=api@internal"
     restart: unless-stopped
     networks:
       - traefik
