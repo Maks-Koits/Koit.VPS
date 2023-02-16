@@ -28,9 +28,8 @@ services:
 #      - /path/to/docker/traefik/acme.json:/acme.json
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.api.rule=Host(`traefik.maks-koits.click`)"
-      - "traefik.http.routers.api.entrypoints=web"
-      - "traefik.http.routers.api.service=api@internal"
+      - "traefik.http.routers.traefik.rule=Host(`traefik.maks-koits.click`)"
+      - "traefik.http.routers.traefik.entrypoints=web"
     restart: unless-stopped
     networks:
       - traefik
