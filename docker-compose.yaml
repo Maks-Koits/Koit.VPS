@@ -2,13 +2,13 @@ version: "3.9"
 
 services:
   traefik:
-    image: traefik:v3.0
+    image: traefik:latest
     container_name: traefik
     command:
       - "--api.dashboard"
       - "--api.insecure=true"
       - "--providers.docker=true" # Включаем докер провайдер. После этого traefik будет следить за появлением специальных меток на других контейнерах и перенастраивать все согласно этим меткам.
-#      - "--providers.docker.exposedbydefault=false" # Запрещаем автоматическое добавление HTTP сервисов и HTTP маршрутов в traefik. Если этого не сделать, то traefik опубликует все docker контейнеры, в которых есть expose порта наружу автоматически. В качестве доменного имени он будет использовать имя контейнера.
+      - "--providers.docker.exposedbydefault=false" # Запрещаем автоматическое добавление HTTP сервисов и HTTP маршрутов в traefik. Если этого не сделать, то traefik опубликует все docker контейнеры, в которых есть expose порта наружу автоматически. В качестве доменного имени он будет использовать имя контейнера.
       - "--entrypoints.web.address=:80"
 #      - "--entrypoints.web.address=:8080"
 #      - "--entrypoints.web.http.redirections.entryPoint.to=websecure" # Перенаправление с HTTP на HTTPS
@@ -19,7 +19,7 @@ services:
 #      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json" # Меняем стандартное расположение файла acme.json. В этот файл будут записываться выданные сертификаты. Дело в том, что стандартное расположение файла “/acme.json" в корне не позволяет хранить этот файл на подключенном томе.
     ports:
       - 80:80
-#      - 8080:8080
+      - 8080:8080
 #      - 443:443
 #      - 9000:9000
     volumes:
@@ -34,7 +34,6 @@ services:
     restart: unless-stopped
     networks:
       - traefik
-
 #  portainer:
 #    image: portainer/portainer-ce:linux-amd64
 #    container_name: "portainer"
@@ -50,7 +49,6 @@ services:
 #      - "traefik.http.routers.registry.rule=Host(`portainer.maks-koits.click`)"
 #      - "traefik.http.routers.registry.loadBalancer.server.port=9000"
 #      - "traefik.docker.network=traefik"
-
   maks-koits.github.io:
     image: nginx:stable-alpine
     container_name: "maks-koits"
@@ -65,7 +63,6 @@ services:
       - "traefik.http.routers.maks-koits.entrypoints=web"
     networks:
       - traefik
-
 networks:
   traefik:
     driver: bridge
