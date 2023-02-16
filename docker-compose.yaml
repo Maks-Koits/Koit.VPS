@@ -6,30 +6,22 @@ services:
     container_name: traefik
     command:
       - "--api.insecure=true"
-      - "--providers.docker=true" # Включаем докер провайдер. После этого traefik будет следить за появлением
-       # специальных меток на других контейнерах и перенастраивать все согласно этим меткам.
-      - "--providers.docker.exposedbydefault=false" # Запрещаем автоматическое добавление HTTP сервисов и HTTP
-       # маршрутов в traefik. Если этого не сделать, то traefik опубликует все docker контейнеры, в которых есть
-       # expose порта наружу автоматически. В качестве доменного имени он будет использовать имя контейнера.
+      - "--providers.docker=true" # Включаем докер провайдер. После этого traefik будет следить за появлением специальных меток на других контейнерах и перенастраивать все согласно этим меткам.
+      - "--providers.docker.exposedbydefault=false" # Запрещаем автоматическое добавление HTTP сервисов и HTTP маршрутов в traefik. Если этого не сделать, то traefik опубликует все docker контейнеры, в которых есть expose порта наружу автоматически. В качестве доменного имени он будет использовать имя контейнера.
       - "--entrypoints.web.address=:80"
 #      - "--entrypoints.web.http.redirections.entryPoint.to=websecure" # Перенаправление с HTTP на HTTPS
 #      - "--entrypoints.websecure.address=:443" # Создали entrypoint
-#      - "--certificatesresolvers.myresolver.acme.httpchallenge=true" # Настраиваем режим выдачи сертификатов
-#       # Let’s Encrypt через http challenge
-#      - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web" # Настраиваем entrypoint для
-#       # http challenge
-#      - "--certificatesresolvers.myresolver.acme.email=<EMAIL>" # Настраиваем <email> адрес для регистрации в центре
-#       # сертификации
-#      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json" # Меняем стандартное расположение
-#       # файла acme.json. В этот файл будут записываться выданные сертификаты. Дело в том, что стандартное расположение
-#        #файла “/acme.json" в корне не позволяет хранить этот файл на подключенном томе.
+#      - "--certificatesresolvers.myresolver.acme.httpchallenge=true" # Настраиваем режим выдачи сертификатов Let’s Encrypt через http challenge
+#      - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web" # Настраиваем entrypoint для http challenge
+#      - "--certificatesresolvers.myresolver.acme.email=<EMAIL>" # Настраиваем <email> адрес для регистрации в центре сертификации
+#      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json" # Меняем стандартное расположение файла acme.json. В этот файл будут записываться выданные сертификаты. Дело в том, что стандартное расположение файла “/acme.json" в корне не позволяет хранить этот файл на подключенном томе.
     ports:
       - 80:80
       - 8080:8080
-      - 443:443
-     # - 9000:9000
-#    networks:
-#      - traefik
+#      - 443:443
+#      - 9000:9000
+    networks:
+      - traefik
     volumes:
       - /app/letsencrypt:/letsencrypt
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -60,20 +52,14 @@ services:
     restart: unless-stopped
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.registry.rule=Host(`maks-koits.click`)"
-      - "traefik.http.routers.registry.loadBalancer.server.port=80"
+      - "traefik.http.routers.maks-koits.rule=Host(`maks-koits.click`)"
+      - "traefik.http.routers.maks-koits.entrypoints=web"
+    networks:
+      - traefik
 
-#networks:
-#  agent_network:
-#    driver: overlay
-#
-#
+networks:
+  traefik: {}
+
 #portainer_data:/data
-#
 #volumes:
 #    portainer_data:
-#
-
-#networks:
-#  traefik:
-#    external: true
