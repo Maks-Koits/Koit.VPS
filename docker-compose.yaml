@@ -20,11 +20,16 @@ services:
       - 8080:8080
 #      - 443:443
 #      - 9000:9000
-    networks:
-      - traefik
     volumes:
       - /app/letsencrypt:/letsencrypt
       - /var/run/docker.sock:/var/run/docker.sock:ro
+    label:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.rule=Host(`traefik.maks-koits.click`)"
+      - "traefik.http.routers.traefik.entrypoints=web"
+      - "traefik.http.routers.traefik.service=api@internal"
+    networks:
+      - traefik
 
 #  portainer:
 #    image: portainer/portainer-ce:linux-amd64
