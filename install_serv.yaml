@@ -80,6 +80,7 @@ cd /app
 git clone https://github.com/Maks-Koits/Maks-Koits.github.io.git
 
 docker run -d --name maks-koits -p 80:80 -v /app/Maks-Koits.github.io:/usr/local/apache2/htdocs --restart=unless-stopped httpd:alpine3.17
+git pull
 docker run -d --name maks-koits -p 80:80 -v /app/Maks-Koits.github.io:/usr/share/nginx/html --restart=unless-stopped nginx:stable-alpine
 
 ###################### Установка mc ncdu net-tools speedtest
@@ -94,7 +95,7 @@ sudo swapon /swapfile
 sudo echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
 sudo swapon --show
 
-####################### полная копия системы
+####################### полная копия системы со сжатием
 ssh root@90.156.228.116 "-S dd if=/dev/vda1 bs=512k status=progress | gzip -1 -" | dd of=image.gz bs=512k
 
 

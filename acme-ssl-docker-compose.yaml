@@ -1,0 +1,76 @@
+---
+version: "3.9"
+
+services:
+  nginx-proxy:
+    image: nginxproxy/nginx-proxy:latest
+    container_name: 'nginx-proxy'
+    volumes:
+      - /app/Koit.VPS/config/html:/usr/share/nginx/html
+      - /app/Koit.VPS/config/dhparam:/etc/nginx/dhparam
+      - /app/Koit.VPS/config/vhost:/etc/nginx/vhost.d
+      - /app/Koit.VPS/config/certs:/etc/nginx/certs
+      - /app/Koit.VPS/config/conf:/etc/nginx/conf.d
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    restart: always
+    networks:
+      - net
+    ports:
+      - 80:80
+      - 443:443
+
+  acme:
+    image: nginxproxy/acme-companion:latest
+    container_name: 'nginx-proxy-acme-companion'
+    depends_on:
+      - nginx-proxy
+    volumes_from:
+      - nginx-proxy
+    volumes:
+      - /app/Koit.VPS/config/acme:/etc/acme.sh
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      NGINX_PROXY_CONTAINER: 'nginx-proxy'
+      DEFAULT_EMAIL: 'mix256@gmail.com'
+    restart: always
+    networks:
+      - net
+
+  maks-koits-github-io:
+    image: nginx:stable-alpine
+    container_name: 'maks-koits-github-io'
+    depends_on:
+      - 'nginx-proxy'
+#   ports:
+#      - 80:80
+    volumes:
+        - /app/Maks-Koits.github.io:/usr/share/nginx/html
+    environment:
+      VIRTUAL_HOST: 'maks-koits.click'
+      LETSENCRYPT_HOST: 'maks-koits.click'
+    restart: unless-stopped
+    networks:
+      - net
+networks:
+  net:
+    driver: bridge
+
+#  portainer:
+#    image: portainer/portainer-ce:linux-amd64
+#    container_name: "portainer"
+#    ports:
+#      - 9443:9443
+#      - 9000:9000
+#      volumes:
+#        - data:/data
+#        - /var/run/docker.sock:/var/run/docker.sock
+#    restart: unless-stopped
+#    labels:
+#      - "traefik.enable=true"
+#      - "traefik.http.routers.registry.rule=Host(`portainer.maks-koits.click`)"
+#      - "traefik.http.routers.registry.loadBalancer.server.port=9000"
+#      - "traefik.docker.network=traefik"
+
+#portainer_data:/data
+#volumes:
+#    portainer_data:
