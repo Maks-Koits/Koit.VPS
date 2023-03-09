@@ -1,5 +1,7 @@
 ---
-генерим ключи
+################# генерим ключи
+
+
 
 ################# перевесить ssh на другой порт
 sudo nano /etc/ssh/sshd_config
@@ -15,24 +17,34 @@ PrintMotd no
 AcceptEnv LANG LC_*
 Subsystem       sftp    /usr/lib/openssh/sftp-server
 
-
 sudo systemctl restart ssh
 
 ################# открыть определённые порты
 sudo ufw status
 
-sudo ufw default allow outgoing
-sudo ufw default deny incoming
-sudo ufw allow 80
-sudo ufw allow 51820 # wireguard-vpn
-sudo ufw allow 1194 # open-vpn
-sudo ufw allow 8000 # portainer-agent
-sudo ufw allow 9000 # portainer
-sudo ufw allow 9443 # ssl portainer
-sudo ufw allow 3000 # open VScode
-sudo ufw allow 8299 # ssh
-sudo ufw allow 10050 # zabbix Для timeweb
-sudo ufw allow ssh # для openssh
+sudo ufw default allow outgoing \
+&& sudo ufw default deny incoming \
+&& sudo ufw allow 80 \
+&& sudo ufw allow 51820 \
+&& sudo ufw allow 1194 \
+&& sudo ufw allow 8000 \
+&& sudo ufw allow 9000 \
+&& sudo ufw allow 9443 \
+&& sudo ufw allow 3000 \
+&& sudo ufw allow 8299 \
+&& sudo ufw allow 10050 \
+&& sudo ufw allow ssh
+
+# wireguard-vpn 51820
+# open-vpn 1194
+# portainer-agent 8000
+# portainer 9000
+# ssl portainer 9443
+# open VScode 3000
+# ssh 8299
+# zabbix Для timeweb 10050
+# для openssh ssh
+
 
 sudo ufw enable
 sudo ufw status
@@ -66,6 +78,20 @@ sudo systemctl enable docker
 sudo groupadd docker
 sudo usermod -aG docker $USER
 
+
+######################### Установка GIT + копия сайта + Установка Portainer + получение
+######################### сертификатов
+
+&& sudo apt install git \
+&& mkdir /app \
+&& cd /app \
+&& git clone https://github.com/Maks-Koits/Maks-Koits.github.io.git \
+&& mkdir -p /app/Koit.VPS \
+&& cd /app/Koit.VPS \
+&& docker compose -f acme-ssl-docker-compose.yaml up -d \
+
+######################### ИЛИ по отдельности
+
 ######################### Установка Portainer
 docker volume create portainer_data
 docker run -d -p 9443:9443 -p 8000:8000 -p 9000:9000 --name=portainer --restart=unless-stopped -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce:linux-amd64
@@ -74,6 +100,7 @@ docker run -d -p 9443:9443 -p 8000:8000 -p 9000:9000 --name=portainer --restart=
 docker run -it --name=vscode --init -d --user root -p 3000:3000 -v /root/vscode:/home/workspace:cached -v /app:/app -v /var/run/docker.sock:/var/run/docker.sock gitpod/openvscode-server:nightly
 
 ###################### Установка GIT + разворачивание сайта
+
 sudo apt install git
 mkdir /app
 cd /app
@@ -88,15 +115,15 @@ curl -s https://packagecloud.io/install/repositories/ookla/speedtest-cli/script.
 sudo apt install mc ncdu net-tools speedtest
 
 ###################### Назначение Swap-файла
-sudo fallocate -l 1G /swapfile
-sudo chmod 600 /swapfile
-sudo mkswap /swapfile
-sudo swapon /swapfile
-sudo echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
-sudo swapon --show
+sudo fallocate -l 1G /swapfile \
+&& sudo chmod 600 /swapfile \
+&& sudo mkswap /swapfile \
+&& sudo swapon /swapfile \
+&& sudo echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab \
+&& sudo swapon --show
 
-####################### полная копия системы со сжатием
-ssh root@90.156.228.116 "-S dd if=/dev/vda1 bs=512k status=progress | gzip -1 -" | dd of=image.gz bs=512k
+####################### Полная копия системы со сжатием
+ssh root@90.156.228.116 "-S dd if=/dev/vda1 bs=1m status=progress | gzip -1 -" | dd of=image.gz bs=1m
 
 
 backup
