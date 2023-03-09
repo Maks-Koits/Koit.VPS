@@ -55,9 +55,11 @@ services:
   portainer:
     image: portainer/portainer-ce:linux-amd64
     container_name: 'portainer-maks-koits-click'
-      volumes:
+    depends_on:
+      - nginx-proxy
+    volumes:
         - /app/portainer_data:/data
-        - /var/run/docker.sock:/var/run/docker.sock
+        - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
       VIRTUAL_HOST: 'portainer.maks-koits.click'
       VIRTUAL_PORT: '9000'
