@@ -60,6 +60,10 @@ services:
     volumes:
         - /app/portainer_data:/data
         - /var/run/docker.sock:/var/run/docker.sock:ro
+        - /app/Koit.VPS/config/certs:/certs:ro
+    command:
+        - --sslcert /certs/portainer.maks-koits.click.crt
+        - --sslkey /certs/portainer.maks-koits.click.key
     environment:
       VIRTUAL_HOST: 'portainer.maks-koits.click'
       VIRTUAL_PORT: '9000'
