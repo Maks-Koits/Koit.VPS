@@ -62,14 +62,13 @@ services:
         - /var/run/docker.sock:/var/run/docker.sock:ro
         - /app/Koit.VPS/config/certs:/certs:ro
 #    command: --ssl --sslcert /certs/server-cert.pem --sslkey /certs/server-key.pem --tlsverify --tlscacert /docker-certs/ca.pem --tlscert /docker-certs/server-cert.pem --tlskey /docker-certs/server-key.pem
-    command:
-        - --ssl
-        - --sslcert /certs/portainer.maks-koits.click/cert.pem
-        - --sslkey /certs/portainer.maks-koits.click/key.pem
+#    command:
+#        - --ssl
+#        - --sslcert /certs/portainer.maks-koits.click/cert.pem
+#        - --sslkey /certs/portainer.maks-koits.click/key.pem
     environment:
       VIRTUAL_HOST: 'portainer.maks-koits.click'
       VIRTUAL_PORT: '9000'
-      VIRTUAL_PORT: '9443'
       LETSENCRYPT_HOST: 'portainer.maks-koits.click'
       LETSENCRYPT_EMAIL: 'mix256@gmail.com'
     restart: unless-stopped
