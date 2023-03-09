@@ -40,7 +40,7 @@ services:
 
   maks-koits-github-io:
     image: nginx:stable-alpine
-    container_name: 'maks-koits.click'
+    container_name: 'maks-koits-click'
     depends_on:
       - nginx-proxy
     volumes:
@@ -54,7 +54,7 @@ services:
 
   portainer:
     image: portainer/portainer-ce:linux-amd64
-    container_name: 'portainer.maks-koits.click'
+    container_name: 'portainer-maks-koits-click'
       volumes:
         - /app/portainer_data:/data
         - /var/run/docker.sock:/var/run/docker.sock
