@@ -58,7 +58,7 @@ services:
     depends_on:
       - nginx-proxy
     volumes:
-        - /app/portainer_data:/data
+        - /app/portainer_data/_data:/data
         - /var/run/docker.sock:/var/run/docker.sock:ro
         - /app/Koit.VPS/config/certs:/certs:ro
 #    command: --ssl --sslcert /certs/server-cert.pem --sslkey /certs/server-key.pem --tlsverify --tlscacert /docker-certs/ca.pem --tlscert /docker-certs/server-cert.pem --tlskey /docker-certs/server-key.pem
