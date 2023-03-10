@@ -6,11 +6,11 @@ services:
     image: nginxproxy/nginx-proxy:alpine
     container_name: 'nginx-proxy'
     volumes:
-      - /app/Koit.VPS/config/html:/usr/share/nginx/html
-      - /app/Koit.VPS/config/dhparam:/etc/nginx/dhparam
-      - /app/Koit.VPS/config/vhost:/etc/nginx/vhost.d
-      - /app/Koit.VPS/config/certs:/etc/nginx/certs
-      - /app/Koit.VPS/config/conf:/etc/nginx/conf.d
+      - /app/config/html:/usr/share/nginx/html
+      - /app/config/dhparam:/etc/nginx/dhparam
+      - /app/config/vhost:/etc/nginx/vhost.d
+      - /app/config/certs:/etc/nginx/certs
+      - /app/config/conf:/etc/nginx/conf.d
       - /var/run/docker.sock:/tmp/docker.sock:ro
     restart: always
     networks:
@@ -29,7 +29,7 @@ services:
     volumes_from:
       - nginx-proxy
     volumes:
-      - /app/Koit.VPS/config/acme:/etc/acme.sh
+      - /app/config/acme:/etc/acme.sh
       - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
       NGINX_PROXY_CONTAINER: 'nginx-proxy'
@@ -58,9 +58,9 @@ services:
     depends_on:
       - nginx-proxy
     volumes:
-        - /app/portainer_data/_data:/data
+        - /app/portainer_data:/data
         - /var/run/docker.sock:/var/run/docker.sock:ro
-        - /app/Koit.VPS/config/certs:/certs:ro
+        - /app/config/certs:/certs:ro
 #    command: --ssl --sslcert /certs/server-cert.pem --sslkey /certs/server-key.pem --tlsverify --tlscacert /docker-certs/ca.pem --tlscert /docker-certs/server-cert.pem --tlskey /docker-certs/server-key.pem
 #    command:
 #        - --ssl
