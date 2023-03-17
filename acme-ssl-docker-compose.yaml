@@ -12,6 +12,7 @@ services:
       - /app/config/certs:/etc/nginx/certs
       - /app/config/conf:/etc/nginx/conf.d
       - /var/run/docker.sock:/tmp/docker.sock:ro
+      - /etc/localtime:/etc/localtime:ro
     restart: always
     networks:
       - net
@@ -45,7 +46,9 @@ services:
       - nginx-proxy
     volumes:
         - /app/Maks-Koits.github.io:/usr/share/nginx/html
+        - /etc/localtime:/etc/localtime:ro
     environment:
+#      TZ: 'Europe/Minsk'
       VIRTUAL_HOST: 'maks-koits.click'
       LETSENCRYPT_HOST: 'maks-koits.click'
     restart: unless-stopped
