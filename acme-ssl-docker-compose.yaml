@@ -80,7 +80,7 @@ services:
       - net
 
   node_exporter:
-    image: prometheus/node-exporter:latest
+    image: prom/node-exporter:latest
     container_name: 'node-exporter-maks-koits-click'
     depends_on:
       - nginx-proxy
