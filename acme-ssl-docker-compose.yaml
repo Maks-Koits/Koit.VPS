@@ -85,11 +85,18 @@ services:
     depends_on:
       - nginx-proxy
     volumes:
-      - /:/host:ro,rslave
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /etc/localtime:/etc/localtime:ro
     command:
-      - --path.rootfs=/host
+      - --path.procfs=/host/proc
+      - --path.rootfs=/rootfs
+      - --path.sysfs=/host/sys
+      - --collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)
+    expose:
+      - 9100
     environment:
       VIRTUAL_HOST: 'node-exporter.maks-koits.click'
       VIRTUAL_PORT: '9100'
