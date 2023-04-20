@@ -19,7 +19,7 @@ services:
     ports:
       - 80:80
       - 443:443
-#      - 9000:9000
+#      - 9100:9100
 #      - 9443:9443
 
   acme:
@@ -64,7 +64,7 @@ services:
       - /app/portainer_data:/data
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /etc/localtime:/etc/localtime:ro
-#        - /app/config/certs:/certs:ro
+#      - /app/config/certs:/certs:ro
 #    command: --ssl --sslcert /certs/server-cert.pem --sslkey /certs/server-key.pem --tlsverify --tlscacert /docker-certs/ca.pem --tlscert /docker-certs/server-cert.pem --tlskey /docker-certs/server-key.pem
 #    command:
 #        - --ssl
@@ -95,8 +95,6 @@ services:
       - --path.rootfs=/rootfs
       - --path.sysfs=/host/sys
       - --collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)
-    expose:
-      - 9100
     environment:
       VIRTUAL_HOST: 'node-exporter.maks-koits.click'
       VIRTUAL_PORT: '9100'
