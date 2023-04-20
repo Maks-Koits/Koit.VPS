@@ -82,6 +82,8 @@ services:
   node_exporter:
     image: prom/node-exporter:latest
     container_name: 'node-exporter-maks-koits-click'
+    depends_on:
+      - nginx-proxy
     volumes:
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
@@ -93,14 +95,15 @@ services:
       - --path.rootfs=/rootfs
       - --path.sysfs=/host/sys
       - --collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)
-    expose:
-      - 9100
+    environment:
+      VIRTUAL_HOST: 'node-exporter.maks-koits.click'
+      VIRTUAL_PORT: '9100'
+      LETSENCRYPT_HOST: 'node-exporter.maks-koits.click'
+      LETSENCRYPT_EMAIL: 'mix256@gmail.com'
     restart: unless-stopped
     networks:
-      - net1
+      - net
 
 networks:
-  net1:
-    driver: bridge
   net:
     driver: bridge
