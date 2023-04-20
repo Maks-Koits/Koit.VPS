@@ -64,6 +64,24 @@ services:
       - "traefik.http.routers.maks-koits.entrypoints=web"
     networks:
       - traefik
+
+  node_exporter:
+    image: node-exporter:latest
+    container_name: "node-exporter"
+    volumes:
+      - '/:/host:ro,rslave'
+    command:
+      - '--path.rootfs=/host'
+    network_mode: traefik
+#    pid: host
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.maks-koits.rule=Host(`node_exporter.maks-koits.click`)"
+      - "traefik.http.routers.maks-koits.entrypoints=web"
+    networks:
+      - traefik
+
 networks:
   traefik:
     driver: bridge
