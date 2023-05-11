@@ -10,6 +10,7 @@ echo "-------------------------------------"
 echo "----------ustanovka paketov----------"
 echo "-------------------------------------"
 apt -y upgrade
+snap refresh
 echo "-------------------------------------"
 echo "----ochistka dublirovannyh paketov---"
 echo "-------------------------------------"
