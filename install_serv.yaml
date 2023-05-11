@@ -137,3 +137,5 @@ apt-mark showmanual > list-manually-installed.txt
 journald | grep 'docker'
 cat /var/log/auth.log
 
+
+
