@@ -12,7 +12,6 @@ ip -c link
 ip -c addr
 ip -c ro
 
-
 Поднять интерфейс
 ip link set eth0 up
 ip link set eth0 down
