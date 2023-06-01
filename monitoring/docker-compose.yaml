@@ -17,7 +17,7 @@ services:
       - '--storage.tsdb.retention.size=5GB'
       - '--storage.tsdb.wal-compression'
     ports:
-      - 9090:9090
+      - '9090:9090'
     environment:
       TZ: "Europe/Minsk"
     restart: unless-stopped
@@ -30,7 +30,7 @@ services:
     depends_on:
       - prometheus
     ports:
-      - 3000:3000
+      - '3000:3000'
     volumes:
       - grafana_data:/var/lib/grafana
       - ./grafana/dashboards/dashboard.yaml:/etc/grafana/provisioning/dashboards/dashboard.yaml
@@ -57,7 +57,7 @@ services:
       - '--collector.filesystem.ignored-mount-points'
       - "^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)"
     ports:
-      - 9100:9100
+      - '9100:9100'
     environment:
       - TZ=Europe/Minsk
     restart: unless-stopped
