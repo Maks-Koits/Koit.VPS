@@ -22,7 +22,7 @@ snap list --all | awk '/disabled/{print $1, $3}' |
 echo "-------------------------------------"
 echo "--------udaleniye stari yader--------"
 echo "-------------------------------------"
-sudo apt-get purge $(dpkg -l 'linux-*' | sed '/^ii/!d;/'"$(uname -r | sed "s/\(.*\)-\([^0-9]\+\)/\1/")"'/d;s/^[^ ]* [^ ]* \([^ ]*\).*/\1/;/[0-9]/!d' | head -n -1) -y
+apt-get purge $(dpkg -l 'linux-*' | sed '/^ii/!d;/'"$(uname -r | sed "s/\(.*\)-\([^0-9]\+\)/\1/")"'/d;s/^[^ ]* [^ ]* \([^ ]*\).*/\1/;/[0-9]/!d' | head -n -1) -y
 echo "-------------------------------------"
 echo "-------udalenie starih paketov-------"
 echo "-------------------------------------"

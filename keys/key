@@ -1,0 +1,7 @@
+удалить парольную фразу для ключа SSH без создания нового ключа
+
+приватный ключ
+ssh-keygen -p
+ssh-keygen -p [-P old_passphrase] [-N new_passphrase] [-f keyfile]
+
+
