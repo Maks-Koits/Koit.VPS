@@ -28,6 +28,7 @@ echo "-------udalenie starih paketov-------"
 echo "-------------------------------------"
 apt -y autoremove
 update-grub
+docker builder prune -af
 echo "-------------------------------------"
 echo "----------------done!----------------"
 echo "-------------------------------------"
