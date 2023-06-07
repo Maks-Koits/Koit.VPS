@@ -12,22 +12,23 @@ echo "-------------------------------------"
 apt -y upgrade
 snap refresh
 echo "-------------------------------------"
-echo "----ochistka dublirovannyh paketov---"
+echo "------ochistka paketov app i snap----"
 echo "-------------------------------------"
+apt -y autoremove
 set -eu
 snap list --all | awk '/disabled/{print $1, $3}' |
     while read snapname revision; do
         snap remove "$snapname" --revision="$revision"
     done
+rm -rf /var/lib/snapd/cache/*
 echo "-------------------------------------"
 echo "--------udaleniye stari yader--------"
 echo "-------------------------------------"
 apt-get purge $(dpkg -l 'linux-*' | sed '/^ii/!d;/'"$(uname -r | sed "s/\(.*\)-\([^0-9]\+\)/\1/")"'/d;s/^[^ ]* [^ ]* \([^ ]*\).*/\1/;/[0-9]/!d' | head -n -1) -y
-echo "-------------------------------------"
-echo "-------udalenie starih paketov-------"
-echo "-------------------------------------"
-apt -y autoremove
 update-grub
+echo "-------------------------------------"
+echo "--------udalenie cache docker--------"
+echo "-------------------------------------"
 docker builder prune -af
 echo "-------------------------------------"
 echo "----------------done!----------------"
