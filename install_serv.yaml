@@ -56,6 +56,9 @@ netstat -tulpn
 cp ./.bashrc /root/.bashrc
 sudo chmod 644 /root/.bashrc
 
+############# pishem istoriy vseh terminalov v odin
+export PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND$'\n'}history -a; history -c; history -r;"
+
 ################## копируем скрипт обновления и очистки
 bash clean+update.sh
 
