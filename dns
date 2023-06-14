@@ -1,0 +1,18 @@
+namecheap.com
+maks-koits.click
+
+A Records
+@               90.156.228.116
+cv              90.156.228.116
+node-exporter   90.156.228.116
+portainer       90.156.228.116
+
+CAA Records
+@               0 issue "letsencrypt.org"
+
+CNAME Records
+www             maks-koits.click.
+
+TXT Records
+_dmarc          v=DMARC1; p=reject; sp=reject; adkim=s; fo=0:1:d:s;
+@               v=spf1 include:spf.efwd.registrar-servers.com ~all
