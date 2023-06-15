@@ -13,6 +13,7 @@ services:
       - /app/config/conf:/etc/nginx/conf.d
       - /var/run/docker.sock:/tmp/docker.sock:ro
       - /etc/localtime:/etc/localtime:ro
+      - /var/log/nginx:/var/log/nginx
     restart: always
     networks:
       - net
@@ -27,9 +28,15 @@ services:
     container_name: 'nginx-proxy-acme-companion'
     depends_on:
       - nginx-proxy
-    volumes_from:
-      - nginx-proxy
     volumes:
+      - /app/config/html:/usr/share/nginx/html
+      - /app/config/dhparam:/etc/nginx/dhparam
+      - /app/config/vhost:/etc/nginx/vhost.d
+      - /app/config/certs:/etc/nginx/certs
+      - /app/config/conf:/etc/nginx/conf.d
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - /etc/localtime:/etc/localtime:ro
+
       - /app/config/acme:/etc/acme.sh
       - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
@@ -47,6 +54,7 @@ services:
     volumes:
       - /app/Maks-Koits.github.io:/usr/share/nginx/html
       - /etc/localtime:/etc/localtime:ro
+#      - /var/log/nginx:/var/log/nginx
     environment:
 #      TZ: 'Europe/Minsk'
       VIRTUAL_HOST: 'maks-koits.click'
