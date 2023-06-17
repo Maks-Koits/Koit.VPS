@@ -1,0 +1,55 @@
+ssh-keygen -t rsa
+cd .ssh
+cat id_rsa.pub #публичный ключ
+
+adduser -m ansible
+mkdir .ssh
+key >> autorized_keys && chmod 600 autorized_keys
+
+echo "export EDITOR=/usr/bin/nano" >> ~/.bashrc
+
+visudo
+добавить строку
+ansible  ALL=(ALL:ALL) NOPASSWD: ALL
+
+apt install python-pip
+
+###
+
+	name: install python
+	remote_user: root
+	vars:
+		ansible_ssh_user: "root"
+		ansible_ssh_private_key_file: "~/.ssh/id_rsa"
+	raw: test -e /usr/bin/python || (apt -y update && apt install -y python-pip)
+	changed_when: False
+	ignore_errors: true
+	retries: 3
+	delay: 5
+	register: result
+	until: result is succeeded
+
+###	
+- hosts: all	
+	gather_facts: false
+	tasks:
+	- raw: test -e /usr/bin/python || (apt -y update && apt install -y python-pip)
+
+
+
+ansible-playbook -i hosts playbook.yaml
+
+ansible test -i hosts -m ping
+
+ansible.cfg
+log_path = ansible.log
+добавить его в исключения git
+
+ansible-galaxy init name
+ansible-vault create file --vault-password-file .txt или --ask-vault-pass
+view
+encrypt
+decrypt
+
+
+

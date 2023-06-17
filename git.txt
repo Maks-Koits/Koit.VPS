@@ -1,0 +1,61 @@
+git clone https://github.com/user-or-organisation/myrepo.git
+Username: <my-username>
+Password: <my-personal-access-token>
+
+git push https://github.com/user-or-organisation/myrepo.git
+Username: <my-username>
+Password: <my-personal-access-token>
+
+
+git clone https://[TOKEN]@github.com/[REPO-OWNER]/[REPO-NAME]
+
+
+git config --global user.email "emailaddress@yahoo.com"
+git config --global user.name "username"
+
+
+пушим в новую репу
+
+echpo "# blabla" >> readme.md
+git init
+git add file
+git commit -m "bla bla"
+git remote add origin https://kkkkkkkkkkkkk/xxxxx.git
+git push -u origin main
+
+
+или
+пушим в существующую репу
+
+git remote add origin https://kkkkkkkkkkkkk/xxxxx.git
+git push -u origin main
+
+git branch ветка - create
+git checkout - на ветку
+git commit -a -m "bla"
+git checkout main - слить ветку в main
+git merge ветка - слить ветку в main
+git branch -d ветка - удалить
+git commit --amend - изменить предыдущий коммит
+git add file
+git fetch - спуллить изменения но не мерджить с локальными
+git pull (fetch+merge)
+git log
+git reset --hard HEAD~1 отменить последний локальный коммит -soft с сохранением состояния
+git revert commit - создаёт коммит отмены
+git status
+git remote -v - просмотреть откуда и куда пуш пулл
+git remote add URL - добавить репу
+git push origin ветка - кого пушишь первый раз
+git checkout ветка + git rebase main - переносит начало ветки целиком в main(с удалением ветки)
+если делал rebase, то пушить надо git push origin ветка --force
+git push origin --delete ветка - удалить ветку в репозитории
+git cherry-pick commit commit commit принять в ветку только конкретные коммиты
+git reflog - перечень всеъ коммитов ветки
+git worktree
+git reset - сбросить локальные изменения 
+git 
+git 
+git 
+git 
+ 
