@@ -20,3 +20,25 @@ docker rm put_here_docker_id
 docker rmi kuber:0.1
 docker rm -vf $(docker ps -a -q)
 docker rmi -f $(docker images -a -q)
+
+
+docker rmi 12345 | docker build --no-cache -t 12345 .
+docker builder prune -a
+
+--network=host
+
+
+healthcheck:
+  test: ["CMD-SHELL", "curl -f http://localhost || exit 1"]
+  interval: 1m30s
+  timeout: 10s
+  retries: 3
+  start_period: 40s
+
+
+docker build --no-cache -t mix256/ubuntu_22.04_deploy_image:v0.1 .
+docker run -it mix256/ubuntu_22.04_deploy_image:v0.1
+docker push mix256/ubuntu_22.04_deploy_image:v0.1
+
+
+&& apt-get clean && apt-get autoremove --yes && rm -rf /var/lib/apt/lists/* /var/cache/apt/* \
