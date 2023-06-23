@@ -33,7 +33,7 @@ spinner() {
     printf "["
     while kill -0 $1 2> /dev/null; do
         printf "▓"
-        sleep .05
+        sleep .25
     done
     printf "]\n"
 }
@@ -54,8 +54,9 @@ set -eu
 snap list --all | awk '/disabled/{print $1, $3}' |
     while read snapname revision; do
         snap remove "$snapname" --revision="$revision"
-    done
-rm -rf /var/lib/snapd/cache/*
+    done >/dev/null 2>&1
+rm -r /var/lib/snapd/cache/* >/dev/null 2>&1 || true
+rm -r /var/lib/swapspace/* >/dev/null 2>&1 || true
 echo "-------------old kernel cleaning---------------"
 apt-get purge $(dpkg -l 'linux-*' | sed '/^ii/!d;/'"$(uname -r \
 | sed "s/\(.*\)-\([^0-9]\+\)/\1/")"'/d;s/^[^ ]* [^ ]* \([^ ]*\).*/\1/;/[0-9]/!d' | head -n -1) -y >/dev/null 2>&1
