@@ -66,9 +66,10 @@ docker builder prune -af >/dev/null 2>&1 & spinner $!
 # Получение значения занятого места после выполнения команды
 finalUsage=$(getDiskUsage)
 # Вычисление разницы в использовании места на диске
-difference=$(( finalUsage - initialUsage ))
+#difference=$(( finalUsage - initialUsage ))
+difference=$(( initialUsage - finalUsage ))
 # Конвертация разницы в человеко-читаемый формат
-humanDifference=$(bytesToHuman $difference)
+humanDifference=$(bytesToHuman "$difference")
 # Вывод результата
 echo "-------------------done!-----------------------"
 echo "cleared disk space: $humanDifference "
