@@ -1,5 +1,6 @@
 Test-NetConnection -ComputerName "www.contoso.com" -Port 80
 
+
 Netcat
 ncat -v -w3 -z some.server 1111
 
