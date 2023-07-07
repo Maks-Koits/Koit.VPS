@@ -1,3 +1,9 @@
+изменить способ общения с репозиторием
+git remote set-url --push git@github.com:Maks-Koits/Maks-Koits.github.io.git https://github.com/Maks-Koits/Maks-Koits.github.io.git
+usage: git remote set-url [--push] <name> <newurl> [<oldurl>]
+   or: git remote set-url --add <name> <newurl>
+   or: git remote set-url --delete <name> <url>
+
 git clone https://github.com/user-or-organisation/myrepo.git
 Username: <my-username>
 Password: <my-personal-access-token>

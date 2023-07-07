@@ -93,4 +93,5 @@ color_prompt=yes
 # bash history. Count, write all terminals histories in one file
 export HISTSIZE=10000
 export PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND$'\n'}history -a; history -c; history -r;"
-export LC_ALL=en_GB.UTF-8
+#export LC_ALL=en_GB.UTF-8
+export LC_ALL=
