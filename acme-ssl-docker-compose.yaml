@@ -75,9 +75,9 @@ services:
       - /app/Koit.VPS/cv_config_nginx/default.conf:/etc/nginx/conf.d/default.conf
       - /app/Maks-Koits.github.io:/usr/share/nginx/html
 #if file      - /dev/null:/usr/share/nginx/html/.git
-      - /usr/share/nginx/html/.git
+#      - /usr/share/nginx/html/.git
       - /etc/localtime:/etc/localtime:ro
-      - /var/log/nginx_cv:/var/log/nginx_cv
+#      - /var/log/nginx_cv:/var/log/nginx_cv
     environment:
 #      TZ: 'Europe/Minsk'
       VIRTUAL_HOST: 'cv.maks-koits.click'
