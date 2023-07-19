@@ -58,9 +58,9 @@ snap list --all | awk '/disabled/{print $1, $3}' |
 rm -r /var/lib/snapd/cache/* >/dev/null 2>&1 || true
 rm -r /var/lib/swapspace/* >/dev/null 2>&1 || true
 echo "-------------old kernel cleaning---------------"
-apt-get purge $(dpkg -l 'linux-*' | sed '/^ii/!d;/'"$(uname -r \
-| sed "s/\(.*\)-\([^0-9]\+\)/\1/")"'/d;s/^[^ ]* [^ ]* \([^ ]*\).*/\1/;/[0-9]/!d' | head -n -1) -y >/dev/null 2>&1
-update-grub >/dev/null 2>&1 & spinner $!
+#apt-get purge $(dpkg -l 'linux-*' | sed '/^ii/!d;/'"$(uname -r \
+#| sed "s/\(.*\)-\([^0-9]\+\)/\1/")"'/d;s/^[^ ]* [^ ]* \([^ ]*\).*/\1/;/[0-9]/!d' | head -n -1) -y >/dev/null 2>&1
+#update-grub >/dev/null 2>&1 & spinner $!
 echo "---------docker builder cache cleaning---------"
 docker builder prune -af >/dev/null 2>&1 & spinner $!
 # Получение значения занятого места после выполнения команды

@@ -14,7 +14,7 @@ services:
       - '--web.console.templates=/usr/share/prometheus/consoles'
       - '--web.enable-lifecycle'
 
-      - '--storage.tsdb.retention.size=5GB'
+      - '--storage.tsdb.retention.size=1GB'
       - '--storage.tsdb.wal-compression'
     ports:
       - '9090:9090'
