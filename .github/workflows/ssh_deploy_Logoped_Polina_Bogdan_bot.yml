@@ -1,0 +1,35 @@
+name: ssh_deploy_Logoped_Polina_Bogdan_bot
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Setup SSH
+      uses: webfactory/ssh-agent@v0.5.0
+      with:
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY_TIMEWEB }}
+
+    - name: Deploy
+      env:
+          REMOTE_HOST: ${{ secrets.REMOTE_HOST_TIMEWEB }}
+          REMOTE_USER: ${{ secrets.REMOTE_USER_TIMEWEB }}
+          REMOTE_PORT: ${{ secrets.REMOTE_PORT_TIMEWEB }}
+          API_TOKEN: ${{ secrets.API_TOKEN }}
+      run: |
+       ssh -o StrictHostKeyChecking=no -p $REMOTE_PORT $REMOTE_USER@$REMOTE_HOST "\
+       cd /app/Koit.VPS/Logoped_Polina_Bogdan_bot/ && \
+       docker stop logoped_polina_bogdan_bot && \
+       docker rm logoped_polina_bogdan_bot && \
+       docker rmi logoped_polina_bogdan_bot:v0.1 && \
+       git pull && \
+       docker build --no-cache -t logoped_polina_bogdan_bot:v0.1 . && \
+       docker run -d -e API_TOKEN=${API_TOKEN} --name logoped_polina_bogdan_bot --restart=unless-stopped -v ./:/bot logoped_polina_bogdan_bot:v0.1"
