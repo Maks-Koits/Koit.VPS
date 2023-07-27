@@ -13,7 +13,7 @@ dp: Dispatcher = Dispatcher()
 
 # Создаем объекты инлайн-кнопок
 url_button_1: InlineKeyboardButton = InlineKeyboardButton(
-    text='Записаться на индивидуальное занятие',
+    text='З а п исаться на индивидуальное занятие',
     url='https://t.me/logoped_polinabogdan')
 url_button_2: InlineKeyboardButton = InlineKeyboardButton(
     text='Развивающие занятия на YouTube',
