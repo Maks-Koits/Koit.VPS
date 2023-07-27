@@ -5,8 +5,6 @@ import os
 
 API_TOKEN = os.environ['API_TOKEN']
 
-# API_TOKEN: str = '6092736622:AAE-M9nWHVkY5_8qgWAkhOpCd0rB6g9YCak'
-
 # погнали ;) Создаем объекты бота и диспетчера
 bot: Bot = Bot(token=API_TOKEN)
 dp: Dispatcher = Dispatcher()
