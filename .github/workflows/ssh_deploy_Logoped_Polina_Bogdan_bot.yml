@@ -26,7 +26,7 @@ jobs:
           API_TOKEN: ${{ secrets.API_TOKEN }}
       run: |
        ssh -o StrictHostKeyChecking=no -p $REMOTE_PORT $REMOTE_USER@$REMOTE_HOST "\
-       cd /app/Koit.VPS/Logoped_Polina_Bogdan_bot/ && \
+       cd /bot/Logoped_Polina_Bogdan_bot/ && \
        docker stop logoped_polina_bogdan_bot && \
        docker rm logoped_polina_bogdan_bot && \
        docker rmi logoped_polina_bogdan_bot:v0.1 && \
