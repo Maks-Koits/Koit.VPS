@@ -58,7 +58,7 @@ alias egrep='egrep --color=auto'
 alias ll='ls -lAhp --time=access --sort=time --color=auto'
 alias la='ls -A --color=auto'
 alias l='ls -CF --color=auto'
-alias mysql='docker run -it --rm -e MYSQL_ALLOW_EMPTY_PASSWORD=1 -p 3306 -w /bases -v /home/mix/Desktop/bases:/bases mysql:debian bash'
+alias mysql='docker run -it --rm -e MYSQL_ALLOW_EMPTY_PASSWORD=1 -p 3306 -w /bases -v /home/mix/Desktop/bases:/bases mysql:8.0 bash'
 alias myip='echo -e `curl -s ifconfig.me`'
 
 # Add an "alert" alias for long running commands.  Use like so:

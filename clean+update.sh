@@ -43,18 +43,18 @@ initialUsage=$(getDiskUsage)
 
 # cleaning script
 echo "---------------updating packages---------------"
-apt update >/dev/null 2>&1 & spinner $!
+apt update #>/dev/null 2>&1 & spinner $!
 echo "--------------installing packages--------------"
-apt -y upgrade >/dev/null 2>&1 & spinner $!
+apt -y upgrade #>/dev/null 2>&1 & spinner $!
 echo "----------------refreshing snaps---------------"
-snap refresh >/dev/null 2>&1 & spinner $!
+snap refresh #>/dev/null 2>&1 & spinner $!
 echo "-----------app's and snap's cleaning-----------"
-apt -y autoremove >/dev/null 2>&1 & spinner $!
+apt -y autoremove #>/dev/null 2>&1 & spinner $!
 set -eu
 snap list --all | awk '/disabled/{print $1, $3}' |
     while read snapname revision; do
         snap remove "$snapname" --revision="$revision"
-    done >/dev/null 2>&1
+    done #>/dev/null 2>&1
 rm -r /var/lib/snapd/cache/* >/dev/null 2>&1 || true
 rm -r /var/lib/swapspace/* >/dev/null 2>&1 || true
 echo "-------------old kernel cleaning---------------"
@@ -62,7 +62,7 @@ echo "-------------old kernel cleaning---------------"
 #| sed "s/\(.*\)-\([^0-9]\+\)/\1/")"'/d;s/^[^ ]* [^ ]* \([^ ]*\).*/\1/;/[0-9]/!d' | head -n -1) -y >/dev/null 2>&1
 #update-grub >/dev/null 2>&1 & spinner $!
 echo "---------docker builder cache cleaning---------"
-docker builder prune -af >/dev/null 2>&1 & spinner $!
+docker builder prune -af #>/dev/null 2>&1 & spinner $!
 # Получение значения занятого места после выполнения команды
 finalUsage=$(getDiskUsage)
 # Вычисление разницы в использовании места на диске
