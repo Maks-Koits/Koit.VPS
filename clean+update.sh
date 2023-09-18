@@ -4,6 +4,15 @@
 # CLOSE ALL SNAPS BEFORE RUNNING THIS
 
 # Функция для конвертации размера из байт в человеко-читаемый формат
+
+abs() {
+  if (( $1 < 0 )); then
+    echo $(( -$1 ))
+  else
+    echo $1
+  fi
+}
+
 bytesToHuman() {
   local bytes=$1
   local -a suffixes=('B' 'KB' 'MB' 'GB' 'TB' 'PB')
@@ -12,14 +21,33 @@ bytesToHuman() {
     echo "0 Bytes"
     return
   fi
+
   local i=0
-  local size=$(( bytes ))
+  local size=$(abs $bytes)  # Используем функцию abs для получения абсолютного значения
   while (( size > 1024 )); do
     size=$(( size / 1024 ))
     (( i++ ))
   done
   echo "${size} ${suffixes[i]}"
 }
+
+
+#bytesToHuman() {
+#  local bytes=$1
+#  local -a suffixes=('B' 'KB' 'MB' 'GB' 'TB' 'PB')
+
+#  if (( bytes == 0 )); then
+#    echo "0 Bytes"
+#    return
+#  fi
+#  local i=0
+#  local size=$(( bytes ))
+#  while (( size > 1024 )); do
+#    size=$(( size / 1024 ))
+#    (( i++ ))
+#  done
+#  echo "${size} ${suffixes[i]}"
+#}
 
 # Функция для получения занятого места на диске
 getDiskUsage() {
@@ -51,13 +79,13 @@ snap refresh #>/dev/null 2>&1 & spinner $!
 echo "-----------app's and snap's cleaning-----------"
 apt -y autoremove #>/dev/null 2>&1 & spinner $!
 set -eu
-snap list --all | awk '/disabled/{print $1, $3}' |
+LANG=C snap list --all | awk '/disabled/{print $1, $3}' |
     while read snapname revision; do
         snap remove "$snapname" --revision="$revision"
     done #>/dev/null 2>&1
 rm -r /var/lib/snapd/cache/* >/dev/null 2>&1 || true
 rm -r /var/lib/swapspace/* >/dev/null 2>&1 || true
-echo "-------------old kernel cleaning---------------"
+#echo "-------------old kernel cleaning---------------"
 #apt-get purge $(dpkg -l 'linux-*' | sed '/^ii/!d;/'"$(uname -r \
 #| sed "s/\(.*\)-\([^0-9]\+\)/\1/")"'/d;s/^[^ ]* [^ ]* \([^ ]*\).*/\1/;/[0-9]/!d' | head -n -1) -y >/dev/null 2>&1
 #update-grub >/dev/null 2>&1 & spinner $!
@@ -73,3 +101,4 @@ humanDifference=$(bytesToHuman "$difference")
 # Вывод результата
 echo "-------------------done!-----------------------"
 echo "cleared disk space: $humanDifference "
+echo "free disk space: `df -h / | awk 'NR==2 {print $4}'`"
