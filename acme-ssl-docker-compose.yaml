@@ -4,7 +4,7 @@ version: "3.9"
 services:
   nginx-proxy:
     image: nginxproxy/nginx-proxy:alpine
-    container_name: 'nginx_proxy_maks-koits-click'
+    container_name: 'nginx_proxy_maks-koits-space'
     volumes:
       - /app/config/html:/usr/share/nginx/html
       - /app/config/dhparam:/etc/nginx/dhparam
@@ -26,7 +26,7 @@ services:
 
   acme:
     image: nginxproxy/acme-companion:latest
-    container_name: 'nginx_proxy_acme_maks-koits-click'
+    container_name: 'nginx_proxy_acme_maks-koits-space'
     depends_on:
       - nginx-proxy
     volumes:
@@ -41,7 +41,7 @@ services:
       - /app/config/acme:/etc/acme.sh
       - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
-      NGINX_PROXY_CONTAINER: 'nginx_proxy_maks-koits-click'
+      NGINX_PROXY_CONTAINER: 'nginx_proxy_maks-koits-space'
       DEFAULT_EMAIL: 'mix256@gmail.com'
     restart: always
     networks:
@@ -49,7 +49,7 @@ services:
 
   maks-koits-github-io:
     image: nginx:stable-alpine
-    container_name: 'maks-koits-click'
+    container_name: 'maks-koits-space'
     depends_on:
       - nginx-proxy
     volumes:
@@ -68,7 +68,7 @@ services:
 
   cv.maks-koits.space:
     image: nginx:stable-alpine
-    container_name: 'cv_maks-koits-click'
+    container_name: 'cv_maks-koits-space'
     depends_on:
       - nginx-proxy
     volumes:
@@ -88,7 +88,7 @@ services:
 
   portainer:
     image: portainer/portainer-ce:linux-amd64
-    container_name: 'portainer_maks-koits-click'
+    container_name: 'portainer_maks-koits-space'
     command: -H tcp://agent:9001 --tlsskipverify
     depends_on:
       - nginx-proxy
@@ -120,7 +120,7 @@ services:
 
   node_exporter:
     image: prom/node-exporter:latest
-    container_name: 'node_exporter_maks-koits-click'
+    container_name: 'node_exporter_maks-koits-space'
     depends_on:
       - nginx-proxy
     volumes:
@@ -145,7 +145,7 @@ services:
 
   openvscode-server:
     image: gitpod/openvscode-server:latest
-    container_name: 'openvscode_maks-koits-click'
+    container_name: 'openvscode_maks-koits-space'
     environment:
       VIRTUAL_HOST: 'openvscode.maks-koits.space'
       VIRTUAL_PORT: '3000'
