@@ -1,5 +1,5 @@
 namecheap.com
-maks-koits.click
+maks-koits.space
 
 A Records
 @               90.156.228.116
@@ -11,7 +11,7 @@ CAA Records
 @               0 issue "letsencrypt.org"
 
 CNAME Records
-www             maks-koits.click.
+www             maks-koits.space.
 
 TXT Records
 _dmarc          v=DMARC1; p=reject; sp=reject; adkim=s; fo=0:1:d:s;

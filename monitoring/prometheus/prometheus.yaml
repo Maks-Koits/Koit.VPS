@@ -36,4 +36,4 @@ scrape_configs:
     # scheme defaults to 'http'.
     static_configs:
       - targets:
-        - node-exporter.maks-koits.click
+        - node-exporter.maks-koits.space
