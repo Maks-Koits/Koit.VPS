@@ -30,8 +30,9 @@ jobs:
         sshpass -p $REMOTE_PASSWORD ssh -o StrictHostKeyChecking=no -p $REMOTE_PORT $REMOTE_USER@$REMOTE_HOST \
         "
         cd / && \
-        git config --global credential.helper 'store --file=/tmp/git-credentials' echo "https://${GIT_USER}:${GIT_TOKEN}@github.com" > /tmp/git-credentials && \
-        git clone https://github.com/Maks-Koits/Koit.VPS.git
+        echo "https://${GIT_USER}:${GIT_TOKEN}@github.com" > /tmp/git-credentials && \
+        git config --global credential.helper 'store --file=/tmp/git-credentials' && \
+        git clone https://github.com/Maks-Koits/Maks-Koits.github.io
         "
       #run: |
       # ssh -o StrictHostKeyChecking=no -p $REMOTE_PORT $REMOTE_USER@$REMOTE_HOST "\
