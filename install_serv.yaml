@@ -50,6 +50,7 @@ sudo ufw enable
 sudo ufw status
 sudo systemctl status ufw.service
 
+apt install net-tools
 netstat -tulpn
 
 ############# Заменяем стандартный bashrc файл
@@ -64,19 +65,19 @@ bash clean+update.sh
 
 ######################### Установка Docker
 sudo apt-get update
- sudo apt-get install \
-    ca-certificates \
-    curl \
-    gnupg \
-    lsb-release
+sudo apt-get install ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+  
+echo \
+"deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu \
+$(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
+sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
-sudo mkdir -p /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-
-sudo chmod a+r /etc/apt/keyrings/docker.gpg
 sudo apt-get update
-sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin
-sudo systemctl enable docker
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
 
 sudo groupadd docker
 sudo usermod -aG docker $USER
@@ -85,11 +86,11 @@ sudo usermod -aG docker $USER
 ######################### Установка GIT + копия сайта + Установка Portainer + получение
 ######################### сертификатов
 
-&& sudo apt install git \
+sudo apt install git \
 && mkdir /app \
 && cd /app \
 && git clone https://github.com/Maks-Koits/Maks-Koits.github.io.git \
-&& mkdir -p /app/Koit.VPS \
+&& git clone https://github.com/Maks-Koits/Koit.VPS.git \
 && cd /app/Koit.VPS \
 && docker compose -f acme-ssl-docker-compose.yaml up -d \
 
@@ -114,8 +115,8 @@ git pull
 docker run -d --name maks-koits -p 80:80 -v /app/Maks-Koits.github.io:/usr/share/nginx/html --restart=unless-stopped nginx:stable-alpine
 
 ###################### Установка mc ncdu net-tools speedtest
-curl -s https://packagecloud.io/install/repositories/ookla/speedtest-cli/script.deb.sh | sudo bash
-sudo apt install mc ncdu net-tools speedtest
+curl -s https://packagecloud.io/install/repositories/ookla/speedtest-cli/script.deb.sh \
+&& sudo apt install mc ncdu net-tools speedtest
 
 ###################### Назначение Swap-файла
 sudo fallocate -l 1G /swapfile \
@@ -140,5 +141,16 @@ apt-mark showmanual > list-manually-installed.txt
 journald | grep 'docker'
 cat /var/log/auth.log
 
+
+
+ln -s /app/Koit.VPS/.bashrc .bashrc
+
+nano /etc/sysctl.conf
+
+net.ipv6.conf.all.disable_ipv6=1
+net.ipv6.conf.default.disable_ipv6=1
+net.ipv6.conf.lo.disable_ipv6=1
+  
+sudo sysctl -p
 
 
