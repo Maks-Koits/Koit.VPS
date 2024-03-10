@@ -1,11 +1,8 @@
 ---
 ################# генерим ключи
 
-
-
-################# перевесить ssh на другой порт
-sudo nano /etc/ssh/sshd_config
-
+################# перевесить ssh на другой порт, запрет доступа по паролю
+sudo echo "
 Include /etc/ssh/sshd_config.d/*.conf
 Port 8299 # перевесить ssh на другой порт
 PermitRootLogin yes
@@ -15,8 +12,7 @@ UsePAM yes
 X11Forwarding yes
 PrintMotd no
 AcceptEnv LANG LC_*
-Subsystem       sftp    /usr/lib/openssh/sftp-server
-
+Subsystem       sftp    /usr/lib/openssh/sftp-server" >> /etc/ssh/sshd_config1 && \
 sudo systemctl restart ssh
 
 ################# открыть определённые порты
@@ -33,8 +29,11 @@ sudo ufw default allow outgoing \
 && sudo ufw allow 3000 \
 && sudo ufw allow 8299 \
 && sudo ufw allow 10050 \
-&& sudo ufw allow ssh
-
+&& sudo ufw allow ssh \
+&& sudo ufw enable \
+&& sudo ufw status \
+&& sudo systemctl status ufw.service
+  
 # wireguard-vpn 51820
 # open-vpn 1194
 # portainer-agent 8000
@@ -45,29 +44,17 @@ sudo ufw default allow outgoing \
 # zabbix Для timeweb 10050
 # для openssh ssh
 
-
-sudo ufw enable
-sudo ufw status
-sudo systemctl status ufw.service
-
-apt install net-tools
+sudo apt install net-tools && \
 netstat -tulpn
-
-############# Заменяем стандартный bashrc файл
-cp ./.bashrc /root/.bashrc
-sudo chmod 644 /root/.bashrc
 
 ############# pishem istoriy vseh terminalov v odin
 export PROMPT_COMMAND="${PROMPT_COMMAND:+$PROMPT_COMMAND$'\n'}history -a; history -c; history -r;"
 
-################## копируем скрипт обновления и очистки
-bash clean+update.sh
-
 ######################### Установка Docker
-sudo apt-get update
-sudo apt-get install ca-certificates curl
-sudo install -m 0755 -d /etc/apt/keyrings
-sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+sudo apt-get update && \
+sudo apt-get install ca-certificates curl && \
+sudo install -m 0755 -d /etc/apt/keyrings && \
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc && \
 sudo chmod a+r /etc/apt/keyrings/docker.asc
   
 echo \
@@ -75,16 +62,13 @@ echo \
 $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | \
 sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
-sudo apt-get update
+sudo apt-get update  && \
 sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
-
-sudo groupadd docker
+sudo groupadd docker && \
 sudo usermod -aG docker $USER
 
-
-######################### Установка GIT + копия сайта + Установка Portainer + получение
-######################### сертификатов
+######################### Установка GIT + копия сайта + Установка Portainer + получение сертификатов
 
 sudo apt install git \
 && mkdir /app \
@@ -94,25 +78,12 @@ sudo apt install git \
 && cd /app/Koit.VPS \
 && docker compose -f acme-ssl-docker-compose.yaml up -d \
 
-######################### ИЛИ по отдельности
-
 ######################### Установка Portainer
 docker volume create portainer_data
 docker run -d -p 9443:9443 -p 8000:8000 -p 9000:9000 --name=portainer --restart=unless-stopped -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce:linux-amd64
 
 ######################### установка vscode
 docker run -it --name=vscode --init -d --user root -p 3000:3000 -v /root/vscode:/home/workspace:cached -v /app:/app -v /var/run/docker.sock:/var/run/docker.sock gitpod/openvscode-server:nightly
-
-###################### Установка GIT + разворачивание сайта
-
-sudo apt install git
-mkdir /app
-cd /app
-git clone https://github.com/Maks-Koits/Maks-Koits.github.io.git
-
-docker run -d --name maks-koits -p 80:80 -v /app/Maks-Koits.github.io:/usr/local/apache2/htdocs --restart=unless-stopped httpd:alpine3.17
-git pull
-docker run -d --name maks-koits -p 80:80 -v /app/Maks-Koits.github.io:/usr/share/nginx/html --restart=unless-stopped nginx:stable-alpine
 
 ###################### Установка mc ncdu net-tools speedtest
 curl -s https://packagecloud.io/install/repositories/ookla/speedtest-cli/script.deb.sh \
@@ -129,32 +100,34 @@ sudo fallocate -l 1G /swapfile \
 ####################### Полная копия системы со сжатием
 ssh root@90.156.228.116 "-S dd if=/dev/vda1 bs=1m status=progress | gzip -1 -" | dd of=image.gz bs=1m
 
+####################### Настройка конфига консоли
+ln -s /app/Koit.VPS/.bashrc .bashrc
 
-backup
-dpkg --get-selections > list.txt
-dpkg --clear-selections
-sudo dpkg --set-selections < list.txt
-sudo apt-get autoremove
+####################### Отключение ipv6
+nano /etc/sysctl.conf
+net.ipv6.conf.all.disable_ipv6=1
+net.ipv6.conf.default.disable_ipv6=1
+net.ipv6.conf.lo.disable_ipv6=1  
+sudo sysctl -p
 
-apt-mark showmanual > list-manually-installed.txt
+####################### Разрешаем подключение с помощью перечисленных ключей
+nano /root/.ssh/authorized_keys
+вставить ключ публик
+
+####################### Обновление
+bash /app/Koit.VPS/clean+update.sh
+
 
 journald | grep 'docker'
 cat /var/log/auth.log
 
+###################### Установка GIT + разворачивание сайта
 
+sudo apt install git
+mkdir /app
+cd /app
+git clone https://github.com/Maks-Koits/Maks-Koits.github.io.git
 
-ln -s /app/Koit.VPS/.bashrc .bashrc
-
-nano /etc/sysctl.conf
-
-net.ipv6.conf.all.disable_ipv6=1
-net.ipv6.conf.default.disable_ipv6=1
-net.ipv6.conf.lo.disable_ipv6=1
-  
-sudo sysctl -p
-  
-  
-nano authorized_keys
-  вставить ключ публик
-
-
+docker run -d --name maks-koits -p 80:80 -v /app/Maks-Koits.github.io:/usr/local/apache2/htdocs --restart=unless-stopped httpd:alpine3.17
+git pull
+docker run -d --name maks-koits -p 80:80 -v /app/Maks-Koits.github.io:/usr/share/nginx/html --restart=unless-stopped nginx:stable-alpine

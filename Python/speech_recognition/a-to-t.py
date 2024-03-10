@@ -1,3 +1,5 @@
+# python a-to-t.py --audio_dir data --out_dir text --whisper_model tiny
+
 import argparse
 import os
 import os.path as osp
@@ -14,7 +16,7 @@ parser.add_argument(
 )
 
 parser.add_argument(
-    "--whisper_model", type=str, choices=("small", "medium", "large"), default="medium"
+    "--whisper_model", type=str, choices=("tiny", "base", "small", "medium", "large"), default="medium"
 )
 
 parser.add_argument(
