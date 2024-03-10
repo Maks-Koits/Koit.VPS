@@ -152,5 +152,9 @@ net.ipv6.conf.default.disable_ipv6=1
 net.ipv6.conf.lo.disable_ipv6=1
   
 sudo sysctl -p
+  
+  
+nano authorized_keys
+  вставить ключ публик
 
 
