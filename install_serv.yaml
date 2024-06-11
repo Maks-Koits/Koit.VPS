@@ -76,7 +76,7 @@ sudo apt install git \
 && git clone https://github.com/Maks-Koits/Maks-Koits.github.io.git \
 && git clone https://github.com/Maks-Koits/Koit.VPS.git \
 && cd /app/Koit.VPS \
-&& docker compose -f acme-ssl-docker-compose.yaml up -d \
+&& docker compose -f acme-ssl-docker-compose.yaml up -d
 
 ######################### Установка Portainer
 docker volume create portainer_data
@@ -101,7 +101,7 @@ sudo fallocate -l 1G /swapfile \
 ssh root@90.156.228.116 "-S dd if=/dev/vda1 bs=1m status=progress | gzip -1 -" | dd of=image.gz bs=1m
 
 ####################### Настройка конфига консоли
-ln -s /app/Koit.VPS/.bashrc .bashrc
+ln -s /app/Koit.VPS/.bashrc ~/.bashrc
 
 ####################### Отключение ipv6
 nano /etc/sysctl.conf
@@ -114,20 +114,14 @@ sudo sysctl -p
 nano /root/.ssh/authorized_keys
 вставить ключ публик
 
+####################### Logoped polina bot
+
+cd /app/Koit.VPS/Logoped_Polina_Bogdan_bot \
+&& docker build -t logoped_polina_bogdan_bot:v0.1 . && docker run -d -e API_TOKEN=***** --name logoped_polina_bogdan_bot --restart=unless-stopped -v ./:/bot logoped_polina_bogdan_bot:v0.1
+
 ####################### Обновление
 bash /app/Koit.VPS/clean+update.sh
 
 
 journald | grep 'docker'
 cat /var/log/auth.log
-
-###################### Установка GIT + разворачивание сайта
-
-sudo apt install git
-mkdir /app
-cd /app
-git clone https://github.com/Maks-Koits/Maks-Koits.github.io.git
-
-docker run -d --name maks-koits -p 80:80 -v /app/Maks-Koits.github.io:/usr/local/apache2/htdocs --restart=unless-stopped httpd:alpine3.17
-git pull
-docker run -d --name maks-koits -p 80:80 -v /app/Maks-Koits.github.io:/usr/share/nginx/html --restart=unless-stopped nginx:stable-alpine
