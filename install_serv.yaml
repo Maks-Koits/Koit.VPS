@@ -87,7 +87,7 @@ docker run -it --name=vscode --init -d --user root -p 3000:3000 -v /root/vscode:
 
 ###################### Установка mc ncdu net-tools speedtest
 curl -s https://packagecloud.io/install/repositories/ookla/speedtest-cli/script.deb.sh \
-&& sudo apt install mc ncdu net-tools speedtest
+&& sudo apt install mc ncdu net-tools speedtest dnsutils
 
 ###################### Назначение Swap-файла
 sudo fallocate -l 1G /swapfile \
@@ -125,3 +125,7 @@ bash /app/Koit.VPS/clean+update.sh
 
 journald | grep 'docker'
 cat /var/log/auth.log
+
+
+####################### чекнуть скорость
+curl -s https://raw.githubusercontent.com/sivel/speedtest-cli/master/speedtest.py | python3 -

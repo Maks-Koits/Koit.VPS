@@ -24,6 +24,28 @@ services:
 #      - 9100:9100
 #      - 9443:9443
 
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: 'cadvisor'
+    restart: always
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker:/var/lib/docker:ro
+    devices:
+      - /dev/kmsg:/dev/kmsg
+    environment:
+      TZ: 'Europe/Minsk'
+      VIRTUAL_HOST: 'cadvisor.maks-koits.space'
+      VIRTUAL_PORT: '8080'
+      LETSENCRYPT_HOST: 'cadvisor.maks-koits.space'
+      LETSENCRYPT_EMAIL: 'mix256@gmail.com'
+    networks:
+      - net
+
   acme:
     image: nginxproxy/acme-companion:latest
     container_name: 'nginx_proxy_acme_maks-koits-space'
