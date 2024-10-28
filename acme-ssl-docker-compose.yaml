@@ -108,6 +108,26 @@ services:
     networks:
       - net
 
+  salary.maks-koits.space:
+    image: nginx:stable-alpine
+    container_name: 'salary_maks-koits-space'
+    depends_on:
+      - nginx-proxy
+    volumes:
+      - /app/Koit.VPS/salary_calc/default.conf:/etc/nginx/conf.d/default.conf
+      - /app/Koit.VPS/salary_calc.html:/usr/share/nginx/html
+#if file      - /dev/null:/usr/share/nginx/html/.git
+#      - /usr/share/nginx/html/.git
+      - /etc/localtime:/etc/localtime:ro
+#      - /var/log/nginx_cv:/var/log/nginx_cv
+    environment:
+#      TZ: 'Europe/Minsk'
+      VIRTUAL_HOST: 'salary.maks-koits.space'
+      LETSENCRYPT_HOST: 'salary.maks-koits.space'
+    restart: unless-stopped
+    networks:
+      - net
+
   portainer:
     image: portainer/portainer-ce:linux-amd64
     container_name: 'portainer_maks-koits-space'

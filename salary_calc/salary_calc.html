@@ -1,0 +1,170 @@
+!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Salary Counter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #2c2c2c; /* Темная тема */
+            color: #fff; /* Цвет текста */
+        }
+        .container {
+            max-width: 400px;
+            padding: 20px;
+            background: #3a3a3a; /* Фон контейнера */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            position: relative; /* Для позиционирования кнопки */
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .field {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="text"], input[type="time"], input[type="date"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+            background-color: #444; /* Фон полей ввода */
+            color: #fff; /* Цвет текста в полях ввода */
+        }
+        input[type="text"]:focus, input[type="time"]:focus, input[type="date"]:focus {
+            border-color: #007bff;
+        }
+        .output {
+            font-size: 1.2em;
+            text-align: center;
+            margin-top: 20px;
+        }
+        #settings {
+            display: none;
+        }
+        .settings-btn {
+            position: absolute; /* Позиционирование кнопки */
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+            text-decoration: underline;
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Real-Time Salary Counter</h2>
+        <div class="settings-btn" onclick="toggleSettings()">Settings</div>
+
+        <div id="settings">
+            <div class="field">
+                <label for="hourlyRate">Hourly Rate (in $)</label>
+                <input type="text" id="hourlyRate" placeholder="e.g., 2.34">
+            </div>
+            <div class="field">
+                <label for="workStartTime">Work Start Time</label>
+                <input type="time" id="workStartTime" value="09:00" step="3600" required>
+            </div>
+            <div class="field">
+                <label for="workEndTime">Work End Time</label>
+                <input type="time" id="workEndTime" value="17:00" step="3600" required>
+            </div>
+            <div class="field">
+                <label for="currentDate">Today's Date</label>
+                <input type="date" id="currentDate" value="" />
+            </div>
+        </div>
+
+        <div class="output">
+            <p><strong>Today's Earnings:</strong> $<span id="todayEarnings">0.000</span></p>
+            <p><strong>Monthly Earnings:</strong> $<span id="monthlyEarnings">0.000</span></p>
+        </div>
+    </div>
+
+    <script>
+        // Function to toggle settings menu visibility
+        function toggleSettings() {
+            const settings = document.getElementById('settings');
+            settings.style.display = settings.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // Function to save data to cookies
+        function setCookie(name, value) {
+            document.cookie = `${name}=${value}; path=/; expires=Fri, 31 Dec 9999 23:59:59 GMT`;
+        }
+
+        // Function to get data from cookies
+        function getCookie(name) {
+            const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+            return match ? match[2] : '';
+        }
+
+        // Initialize settings values from cookies or default values
+        const hourlyRateInput = document.getElementById('hourlyRate');
+        const workStartTimeInput = document.getElementById('workStartTime');
+        const workEndTimeInput = document.getElementById('workEndTime');
+        const currentDateInput = document.getElementById('currentDate');
+
+        hourlyRateInput.value = getCookie('hourlyRate') || '16.74';
+        workStartTimeInput.value = getCookie('workStartTime') || '09:00';
+        workEndTimeInput.value = getCookie('workEndTime') || '17:00';
+        currentDateInput.value = getCookie('currentDate') || new Date().toISOString().split('T')[0];
+
+        hourlyRateInput.addEventListener('change', () => setCookie('hourlyRate', hourlyRateInput.value));
+        workStartTimeInput.addEventListener('change', () => setCookie('workStartTime', workStartTimeInput.value));
+        workEndTimeInput.addEventListener('change', () => setCookie('workEndTime', workEndTimeInput.value));
+        currentDateInput.addEventListener('change', () => setCookie('currentDate', currentDateInput.value));
+
+        // Main function to update earnings in real-time
+        function updateEarnings() {
+            const hourlyRate = parseFloat(hourlyRateInput.value.replace(',', '.')) || 0;
+            const workStartTime = workStartTimeInput.value;
+            const workEndTime = workEndTimeInput.value;
+            const currentDate = new Date(currentDateInput.value);
+
+            const currentDateTime = new Date();
+            const workStartDateTime = new Date(currentDate);
+            workStartDateTime.setHours(...workStartTime.split(':').map(Number));
+
+            const workEndDateTime = new Date(currentDate);
+            workEndDateTime.setHours(...workEndTime.split(':').map(Number));
+
+            // Calculate today's earnings
+            let todayEarnings = 0;
+            if (currentDateTime >= workStartDateTime && currentDateTime <= workEndDateTime) {
+                const elapsedSeconds = (currentDateTime - workStartDateTime) / 1000;
+                const hourlyEarningsPerSecond = hourlyRate / 3600;
+                todayEarnings = elapsedSeconds * hourlyEarningsPerSecond;
+            } else if (currentDateTime > workEndDateTime) {
+                todayEarnings = (workEndDateTime - workStartDateTime) / 1000 * (hourlyRate / 3600);
+            }
+            document.getElementById('todayEarnings').textContent = todayEarnings.toFixed(3);
+
+            // Calculate monthly earnings
+            const dayInMillisec = 24 * 60 * 60 * 1000;
+            const elapsedDaysInMonth = Math.floor((currentDateTime - new Date(currentDate.getFullYear(), currentDate.getMonth(), 1)) / dayInMillisec);
+            const weekdaysElapsed = Math.floor((elapsedDaysInMonth / 7) * 5);
+            const totalWorkSecondsPerDay = (new Date(`1970-01-01T${workEndTime}:00`) - new Date(`1970-01-01T${workStartTime}:00`)) / 1000;
+
+            const monthlyEarnings = weekdaysElapsed * totalWorkSecondsPerDay * (hourlyRate / 3600) + todayEarnings;
+            document.getElementById('monthlyEarnings').textContent = monthlyEarnings.toFixed(3);
+        }
+
+        // Update earnings every 0.1 seconds
+        setInterval(updateEarnings, 100);
+    </script>
+</body>
+</html>
