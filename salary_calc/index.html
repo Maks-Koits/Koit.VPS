@@ -131,7 +131,17 @@
         lunchEndTimeInput.value = getCookie('lunchEndTime') || '13:00';
         currentDateInput.value = getCookie('currentDate') || new Date().toISOString().split('T')[0];
 
-        hourlyRateInput.addEventListener('change', () => setCookie('hourlyRate', hourlyRateInput.value));
+        hourlyRateInput.addEventListener('change', () => {
+            const value = hourlyRateInput.value;
+            try {
+                const evaluatedRate = eval(value);
+                setCookie('hourlyRate', evaluatedRate);
+                hourlyRateInput.value = evaluatedRate;  // Update the input value with the result of the evaluation
+            } catch (error) {
+                alert("Invalid expression!");
+            }
+        });
+
         workStartTimeInput.addEventListener('change', () => setCookie('workStartTime', workStartTimeInput.value));
         workEndTimeInput.addEventListener('change', () => setCookie('workEndTime', workEndTimeInput.value));
         lunchStartTimeInput.addEventListener('change', () => setCookie('lunchStartTime', lunchStartTimeInput.value));
@@ -188,9 +198,8 @@
                 } else if (currentDateTime > workEndDateTime) {
                     earnings = (workEndDateTime - workStartDateTime - (lunchEndDateTime - lunchStartDateTime)) / 1000 * (hourlyRate / 3600);
                 }
-                // Subtract lunch break time
                 if (currentDateTime >= lunchStartDateTime && currentDateTime <= lunchEndDateTime) {
-                    earnings = (lunchStartDateTime - workStartDateTime ) / 1000 * (hourlyRate / 3600);; // No earnings during lunch
+                    earnings = (lunchStartDateTime - workStartDateTime ) / 1000 * (hourlyRate / 3600);
                 }
                 return earnings;
             })();
