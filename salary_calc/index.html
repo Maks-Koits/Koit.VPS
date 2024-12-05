@@ -12,16 +12,16 @@
             align-items: center;
             height: 100vh;
             margin: 0;
-            background-color: #2c2c2c;
-            color: #fff;
+            background-color: #2c2c2c; /* Темная тема */
+            color: #fff; /* Цвет текста */
         }
         .container {
             max-width: 400px;
             padding: 20px;
-            background: #3a3a3a;
+            background: #3a3a3a; /* Фон контейнера */
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             border-radius: 8px;
-            position: relative;
+            position: relative; /* Для позиционирования кнопки */
         }
         h2 {
             text-align: center;
@@ -40,8 +40,8 @@
             border: 1px solid #ddd;
             border-radius: 4px;
             box-sizing: border-box;
-            background-color: #444;
-            color: #fff;
+            background-color: #444; /* Фон полей ввода */
+            color: #fff; /* Цвет текста в полях ввода */
         }
         input[type="text"]:focus, input[type="time"]:focus, input[type="date"]:focus {
             border-color: #007bff;
@@ -55,7 +55,7 @@
             display: none;
         }
         .settings-btn {
-            position: absolute;
+            position: absolute; /* Позиционирование кнопки */
             top: 10px;
             right: 10px;
             cursor: pointer;
@@ -83,8 +83,16 @@
                 <input type="time" id="workEndTime" value="17:00" step="3600" required>
             </div>
             <div class="field">
+                <label for="lunchtimeStartTime">Lunchtime Start Time</label>
+                <input type="time" id="lunchtimeStartTime" value="12:00" step="3600" required>
+            </div>
+            <div class="field">
+                <label for="lunchtimeEndTime">Lunchtime End Time</label>
+                <input type="time" id="lunchtimeEndTime" value="13:00" step="3600" required>
+            </div>
+            <div class="field">
                 <label for="currentDate">Today's Date</label>
-                <input type="date" id="currentDate" value="">
+                <input type="date" id="currentDate" value="" />
             </div>
         </div>
 
@@ -95,36 +103,57 @@
     </div>
 
     <script>
+        // Toggle settings menu visibility
         function toggleSettings() {
             const settings = document.getElementById('settings');
             settings.style.display = settings.style.display === 'none' ? 'block' : 'none';
         }
 
+        // Save data to cookies
         function setCookie(name, value) {
             document.cookie = `${name}=${value}; path=/; expires=Fri, 31 Dec 9999 23:59:59 GMT`;
         }
 
+        // Get data from cookies
         function getCookie(name) {
             const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
             return match ? match[2] : '';
         }
 
+        // Initialize settings values from cookies or default values
         const hourlyRateInput = document.getElementById('hourlyRate');
         const workStartTimeInput = document.getElementById('workStartTime');
         const workEndTimeInput = document.getElementById('workEndTime');
         const currentDateInput = document.getElementById('currentDate');
+        const lunchtimeStartTimeInput = document.getElementById('lunchtimeStartTime');
+        const lunchtimeEndTimeInput = document.getElementById('lunchtimeEndTime');
 
         hourlyRateInput.value = getCookie('hourlyRate') || '16.74';
         workStartTimeInput.value = getCookie('workStartTime') || '09:00';
         workEndTimeInput.value = getCookie('workEndTime') || '17:00';
+        lunchtimeStartTimeInput.value = getCookie('lunchtimeStartTime') || '12:00';
+        lunchtimeEndTimeInput.value = getCookie('lunchtimeEndTime') || '13:00';
         currentDateInput.value = getCookie('currentDate') || new Date().toISOString().split('T')[0];
 
         hourlyRateInput.addEventListener('change', () => setCookie('hourlyRate', hourlyRateInput.value));
         workStartTimeInput.addEventListener('change', () => setCookie('workStartTime', workStartTimeInput.value));
         workEndTimeInput.addEventListener('change', () => setCookie('workEndTime', workEndTimeInput.value));
+        lunchtimeStartTimeInput.addEventListener('change', () => setCookie('lunchtimeStartTime', lunchtimeStartTimeInput.value));
+        lunchtimeEndTimeInput.addEventListener('change', () => setCookie('lunchtimeEndTime', lunchtimeEndTimeInput.value));
         currentDateInput.addEventListener('change', () => setCookie('currentDate', currentDateInput.value));
 
-        function calculateMonthlyEarnings(currentDate, hourlyRate, workStartTime, workEndTime) {
+        // Function to check if today is the first working day of the month
+        function isFirstWorkingDayOfMonth(date) {
+            const firstDayOfMonth = new Date(date.getFullYear(), date.getMonth(), 1);
+            let currentDate = new Date(firstDayOfMonth);
+            while (currentDate.getDay() === 0 || currentDate.getDay() === 6) {
+                currentDate.setDate(currentDate.getDate() + 1);
+            }
+            return currentDate.toDateString() === date.toDateString();
+        }
+
+        // Function to calculate monthly earnings
+        function calculateMonthlyEarnings(currentDate, hourlyRate, workStartTime, workEndTime, lunchtimeStartTime, lunchtimeEndTime) {
             const dayInMillisec = 24 * 60 * 60 * 1000;
             const monthStartDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
             const daysElapsed = Math.floor((currentDate - monthStartDate) / dayInMillisec) + 1;
@@ -138,16 +167,21 @@
             }
 
             const totalWorkSecondsPerDay = (new Date(`1970-01-01T${workEndTime}:00`) - new Date(`1970-01-01T${workStartTime}:00`)) / 1000;
-            const dailyEarnings = totalWorkSecondsPerDay * (hourlyRate / 3600);
+            const lunchtimeDuration = (new Date(`1970-01-01T${lunchtimeEndTime}:00`) - new Date(`1970-01-01T${lunchtimeStartTime}:00`)) / 1000;
+            const totalWorkSecondsExcludingLunch = totalWorkSecondsPerDay - lunchtimeDuration;
+            const dailyEarnings = totalWorkSecondsExcludingLunch * (hourlyRate / 3600);
 
             return weekdaysElapsed * dailyEarnings;
         }
 
+        // Function to update earnings
         function updateEarnings() {
             const hourlyRate = parseFloat(hourlyRateInput.value.replace(',', '.')) || 0;
             const workStartTime = workStartTimeInput.value;
             const workEndTime = workEndTimeInput.value;
             const currentDate = new Date(currentDateInput.value);
+            const lunchtimeStartTime = lunchtimeStartTimeInput.value;
+            const lunchtimeEndTime = lunchtimeEndTimeInput.value;
 
             const todayEarnings = (() => {
                 const currentDateTime = new Date();
@@ -157,23 +191,44 @@
                 const workEndDateTime = new Date(currentDate);
                 workEndDateTime.setHours(...workEndTime.split(':').map(Number));
 
+                const lunchtimeStartDateTime = new Date(currentDate);
+                lunchtimeStartDateTime.setHours(...lunchtimeStartTime.split(':').map(Number));
+
+                const lunchtimeEndDateTime = new Date(currentDate);
+                lunchtimeEndDateTime.setHours(...lunchtimeEndTime.split(':').map(Number));
+
                 let earnings = 0;
+
                 if (currentDateTime >= workStartDateTime && currentDateTime <= workEndDateTime) {
                     const elapsedSeconds = (currentDateTime - workStartDateTime) / 1000;
                     const hourlyEarningsPerSecond = hourlyRate / 3600;
-                    earnings = elapsedSeconds * hourlyEarningsPerSecond;
+
+                    // If we are within lunchtime, set earnings to 0
+                    if (currentDateTime >= lunchtimeStartDateTime && currentDateTime <= lunchtimeEndDateTime) {
+                        earnings = 0;
+                    } else {
+                        earnings = elapsedSeconds * hourlyEarningsPerSecond;
+                    }
                 } else if (currentDateTime > workEndDateTime) {
-                    earnings = (workEndDateTime - workStartDateTime) / 1000 * (hourlyRate / 3600);
+                    earnings = (workEndDateTime - workStartDateTime - (lunchtimeEndDateTime - lunchtimeStartDateTime)) / 1000 * (hourlyRate / 3600);
                 }
+
                 return earnings;
             })();
 
-            const monthlyEarnings = calculateMonthlyEarnings(currentDate, hourlyRate, workStartTime, workEndTime) ;
+            const monthlyEarnings = calculateMonthlyEarnings(currentDate, hourlyRate, workStartTime, workEndTime, lunchtimeStartTime, lunchtimeEndTime);
 
-            document.getElementById('todayEarnings').textContent = todayEarnings.toFixed(3);
-            document.getElementById('monthlyEarnings').textContent = monthlyEarnings.toFixed(3);
+            // Check if today is the first working day of the month and adjust earnings if necessary
+            if (isFirstWorkingDayOfMonth(currentDate)) {
+                document.getElementById('todayEarnings').textContent = (monthlyEarnings + todayEarnings).toFixed(4);
+            } else {
+                document.getElementById('todayEarnings').textContent = (monthlyEarnings + todayEarnings).toFixed(4);
+            }
+
+            document.getElementById('monthlyEarnings').textContent = (monthlyEarnings + todayEarnings).toFixed(4);
         }
 
+        // Update earnings every 100ms
         setInterval(updateEarnings, 100);
     </script>
 </body>

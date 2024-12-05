@@ -5,3 +5,4 @@ ssh-keygen -p
 ssh-keygen -p [-P old_passphrase] [-N new_passphrase] [-f keyfile]
 
 
+set +o history && head /dev/urandom | tr -dc 'a-zA-Z0-9@#%^*(-_=+)' | head -c 20; echo && set -o history
