@@ -151,7 +151,7 @@
         function calculateMonthlyEarnings(currentDate, hourlyRate, workStartTime, workEndTime, lunchStartTime, lunchEndTime) {
             const dayInMillisec = 24 * 60 * 60 * 1000;
             const monthStartDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-            const daysElapsed = Math.floor((currentDate - monthStartDate) / dayInMillisec) + 1;
+            const daysElapsed = Math.floor((currentDate - monthStartDate) / dayInMillisec);
 
             let weekdaysElapsed = 0;
             for (let i = 0; i < daysElapsed; i++) {
@@ -214,10 +214,10 @@
                     earnings = totalWorkSeconds * hourlyEarningsPerSecond;
                 }
 
-    return earnings;
+            return earnings;
             })();
 
-            const monthlyEarnings = calculateMonthlyEarnings(currentDate, hourlyRate, workStartTime, workEndTime, lunchStartTime, lunchEndTime);
+            const monthlyEarnings = calculateMonthlyEarnings(currentDate, hourlyRate, workStartTime, workEndTime, lunchStartTime, lunchEndTime) + todayEarnings;
 
             document.getElementById('todayEarnings').textContent = todayEarnings.toFixed(3);
             document.getElementById('monthlyEarnings').textContent = monthlyEarnings.toFixed(3);
