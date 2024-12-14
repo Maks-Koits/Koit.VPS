@@ -176,46 +176,38 @@
             const lunchEndTime = lunchEndTimeInput.value;
             const currentDate = new Date(currentDateInput.value);
 
-            const todayEarnings = (() => {
-                const currentDateTime = new Date();
-                const workStartDateTime = new Date(currentDate);
-                workStartDateTime.setHours(...workStartTime.split(':').map(Number));
+            const currentDateTime = new Date();
+            const workStartDateTime = new Date(currentDate);
+            workStartDateTime.setHours(...workStartTime.split(':').map(Number));
 
-                const workEndDateTime = new Date(currentDate);
-                workEndDateTime.setHours(...workEndTime.split(':').map(Number));
+            const workEndDateTime = new Date(currentDate);
+            workEndDateTime.setHours(...workEndTime.split(':').map(Number));
 
-                const lunchStartDateTime = new Date(currentDate);
-                lunchStartDateTime.setHours(...lunchStartTime.split(':').map(Number));
+            const lunchStartDateTime = new Date(currentDate);
+            lunchStartDateTime.setHours(...lunchStartTime.split(':').map(Number));
 
-                const lunchEndDateTime = new Date(currentDate);
-                lunchEndDateTime.setHours(...lunchEndTime.split(':').map(Number));
+            const lunchEndDateTime = new Date(currentDate);
+            lunchEndDateTime.setHours(...lunchEndTime.split(':').map(Number));
 
-                let earnings = 0;
-                //от начала работы до обэда
+            let todayEarnings = 0;
+
+            // Проверка на выходной день
+            const currentDayOfWeek = currentDate.getDay();
+            if (currentDayOfWeek !== 0 && currentDayOfWeek !== 6) {
+                // Если не выходной, выполняем расчёт заработка
                 if (currentDateTime >= workStartDateTime && currentDateTime < lunchStartDateTime) {
                     const elapsedSeconds = (currentDateTime - workStartDateTime) / 1000;
-                    const hourlyEarningsPerSecond = hourlyRate / 3600;
-                    earnings = elapsedSeconds * hourlyEarningsPerSecond;
-                }
-                //обэд
-                if (currentDateTime >= lunchStartDateTime && currentDateTime < lunchEndDateTime) {
-                    earnings = ((lunchStartDateTime - workStartDateTime) / 1000) * (hourlyRate / 3600);
-                }
-                //от конца обэда до конца работы
-                if (currentDateTime >= lunchEndDateTime && currentDateTime < workEndDateTime) {
+                    todayEarnings = elapsedSeconds * (hourlyRate / 3600);
+                } else if (currentDateTime >= lunchStartDateTime && currentDateTime < lunchEndDateTime) {
+                    todayEarnings = ((lunchStartDateTime - workStartDateTime) / 1000) * (hourlyRate / 3600);
+                } else if (currentDateTime >= lunchEndDateTime && currentDateTime < workEndDateTime) {
                     const elapsedSeconds = (currentDateTime - workStartDateTime - (lunchEndDateTime - lunchStartDateTime)) / 1000;
-                    const hourlyEarningsPerSecond = hourlyRate / 3600;
-                    earnings = elapsedSeconds  * hourlyEarningsPerSecond;
-                }
-                //от конца работы
-                if (currentDateTime > workEndDateTime) {
+                    todayEarnings = elapsedSeconds * (hourlyRate / 3600);
+                } else if (currentDateTime > workEndDateTime) {
                     const totalWorkSeconds = (workEndDateTime - workStartDateTime - (lunchEndDateTime - lunchStartDateTime)) / 1000;
-                    const hourlyEarningsPerSecond = hourlyRate / 3600;
-                    earnings = totalWorkSeconds * hourlyEarningsPerSecond;
+                    todayEarnings = totalWorkSeconds * (hourlyRate / 3600);
                 }
-
-            return earnings;
-            })();
+            }
 
             const monthlyEarnings = calculateMonthlyEarnings(currentDate, hourlyRate, workStartTime, workEndTime, lunchStartTime, lunchEndTime) + todayEarnings;
 
