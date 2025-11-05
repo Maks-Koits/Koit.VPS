@@ -11,9 +11,10 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 120vh;
             margin: 0;
-            background: radial-gradient(1200px 600px at 20% 0%, #323232 0%, #2a2a2a 40%, #222 100%);
+            min-height: 100vh;
+            padding: 20px 0;
+            background: radial-gradient(ellipse at 20% 0%, #323232 0%, #2a2a2a 40%, #222 100%);
             color: #f5f5f5;
         }
         .container {
@@ -60,12 +61,15 @@
             background-color: #2b2b2b;
             box-shadow: 0 0 0 3px rgba(77, 163, 255, 0.15);
         }
+        input.time-input {
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 0.5px;
+        }
         #settings {
             display: none;
             margin-top: 8px;
         }
         .settings-btn {
-            position: absolute;
             top: 10px;
             right: 10px;
             cursor: pointer;
@@ -170,9 +174,12 @@
             color: #eaeaea;
         }
         .cal-day.out { opacity: 0.35; cursor: default; }
-        .cal-day:hover { background: #353535; }
+        .cal-day:hover:not(.out) { background: #353535; }
         .cal-day.selected { background: rgba(77,163,255,0.18); border-color: rgba(77,163,255,0.6); color: #cfe5ff; }
-        .cal-legend { padding: 8px 10px; color: #bdbdbd; font-size: 0.85em; border-top: 1px solid rgba(255,255,255,0.06); }
+        .cal-day.current { background: rgba(255,183,77,0.25); border-color: rgba(255,183,77,0.8); color: #ffd9a6; font-weight: 600; position: relative; }
+        .cal-day.current::after { content: '●'; position: absolute; bottom: 2px; right: 4px; font-size: 6px; color: rgba(255,183,77,1); }
+        .cal-day.current.selected { background: linear-gradient(135deg, rgba(255,183,77,0.25) 0%, rgba(77,163,255,0.18) 100%); border-color: rgba(255,183,77,0.8); box-shadow: 0 0 0 1px rgba(77,163,255,0.4) inset; }
+        .cal-legend { padding: 8px 10px; color: #bdbdbd; font-size: 0.85em; border-top: 1px solid rgba(255,255,255,0.06); line-height: 1.5; }
     </style>
 </head>
 <body>
@@ -186,27 +193,27 @@
                 <input type="text" id="hourlyRate" placeholder="e.g., 2.74">
             </div>
             <div class="field">
-                <label for="workStartTime">Work Start Time</label>
-                <input type="time" id="workStartTime" value="09:00" step="3600" required>
+                <label for="workStartTime">Work Start Time (24h format)</label>
+                <input type="text" id="workStartTime" value="09:00" class="time-input" placeholder="HH:MM" pattern="[0-2][0-9]:[0-5][0-9]" maxlength="5" required>
             </div>
             <div class="field">
-                <label for="workEndTime">Work End Time</label>
-                <input type="time" id="workEndTime" value="18:00" step="3600" required>
+                <label for="workEndTime">Work End Time (24h format)</label>
+                <input type="text" id="workEndTime" value="18:00" class="time-input" placeholder="HH:MM" pattern="[0-2][0-9]:[0-5][0-9]" maxlength="5" required>
             </div>
             <div class="field">
-                <label for="lunchStartTime">Lunch Break Start</label>
-                <input type="time" id="lunchStartTime" value="12:00" step="3600">
+                <label for="lunchStartTime">Lunch Break Start (24h format)</label>
+                <input type="text" id="lunchStartTime" value="12:00" class="time-input" placeholder="HH:MM" pattern="[0-2][0-9]:[0-5][0-9]" maxlength="5">
             </div>
             <div class="field">
-                <label for="lunchEndTime">Lunch Break End</label>
-                <input type="time" id="lunchEndTime" value="13:00" step="3600">
+                <label for="lunchEndTime">Lunch Break End (24h format)</label>
+                <input type="text" id="lunchEndTime" value="13:00" class="time-input" placeholder="HH:MM" pattern="[0-2][0-9]:[0-5][0-9]" maxlength="5">
             </div>
             <div class="field">
                 <label for="currentDate">Today's Date</label>
-                <input type="date" id="currentDate" value="">
+                <input type="text" id="currentDate" value="" class="time-input" placeholder="YYYY-MM-DD" readonly style="cursor: pointer;">
             </div>
             <div class="field">
-                <label>Working Dates (select in calendar)</label>
+                <label>Calendar</label>
                 <div class="calendar">
                     <div class="cal-header">
                         <div class="cal-title" id="calTitle">Month YYYY</div>
@@ -217,7 +224,16 @@
                         </div>
                     </div>
                     <div class="cal-grid" id="calGrid"></div>
-                    <div class="cal-legend">Click days to toggle working dates. Selected days count as worked.</div>
+                    <div class="cal-legend">
+                        <div style="margin-bottom: 4px;">
+                            <span style="display: inline-block; width: 12px; height: 12px; background: rgba(255,183,77,0.25); border: 1px solid rgba(255,183,77,0.8); border-radius: 3px; margin-right: 6px; vertical-align: middle;"></span>
+                            <span style="vertical-align: middle;">Current date (click to change)</span>
+                        </div>
+                        <div>
+                            <span style="display: inline-block; width: 12px; height: 12px; background: rgba(77,163,255,0.18); border: 1px solid rgba(77,163,255,0.6); border-radius: 3px; margin-right: 6px; vertical-align: middle;"></span>
+                            <span style="vertical-align: middle;">Working day (right-click to toggle)</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -240,6 +256,58 @@
             const willShow = getComputedStyle(settings).display === 'none';
             settings.style.display = willShow ? 'block' : 'none';
             setPref('settingsVisible', willShow ? '1' : '0');
+        }
+
+        // Time input validation and formatting
+        function validateTimeFormat(value) {
+            const timeRegex = /^([0-1]?[0-9]|2[0-3]):([0-5][0-9])$/;
+            return timeRegex.test(value);
+        }
+
+        function normalizeTime(value) {
+            if (!validateTimeFormat(value)) return value;
+            const [h, m] = value.split(':').map(Number);
+            return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+        }
+
+        function formatTimeInput(input) {
+            let value = input.value.replace(/[^\d:]/g, '');
+            
+            // Auto-add colon after 2 digits
+            if (value.length === 2 && !value.includes(':')) {
+                value += ':';
+            }
+            
+            // Remove extra colons
+            const parts = value.split(':');
+            if (parts.length > 2) {
+                value = parts[0] + ':' + parts.slice(1).join('');
+            }
+            
+            input.value = value;
+            
+            // Validate when complete
+            if (value.length >= 4 && value.includes(':')) {
+                if (!validateTimeFormat(value)) {
+                    input.setCustomValidity('Please enter time in HH:MM format (00:00 - 23:59)');
+                } else {
+                    input.setCustomValidity('');
+                }
+            }
+        }
+
+        function setupTimeInput(input) {
+            input.addEventListener('input', () => formatTimeInput(input));
+            input.addEventListener('blur', () => {
+                const value = input.value;
+                if (value && !validateTimeFormat(value)) {
+                    alert('Invalid time format. Please use HH:MM (24-hour format, e.g., 09:00 or 18:30)');
+                    input.focus();
+                } else if (value) {
+                    // Normalize to HH:MM format
+                    input.value = normalizeTime(value);
+                }
+            });
         }
 
         function setCookie(name, value) {
@@ -288,6 +356,12 @@
         // migrate old cookie values once
         migrateCookiesToLocalStorage(['hourlyRate','workStartTime','workEndTime','lunchStartTime','lunchEndTime','currentDate','settingsVisible']);
 
+        // Setup time input formatting and validation
+        setupTimeInput(workStartTimeInput);
+        setupTimeInput(workEndTimeInput);
+        setupTimeInput(lunchStartTimeInput);
+        setupTimeInput(lunchEndTimeInput);
+
         // Work dates storage helpers
         function fmtDateKey(d) {
             const y = d.getFullYear();
@@ -320,7 +394,11 @@
         workEndTimeInput.value = getPref('workEndTime') || '18:00';
         lunchStartTimeInput.value = getPref('lunchStartTime') || '12:00';
         lunchEndTimeInput.value = getPref('lunchEndTime') || '13:00';
-        currentDateInput.value = getPref('currentDate') || new Date().toISOString().split('T')[0];
+        const savedDate = getPref('currentDate');
+        currentDateInput.value = savedDate || fmtDateKey(new Date());
+        if (!savedDate) {
+            setPref('currentDate', currentDateInput.value);
+        }
 
         // ensure settings start hidden by default
         (function ensureSettingsHidden(){
@@ -330,7 +408,9 @@
         })();
 
         function parseTimeToSeconds(timeStr) {
+            if (!timeStr || !timeStr.includes(':')) return 0;
             const [h, m] = timeStr.split(':').map(Number);
+            if (isNaN(h) || isNaN(m)) return 0;
             return (h * 60 + m) * 60;
         }
 
@@ -471,7 +551,17 @@
         workEndTimeInput.addEventListener('change', () => { setPref('workEndTime', workEndTimeInput.value); recomputeDerived(); updateTick(); });
         lunchStartTimeInput.addEventListener('change', () => { setPref('lunchStartTime', lunchStartTimeInput.value); recomputeDerived(); updateTick(); });
         lunchEndTimeInput.addEventListener('change', () => { setPref('lunchEndTime', lunchEndTimeInput.value); recomputeDerived(); updateTick(); });
-        currentDateInput.addEventListener('change', () => { setPref('currentDate', currentDateInput.value); recomputeDerived(); updateTick(); });
+        
+        // Update calendar when date input clicked
+        currentDateInput.addEventListener('click', () => {
+            const settings = document.getElementById('settings');
+            if (getComputedStyle(settings).display === 'none') {
+                settings.style.display = 'block';
+                setPref('settingsVisible', '1');
+            }
+            // Scroll to calendar
+            document.querySelector('.calendar').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        });
 
         // Calendar rendering
         const calGrid = document.getElementById('calGrid');
@@ -498,6 +588,8 @@
             startWeekday = startWeekday === 0 ? 7 : startWeekday; // 1..7, Mon=1
             const daysInMonth = lastDay.getDate();
 
+            const currentDateKey = currentDateInput.value || fmtDateKey(new Date());
+
             const cells = [];
             // Weekday headers
             cells.push(weekdayHeaders());
@@ -511,13 +603,27 @@
                 const dateObj = new Date(year, month, d);
                 const key = fmtDateKey(dateObj);
                 const sel = workDates.has(key) ? ' selected' : '';
-                cells.push(`<div class="cal-day${sel}" data-key="${key}">${d}</div>`);
+                const cur = key === currentDateKey ? ' current' : '';
+                cells.push(`<div class="cal-day${sel}${cur}" data-key="${key}">${d}</div>`);
             }
             calGrid.innerHTML = cells.join('');
 
             // Bind clicks for days
             calGrid.querySelectorAll('.cal-day').forEach(el => {
-                el.addEventListener('click', () => {
+                // Left click - set current date
+                el.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const key = el.getAttribute('data-key');
+                    currentDateInput.value = key;
+                    setPref('currentDate', key);
+                    recomputeDerived();
+                    updateTick();
+                    renderCalendar(); // Re-render to update current date highlight
+                });
+
+                // Right click - toggle working date
+                el.addEventListener('contextmenu', (e) => {
+                    e.preventDefault();
                     const key = el.getAttribute('data-key');
                     if (workDates.has(key)) {
                         workDates.delete(key);
@@ -538,7 +644,16 @@
 
         calPrev.addEventListener('click', () => { calViewDate.setMonth(calViewDate.getMonth() - 1); renderCalendar(); });
         calNext.addEventListener('click', () => { calViewDate.setMonth(calViewDate.getMonth() + 1); renderCalendar(); });
-        calToday.addEventListener('click', () => { calViewDate = new Date(currentDateInput.value || new Date()); calViewDate.setDate(1); renderCalendar(); });
+        calToday.addEventListener('click', () => { 
+            const today = new Date();
+            currentDateInput.value = fmtDateKey(today);
+            setPref('currentDate', currentDateInput.value);
+            calViewDate = new Date(today); 
+            calViewDate.setDate(1); 
+            recomputeDerived();
+            updateTick();
+            renderCalendar(); 
+        });
 
         // Initial compute and start ticking
         recomputeDerived();
