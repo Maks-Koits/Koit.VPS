@@ -4,7 +4,7 @@ version: "3.9"
 services:
   nginx-proxy:
     image: nginxproxy/nginx-proxy:alpine
-    container_name: 'nginx_proxy_maks-koits-space'
+    container_name: 'nginx_proxy_maks-koits-site'
     volumes:
       - /app/config/html:/usr/share/nginx/html
       - /app/config/dhparam:/etc/nginx/dhparam
@@ -39,16 +39,16 @@ services:
       - /dev/kmsg:/dev/kmsg
     environment:
       TZ: 'Europe/Minsk'
-      VIRTUAL_HOST: 'cadvisor.maks-koits.space'
+      VIRTUAL_HOST: 'cadvisor.maks-koits.site'
       VIRTUAL_PORT: '8080'
-      LETSENCRYPT_HOST: 'cadvisor.maks-koits.space'
+      LETSENCRYPT_HOST: 'cadvisor.maks-koits.site'
       LETSENCRYPT_EMAIL: 'mix256@gmail.com'
     networks:
       - net
 
   acme:
     image: nginxproxy/acme-companion:latest
-    container_name: 'nginx_proxy_acme_maks-koits-space'
+    container_name: 'nginx_proxy_acme_maks-koits-site'
     depends_on:
       - nginx-proxy
     volumes:
@@ -63,7 +63,7 @@ services:
       - /app/config/acme:/etc/acme.sh
       - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
-      NGINX_PROXY_CONTAINER: 'nginx_proxy_maks-koits-space'
+      NGINX_PROXY_CONTAINER: 'nginx_proxy_maks-koits-site'
       DEFAULT_EMAIL: 'mix256@gmail.com'
     restart: always
     networks:
@@ -71,7 +71,7 @@ services:
 
   maks-koits-github-io:
     image: nginx:stable-alpine
-    container_name: 'maks-koits-space'
+    container_name: 'maks-koits-site'
     depends_on:
       - nginx-proxy
     volumes:
@@ -82,15 +82,15 @@ services:
 #      - /var/log/nginx:/var/log/nginx
     environment:
 #      TZ: 'Europe/Minsk'
-      VIRTUAL_HOST: 'maks-koits.space'
-      LETSENCRYPT_HOST: 'maks-koits.space'
+      VIRTUAL_HOST: 'maks-koits.site'
+      LETSENCRYPT_HOST: 'maks-koits.site'
     restart: unless-stopped
     networks:
       - net
 
-  cv.maks-koits.space:
+  cv.maks-koits.site:
     image: nginx:stable-alpine
-    container_name: 'cv_maks-koits-space'
+    container_name: 'cv_maks-koits-site'
     depends_on:
       - nginx-proxy
     volumes:
@@ -102,15 +102,15 @@ services:
 #      - /var/log/nginx_cv:/var/log/nginx_cv
     environment:
 #      TZ: 'Europe/Minsk'
-      VIRTUAL_HOST: 'cv.maks-koits.space'
-      LETSENCRYPT_HOST: 'cv.maks-koits.space'
+      VIRTUAL_HOST: 'cv.maks-koits.site'
+      LETSENCRYPT_HOST: 'cv.maks-koits.site'
     restart: unless-stopped
     networks:
       - net
 
-  salary.maks-koits.space:
+  salary.maks-koits.site:
     image: nginx:stable-alpine
-    container_name: 'salary_maks-koits-space'
+    container_name: 'salary_maks-koits-site'
     depends_on:
       - nginx-proxy
     volumes:
@@ -122,15 +122,15 @@ services:
 #      - /var/log/nginx_cv:/var/log/nginx_cv
     environment:
 #      TZ: 'Europe/Minsk'
-      VIRTUAL_HOST: 'salary.maks-koits.space'
-      LETSENCRYPT_HOST: 'salary.maks-koits.space'
+      VIRTUAL_HOST: 'salary.maks-koits.site'
+      LETSENCRYPT_HOST: 'salary.maks-koits.site'
     restart: unless-stopped
     networks:
       - net
 
   portainer:
     image: portainer/portainer-ce:linux-amd64
-    container_name: 'portainer_maks-koits-space'
+    container_name: 'portainer_maks-koits-site'
     command: -H tcp://agent:9001 --tlsskipverify
     depends_on:
       - nginx-proxy
@@ -139,9 +139,9 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - /etc/localtime:/etc/localtime:ro
     environment:
-      VIRTUAL_HOST: 'portainer.maks-koits.space'
+      VIRTUAL_HOST: 'portainer.maks-koits.site'
       VIRTUAL_PORT: '9000'
-      LETSENCRYPT_HOST: 'portainer.maks-koits.space'
+      LETSENCRYPT_HOST: 'portainer.maks-koits.site'
       LETSENCRYPT_EMAIL: 'mix256@gmail.com'
     restart: unless-stopped
     networks:
@@ -149,7 +149,7 @@ services:
 
 #  agent:
 #    image: portainer/agent:linux-amd64
-#    container_name: 'agent_portainer_maks-koits.space'
+#    container_name: 'agent_portainer_maks-koits.site'
 #    volumes:
 #      - /var/run/docker.sock:/var/run/docker.sock
 #      - /var/lib/docker/volumes:/var/lib/docker/volumes
@@ -162,7 +162,7 @@ services:
 
 #  node_exporter:
 #    image: prom/node-exporter:latest
-#    container_name: 'node_exporter_maks-koits-space'
+#    container_name: 'node_exporter_maks-koits-site'
 #    depends_on:
 #      - nginx-proxy
 #    volumes:
@@ -177,9 +177,9 @@ services:
 #      - --path.sysfs=/host/sys
 #      - --collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)
 #    environment:
-#      VIRTUAL_HOST: 'node-exporter.maks-koits.space'
+#      VIRTUAL_HOST: 'node-exporter.maks-koits.site'
 #      VIRTUAL_PORT: '9100'
-#      LETSENCRYPT_HOST: 'node-exporter.maks-koits.space'
+#      LETSENCRYPT_HOST: 'node-exporter.maks-koits.site'
 #      LETSENCRYPT_EMAIL: 'mix256@gmail.com'
 #    restart: unless-stopped
 #    networks:
@@ -187,11 +187,11 @@ services:
 
 #  openvscode-server:
 #    image: gitpod/openvscode-server:latest
-#    container_name: 'openvscode_maks-koits-space'
+#    container_name: 'openvscode_maks-koits-site'
 #    environment:
-#      VIRTUAL_HOST: 'openvscode.maks-koits.space'
+#      VIRTUAL_HOST: 'openvscode.maks-koits.site'
 #      VIRTUAL_PORT: '3000'
-#      LETSENCRYPT_HOST: 'openvscode.maks-koits.space'
+#      LETSENCRYPT_HOST: 'openvscode.maks-koits.site'
 #      LETSENCRYPT_EMAIL: 'mix256@gmail.com'
 #    volumes:
 #      - /var/run/docker.sock:/var/run/docker.sock
