@@ -281,40 +281,24 @@
 
         function formatTimeInput(input) {
             let value = input.value.replace(/[^\d:]/g, '');
-            
-            // Auto-add colon after 2 digits
-            if (value.length === 2 && !value.includes(':')) {
-                value += ':';
-            }
-            
-            // Remove extra colons
+            if (value.length === 2 && !value.includes(':')) value += ':';
             const parts = value.split(':');
-            if (parts.length > 2) {
-                value = parts[0] + ':' + parts.slice(1).join('');
-            }
-            
+            if (parts.length > 2) value = parts[0] + ':' + parts.slice(1).join('');
             input.value = value;
             
-            // Validate when complete
             if (value.length >= 4 && value.includes(':')) {
-                if (!validateTimeFormat(value)) {
-                    input.setCustomValidity('Please enter time in HH:MM format (00:00 - 23:59)');
-                } else {
-                    input.setCustomValidity('');
-                }
+                input.setCustomValidity(validateTimeFormat(value) ? '' : 'Please enter time in HH:MM format (00:00 - 23:59)');
             }
         }
 
         function setupTimeInput(input) {
             input.addEventListener('input', () => formatTimeInput(input));
             input.addEventListener('blur', () => {
-                const value = input.value;
-                if (value && !validateTimeFormat(value)) {
+                if (input.value && !validateTimeFormat(input.value)) {
                     alert('Invalid time format. Please use HH:MM (24-hour format, e.g., 09:00 or 18:30)');
                     input.focus();
-                } else if (value) {
-                    // Normalize to HH:MM format
-                    input.value = normalizeTime(value);
+                } else if (input.value) {
+                    input.value = normalizeTime(input.value);
                 }
             });
         }
@@ -324,7 +308,7 @@
         }
 
         function getCookie(name) {
-            const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+            const match = document.cookie.match(new RegExp(`(^| )${name}=([^;]+)`));
             return match ? match[2] : '';
         }
 
@@ -340,7 +324,7 @@
             try {
                 const v = localStorage.getItem(key);
                 if (v !== null) return v;
-            } catch (e) { /* fallback to cookies */ }
+            } catch (e) {}
             return getCookie(key);
         }
 
@@ -384,16 +368,14 @@
             if (!raw) return new Set();
             try {
                 const arr = JSON.parse(raw);
-                if (Array.isArray(arr)) return new Set(arr);
+                return Array.isArray(arr) ? new Set(arr) : new Set();
             } catch (e) {
-                // try CSV fallback
                 return new Set(String(raw).split(',').map(s => s.trim()).filter(Boolean));
             }
-            return new Set();
         }
 
         function saveWorkDates(set) {
-            setPref('workDates', JSON.stringify(Array.from(set)));
+            setPref('workDates', JSON.stringify([...set]));
         }
 
         const workDates = loadWorkDates();
@@ -409,12 +391,9 @@
             setPref('currentDate', currentDateInput.value);
         }
 
-        // ensure settings start hidden by default
-        (function ensureSettingsHidden(){
-            const settings = document.getElementById('settings');
-            settings.style.display = 'none';
-            setPref('settingsVisible', '0');
-        })();
+        // Ensure settings start hidden
+        document.getElementById('settings').style.display = 'none';
+        setPref('settingsVisible', '0');
 
         function parseTimeToSeconds(timeStr) {
             if (!timeStr || !timeStr.includes(':')) return 0;
@@ -480,73 +459,61 @@
         }
 
         function recomputeDerived() {
-            // Hourly rate
             const rate = parseFloat(String(hourlyRateInput.value).replace(',', '.')) || 0;
             derived.hourlyRate = rate;
             derived.hourlyPerSecond = rate / 3600;
 
-            // Dates
             const currentDate = new Date(currentDateInput.value);
             derived.currentDateObj = currentDate;
-            const workStart = new Date(currentDate);
-            const workEnd = new Date(currentDate);
-            const lunchStart = new Date(currentDate);
-            const lunchEnd = new Date(currentDate);
-            const [wsH, wsM] = workStartTimeInput.value.split(':').map(Number);
-            const [weH, weM] = workEndTimeInput.value.split(':').map(Number);
-            const [lsH, lsM] = lunchStartTimeInput.value.split(':').map(Number);
-            const [leH, leM] = lunchEndTimeInput.value.split(':').map(Number);
-            workStart.setHours(wsH, wsM, 0, 0);
-            workEnd.setHours(weH, weM, 0, 0);
-            lunchStart.setHours(lsH, lsM, 0, 0);
-            lunchEnd.setHours(leH, leM, 0, 0);
-            derived.workStartDateTime = workStart;
-            derived.workEndDateTime = workEnd;
-            derived.lunchStartDateTime = lunchStart;
-            derived.lunchEndDateTime = lunchEnd;
-            derived.isWeekend = currentDate.getDay() === 0 || currentDate.getDay() === 6;
-            derived.isSelectedWorkday = workDates.size > 0 ? workDates.has(fmtDateKey(currentDate)) : true;
+            
+            const setTime = (timeStr) => {
+                const d = new Date(currentDate);
+                const [h, m] = timeStr.split(':').map(Number);
+                d.setHours(h, m, 0, 0);
+                return d;
+            };
 
-            derived.totalWorkSeconds = Math.max(0, (workEnd - workStart - (lunchEnd - lunchStart)) / 1000);
-
-            derived.baseMonthlyEarnings = computeMonthlyBase(
-                currentDate,
-                derived.hourlyPerSecond,
-                workStartTimeInput.value,
-                workEndTimeInput.value,
-                lunchStartTimeInput.value,
-                lunchEndTimeInput.value
-            );
+            derived.workStartDateTime = setTime(workStartTimeInput.value);
+            derived.workEndDateTime = setTime(workEndTimeInput.value);
+            derived.lunchStartDateTime = setTime(lunchStartTimeInput.value);
+            derived.lunchEndDateTime = setTime(lunchEndTimeInput.value);
+            
+            const dow = currentDate.getDay();
+            derived.isWeekend = dow === 0 || dow === 6;
+            derived.isSelectedWorkday = workDates.size ? workDates.has(fmtDateKey(currentDate)) : true;
+            derived.totalWorkSeconds = Math.max(0, (derived.workEndDateTime - derived.workStartDateTime - 
+                (derived.lunchEndDateTime - derived.lunchStartDateTime)) / 1000);
+            derived.baseMonthlyEarnings = computeMonthlyBase(currentDate, derived.hourlyPerSecond,
+                workStartTimeInput.value, workEndTimeInput.value, lunchStartTimeInput.value, lunchEndTimeInput.value);
         }
 
         let lastTodayEarnings = null;
         let lastMonthlyEarnings = null;
         let updateTimer = null;
 
+        // Calculate current earnings based on time
+        function calculateEarnings(now) {
+            const isWorkingDay = derived.isSelectedWorkday && (!workDates.size ? !derived.isWeekend : true);
+            if (!isWorkingDay) return 0;
+
+            const {workStartDateTime: start, lunchStartDateTime: lunchStart, 
+                   lunchEndDateTime: lunchEnd, workEndDateTime: end, 
+                   hourlyPerSecond: rate, totalWorkSeconds: total} = derived;
+
+            if (now < start) return 0;
+            if (now > end) return total * rate;
+            if (now < lunchStart) return ((now - start) / 1000) * rate;
+            if (now < lunchEnd) return ((lunchStart - start) / 1000) * rate;
+            return ((now - start - (lunchEnd - lunchStart)) / 1000) * rate;
+        }
+
         function updateTick() {
             const now = new Date();
-            let todayEarnings = 0;
-            const isWorkingDay = derived.isSelectedWorkday && (!workDates.size ? !derived.isWeekend : true);
-            if (isWorkingDay) {
-                if (now >= derived.workStartDateTime && now < derived.lunchStartDateTime) {
-                    const elapsedSeconds = (now - derived.workStartDateTime) / 1000;
-                    todayEarnings = elapsedSeconds * derived.hourlyPerSecond;
-                } else if (now >= derived.lunchStartDateTime && now < derived.lunchEndDateTime) {
-                    const elapsedSeconds = (derived.lunchStartDateTime - derived.workStartDateTime) / 1000;
-                    todayEarnings = elapsedSeconds * derived.hourlyPerSecond;
-                } else if (now >= derived.lunchEndDateTime && now < derived.workEndDateTime) {
-                    const elapsedSeconds = (now - derived.workStartDateTime - (derived.lunchEndDateTime - derived.lunchStartDateTime)) / 1000;
-                    todayEarnings = elapsedSeconds * derived.hourlyPerSecond;
-                } else if (now > derived.workEndDateTime) {
-                    todayEarnings = derived.totalWorkSeconds * derived.hourlyPerSecond;
-                }
-            }
-
+            const todayEarnings = calculateEarnings(now);
             const monthlyEarnings = derived.baseMonthlyEarnings + todayEarnings;
             
             // Only update DOM if values changed
-            const todayFixed = todayEarnings.toFixed(3);
-            const monthlyFixed = monthlyEarnings.toFixed(3);
+            const [todayFixed, monthlyFixed] = [todayEarnings.toFixed(3), monthlyEarnings.toFixed(3)];
             
             if (todayFixed !== lastTodayEarnings) {
                 todayEarningsEl.textContent = todayFixed;
@@ -557,61 +524,41 @@
                 lastMonthlyEarnings = monthlyFixed;
             }
 
-            // Schedule next update
             scheduleNextUpdate();
         }
 
         function scheduleNextUpdate() {
-            if (updateTimer) {
-                clearTimeout(updateTimer);
-            }
+            if (updateTimer) clearTimeout(updateTimer);
 
             const now = new Date();
+            const {workStartDateTime: start, lunchStartDateTime: lunchStart, 
+                   lunchEndDateTime: lunchEnd, workEndDateTime: end, hourlyPerSecond: rate} = derived;
             const isWorkingDay = derived.isSelectedWorkday && (!workDates.size ? !derived.isWeekend : true);
             
-            // If not working or work hasn't started yet, check again in 1 second
-            if (!isWorkingDay || now < derived.workStartDateTime) {
+            // Not working or before work starts
+            if (!isWorkingDay || now < start) {
                 updateTimer = setTimeout(updateTick, 1000);
                 return;
             }
 
-            // If work is over, check again in 60 seconds
-            if (now > derived.workEndDateTime) {
+            // Work is over
+            if (now > end) {
                 updateTimer = setTimeout(updateTick, 60000);
                 return;
             }
 
-            // Calculate time until next 0.001 change
-            if (derived.hourlyPerSecond > 0) {
-                // Time in milliseconds needed for 0.001 change
-                const msPerIncrement = (0.001 / derived.hourlyPerSecond) * 1000;
-                
-                // Get current earnings and find time to next increment
-                let currentEarnings = 0;
-                if (now >= derived.workStartDateTime && now < derived.lunchStartDateTime) {
-                    const elapsedSeconds = (now - derived.workStartDateTime) / 1000;
-                    currentEarnings = elapsedSeconds * derived.hourlyPerSecond;
-                } else if (now >= derived.lunchEndDateTime && now < derived.workEndDateTime) {
-                    const elapsedSeconds = (now - derived.workStartDateTime - (derived.lunchEndDateTime - derived.lunchStartDateTime)) / 1000;
-                    currentEarnings = elapsedSeconds * derived.hourlyPerSecond;
-                } else if (now >= derived.lunchStartDateTime && now < derived.lunchEndDateTime) {
-                    // During lunch, check when lunch ends
-                    const msUntilLunchEnd = derived.lunchEndDateTime - now;
-                    updateTimer = setTimeout(updateTick, Math.max(100, msUntilLunchEnd));
-                    return;
-                }
+            // During lunch
+            if (now >= lunchStart && now < lunchEnd) {
+                updateTimer = setTimeout(updateTick, Math.max(100, lunchEnd - now));
+                return;
+            }
 
-                // Calculate milliseconds to next 0.001 increment
-                const currentRounded = Math.floor(currentEarnings * 1000) / 1000;
-                const nextIncrement = currentRounded + 0.001;
-                const earningsToGo = nextIncrement - currentEarnings;
-                const msToGo = (earningsToGo / derived.hourlyPerSecond) * 1000;
-                
-                // Schedule update with small buffer for precision
-                const delay = Math.max(10, Math.min(msToGo, 5000)); // Between 10ms and 5s
-                updateTimer = setTimeout(updateTick, delay);
+            // During work - calculate exact time to next 0.001 change
+            if (rate > 0) {
+                const currentEarnings = calculateEarnings(now);
+                const msToGo = ((Math.floor(currentEarnings * 1000 + 1) / 1000 - currentEarnings) / rate) * 1000;
+                updateTimer = setTimeout(updateTick, Math.max(10, Math.min(msToGo, 5000)));
             } else {
-                // Fallback if rate is 0
                 updateTimer = setTimeout(updateTick, 1000);
             }
         }
@@ -638,10 +585,16 @@
             }
         });
 
-        workStartTimeInput.addEventListener('change', () => { setPref('workStartTime', workStartTimeInput.value); recomputeDerived(); resetCache(); updateTick(); });
-        workEndTimeInput.addEventListener('change', () => { setPref('workEndTime', workEndTimeInput.value); recomputeDerived(); resetCache(); updateTick(); });
-        lunchStartTimeInput.addEventListener('change', () => { setPref('lunchStartTime', lunchStartTimeInput.value); recomputeDerived(); resetCache(); updateTick(); });
-        lunchEndTimeInput.addEventListener('change', () => { setPref('lunchEndTime', lunchEndTimeInput.value); recomputeDerived(); resetCache(); updateTick(); });
+        // Time inputs change handler
+        [workStartTimeInput, workEndTimeInput, lunchStartTimeInput, lunchEndTimeInput].forEach((input, i) => {
+            const keys = ['workStartTime', 'workEndTime', 'lunchStartTime', 'lunchEndTime'];
+            input.addEventListener('change', () => {
+                setPref(keys[i], input.value);
+                recomputeDerived();
+                resetCache();
+                updateTick();
+            });
+        });
 
         // Calendar rendering
         const calGrid = document.getElementById('calGrid');
@@ -654,32 +607,19 @@
         calViewDate.setDate(1);
 
         let cachedDateStr = null;
-        let cachedDateDisplay = null;
 
         function updateCurrentDateDisplay() {
             const dateStr = currentDateInput.value;
+            if (dateStr === cachedDateStr) return;
             
-            // Return cached result if date hasn't changed
-            if (dateStr === cachedDateStr && cachedDateDisplay) {
-                return;
-            }
-            
+            cachedDateStr = dateStr;
             if (dateStr) {
                 const [year, month, day] = dateStr.split('-');
-                const dateObj = new Date(year, month - 1, day);
-                const displayText = dateObj.toLocaleDateString(undefined, { 
-                    weekday: 'short', 
-                    year: 'numeric', 
-                    month: 'short', 
-                    day: 'numeric' 
+                currentDateDisplay.textContent = new Date(year, month - 1, day).toLocaleDateString(undefined, { 
+                    weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' 
                 });
-                currentDateDisplay.textContent = displayText;
-                cachedDateStr = dateStr;
-                cachedDateDisplay = displayText;
             } else {
                 currentDateDisplay.textContent = 'Not set';
-                cachedDateStr = null;
-                cachedDateDisplay = null;
             }
         }
 
@@ -693,69 +633,48 @@
             calTitle.textContent = calViewDate.toLocaleString(undefined, { month: 'long', year: 'numeric' });
 
             const firstDay = new Date(year, month, 1);
-            const lastDay = new Date(year, month + 1, 0);
-            let startWeekday = firstDay.getDay(); // 0=Sun
-            startWeekday = startWeekday === 0 ? 7 : startWeekday; // 1..7, Mon=1
-            const daysInMonth = lastDay.getDate();
-
+            const startWeekday = firstDay.getDay() || 7; // 1-7, Mon=1
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
             const currentDateKey = currentDateInput.value || fmtDateKey(new Date());
 
-            const cells = [];
-            // Weekday headers
-            cells.push(weekdayHeadersHTML);
-
-            // Leading blanks
-            for (let i = 1; i < startWeekday; i++) {
-                cells.push('<div></div>');
-            }
-            // Month days
+            const cells = [weekdayHeadersHTML];
+            
+            // Leading blanks + days
+            for (let i = 1; i < startWeekday; i++) cells.push('<div></div>');
             for (let d = 1; d <= daysInMonth; d++) {
-                const dateObj = new Date(year, month, d);
-                const key = fmtDateKey(dateObj);
-                const sel = workDates.has(key) ? ' selected' : '';
-                const cur = key === currentDateKey ? ' current' : '';
-                cells.push(`<div class="cal-day${sel}${cur}" data-key="${key}">${d}</div>`);
+                const key = fmtDateKey(new Date(year, month, d));
+                const classes = `cal-day${workDates.has(key) ? ' selected' : ''}${key === currentDateKey ? ' current' : ''}`;
+                cells.push(`<div class="${classes}" data-key="${key}">${d}</div>`);
             }
+            
             calGrid.innerHTML = cells.join('');
-
-            // Persist month view
             setPref('calendarMonth', fmtDateKey(firstDay));
         }
 
         // Event delegation for calendar - setup once
         function setupCalendarEvents() {
-            // Left click - toggle working date
+            const refresh = () => { recomputeDerived(); resetCache(); updateTick(); };
+            
             calGrid.addEventListener('click', (e) => {
                 const day = e.target.closest('.cal-day');
                 if (!day) return;
                 e.preventDefault();
                 const key = day.getAttribute('data-key');
-                if (workDates.has(key)) {
-                    workDates.delete(key);
-                    day.classList.remove('selected');
-                } else {
-                    workDates.add(key);
-                    day.classList.add('selected');
-                }
+                workDates[workDates.has(key) ? 'delete' : 'add'](key);
+                day.classList.toggle('selected');
                 saveWorkDates(workDates);
-                recomputeDerived();
-                resetCache();
-                updateTick(); // Will reschedule
+                refresh();
             });
 
-            // Right click - set current date
             calGrid.addEventListener('contextmenu', (e) => {
                 const day = e.target.closest('.cal-day');
                 if (!day) return;
                 e.preventDefault();
-                const key = day.getAttribute('data-key');
-                currentDateInput.value = key;
-                setPref('currentDate', key);
+                currentDateInput.value = day.getAttribute('data-key');
+                setPref('currentDate', currentDateInput.value);
                 updateCurrentDateDisplay();
-                recomputeDerived();
-                resetCache();
-                updateTick(); // Will reschedule
-                renderCalendar(); // Re-render to update current date highlight
+                refresh();
+                renderCalendar();
             });
         }
 
@@ -766,11 +685,10 @@
             currentDateInput.value = fmtDateKey(today);
             setPref('currentDate', currentDateInput.value);
             updateCurrentDateDisplay();
-            calViewDate = new Date(today); 
-            calViewDate.setDate(1); 
+            calViewDate = new Date(today.getFullYear(), today.getMonth(), 1);
             recomputeDerived();
             resetCache();
-            updateTick(); // Will reschedule
+            updateTick();
             renderCalendar(); 
         });
 
