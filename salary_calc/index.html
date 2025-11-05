@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="dark">
     <title>Real-Time Salary Counter</title>
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' ry='12' fill='%23000000'/%3E%3Ctext x='32' y='44' font-size='40' text-anchor='middle' fill='%2300ff88' font-family='Arial, sans-serif'%3E%24%3C/text%3E%3C/svg%3E">
     <style>
@@ -115,6 +116,7 @@
             letter-spacing: 0.3px;
             font-variant-numeric: tabular-nums;
             color: #ffffff;
+            will-change: contents;
         }
         .stat-value .currency {
             color: #00ff88;
@@ -130,6 +132,7 @@
             border-radius: 12px;
             overflow: hidden;
             background: #000000;
+            contain: layout style paint;
         }
         .cal-header {
             display: flex;
@@ -160,6 +163,7 @@
             grid-template-columns: repeat(7, 1fr);
             gap: 6px;
             padding: 10px;
+            contain: layout paint;
         }
         .cal-weekday { text-align: center; color: #808080; font-size: 0.85em; }
         .cal-day {
@@ -182,6 +186,12 @@
         .cal-day.current::after { content: '●'; position: absolute; bottom: 2px; right: 4px; font-size: 6px; color: #ffa500; }
         .cal-day.current.selected { background: linear-gradient(135deg, rgba(255,165,0,0.2) 0%, rgba(0,191,255,0.15) 100%); border-color: rgba(255,165,0,0.8); box-shadow: 0 0 0 1px rgba(0,191,255,0.5) inset; }
         .cal-legend { padding: 8px 10px; color: #808080; font-size: 0.85em; border-top: 1px solid rgba(255,255,255,0.15); line-height: 1.5; }
+        .cal-legend-item { margin-bottom: 4px; }
+        .cal-legend-icon { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 6px; vertical-align: middle; }
+        .cal-legend-icon.working { background: rgba(0,191,255,0.15); border: 1px solid rgba(0,191,255,0.7); }
+        .cal-legend-icon.current { background: rgba(255,165,0,0.2); border: 1px solid rgba(255,165,0,0.8); }
+        .cal-legend-text { vertical-align: middle; }
+        .current-date-display { color: #ffb347; font-weight: 600; }
     </style>
 </head>
 <body>
@@ -191,7 +201,7 @@
 
         <div id="settings">
             <div class="field">
-                <label for="hourlyRate">Hourly Rate (in $)</label>
+                <label for="hourlyRate">Hourly Rate</label>
                 <input type="text" id="hourlyRate" placeholder="e.g., 2.74">
             </div>
             <div class="field">
@@ -212,7 +222,7 @@
             </div>
             <input type="hidden" id="currentDate" value="">
             <div class="field">
-                <label>Calendar (Current Date: <span id="currentDateDisplay" style="color: #ffb347; font-weight: 600;"></span>)</label>
+                <label>Calendar (Current Date: <span id="currentDateDisplay" class="current-date-display"></span>)</label>
                 <div class="calendar">
                     <div class="cal-header">
                         <div class="cal-title" id="calTitle">Month YYYY</div>
@@ -224,13 +234,13 @@
                     </div>
                     <div class="cal-grid" id="calGrid"></div>
                     <div class="cal-legend">
-                        <div style="margin-bottom: 4px;">
-                            <span style="display: inline-block; width: 12px; height: 12px; background: rgba(0,191,255,0.15); border: 1px solid rgba(0,191,255,0.7); border-radius: 3px; margin-right: 6px; vertical-align: middle;"></span>
-                            <span style="vertical-align: middle;">Working day (click to toggle)</span>
+                        <div class="cal-legend-item">
+                            <span class="cal-legend-icon working"></span>
+                            <span class="cal-legend-text">Working day (click to toggle)</span>
                         </div>
-                        <div>
-                            <span style="display: inline-block; width: 12px; height: 12px; background: rgba(255,165,0,0.2); border: 1px solid rgba(255,165,0,0.8); border-radius: 3px; margin-right: 6px; vertical-align: middle;"></span>
-                            <span style="vertical-align: middle;">Current date (right-click to change)</span>
+                        <div class="cal-legend-item">
+                            <span class="cal-legend-icon current"></span>
+                            <span class="cal-legend-text">Current date (right-click to change)</span>
                         </div>
                     </div>
                 </div>
@@ -509,6 +519,10 @@
             );
         }
 
+        let lastTodayEarnings = null;
+        let lastMonthlyEarnings = null;
+        let updateTimer = null;
+
         function updateTick() {
             const now = new Date();
             let todayEarnings = 0;
@@ -529,8 +543,85 @@
             }
 
             const monthlyEarnings = derived.baseMonthlyEarnings + todayEarnings;
-            todayEarningsEl.textContent = todayEarnings.toFixed(3);
-            monthlyEarningsEl.textContent = monthlyEarnings.toFixed(3);
+            
+            // Only update DOM if values changed
+            const todayFixed = todayEarnings.toFixed(3);
+            const monthlyFixed = monthlyEarnings.toFixed(3);
+            
+            if (todayFixed !== lastTodayEarnings) {
+                todayEarningsEl.textContent = todayFixed;
+                lastTodayEarnings = todayFixed;
+            }
+            if (monthlyFixed !== lastMonthlyEarnings) {
+                monthlyEarningsEl.textContent = monthlyFixed;
+                lastMonthlyEarnings = monthlyFixed;
+            }
+
+            // Schedule next update
+            scheduleNextUpdate();
+        }
+
+        function scheduleNextUpdate() {
+            if (updateTimer) {
+                clearTimeout(updateTimer);
+            }
+
+            const now = new Date();
+            const isWorkingDay = derived.isSelectedWorkday && (!workDates.size ? !derived.isWeekend : true);
+            
+            // If not working or work hasn't started yet, check again in 1 second
+            if (!isWorkingDay || now < derived.workStartDateTime) {
+                updateTimer = setTimeout(updateTick, 1000);
+                return;
+            }
+
+            // If work is over, check again in 60 seconds
+            if (now > derived.workEndDateTime) {
+                updateTimer = setTimeout(updateTick, 60000);
+                return;
+            }
+
+            // Calculate time until next 0.001 change
+            if (derived.hourlyPerSecond > 0) {
+                // Time in milliseconds needed for 0.001 change
+                const msPerIncrement = (0.001 / derived.hourlyPerSecond) * 1000;
+                
+                // Get current earnings and find time to next increment
+                let currentEarnings = 0;
+                if (now >= derived.workStartDateTime && now < derived.lunchStartDateTime) {
+                    const elapsedSeconds = (now - derived.workStartDateTime) / 1000;
+                    currentEarnings = elapsedSeconds * derived.hourlyPerSecond;
+                } else if (now >= derived.lunchEndDateTime && now < derived.workEndDateTime) {
+                    const elapsedSeconds = (now - derived.workStartDateTime - (derived.lunchEndDateTime - derived.lunchStartDateTime)) / 1000;
+                    currentEarnings = elapsedSeconds * derived.hourlyPerSecond;
+                } else if (now >= derived.lunchStartDateTime && now < derived.lunchEndDateTime) {
+                    // During lunch, check when lunch ends
+                    const msUntilLunchEnd = derived.lunchEndDateTime - now;
+                    updateTimer = setTimeout(updateTick, Math.max(100, msUntilLunchEnd));
+                    return;
+                }
+
+                // Calculate milliseconds to next 0.001 increment
+                const currentRounded = Math.floor(currentEarnings * 1000) / 1000;
+                const nextIncrement = currentRounded + 0.001;
+                const earningsToGo = nextIncrement - currentEarnings;
+                const msToGo = (earningsToGo / derived.hourlyPerSecond) * 1000;
+                
+                // Schedule update with small buffer for precision
+                const delay = Math.max(10, Math.min(msToGo, 5000)); // Between 10ms and 5s
+                updateTimer = setTimeout(updateTick, delay);
+            } else {
+                // Fallback if rate is 0
+                updateTimer = setTimeout(updateTick, 1000);
+            }
+        }
+
+        function resetCache() {
+            lastTodayEarnings = null;
+            lastMonthlyEarnings = null;
+            if (updateTimer) {
+                clearTimeout(updateTimer);
+            }
         }
 
         hourlyRateInput.addEventListener('change', () => {
@@ -540,16 +631,17 @@
                 setPref('hourlyRate', evaluatedRate);
                 hourlyRateInput.value = String(evaluatedRate);
                 recomputeDerived();
-                updateTick();
+                resetCache();
+                updateTick(); // Will reschedule with new rate
             } catch (error) {
                 alert('Invalid expression!');
             }
         });
 
-        workStartTimeInput.addEventListener('change', () => { setPref('workStartTime', workStartTimeInput.value); recomputeDerived(); updateTick(); });
-        workEndTimeInput.addEventListener('change', () => { setPref('workEndTime', workEndTimeInput.value); recomputeDerived(); updateTick(); });
-        lunchStartTimeInput.addEventListener('change', () => { setPref('lunchStartTime', lunchStartTimeInput.value); recomputeDerived(); updateTick(); });
-        lunchEndTimeInput.addEventListener('change', () => { setPref('lunchEndTime', lunchEndTimeInput.value); recomputeDerived(); updateTick(); });
+        workStartTimeInput.addEventListener('change', () => { setPref('workStartTime', workStartTimeInput.value); recomputeDerived(); resetCache(); updateTick(); });
+        workEndTimeInput.addEventListener('change', () => { setPref('workEndTime', workEndTimeInput.value); recomputeDerived(); resetCache(); updateTick(); });
+        lunchStartTimeInput.addEventListener('change', () => { setPref('lunchStartTime', lunchStartTimeInput.value); recomputeDerived(); resetCache(); updateTick(); });
+        lunchEndTimeInput.addEventListener('change', () => { setPref('lunchEndTime', lunchEndTimeInput.value); recomputeDerived(); resetCache(); updateTick(); });
 
         // Calendar rendering
         const calGrid = document.getElementById('calGrid');
@@ -561,26 +653,39 @@
         let calViewDate = new Date(getPref('calendarMonth') || currentDateInput.value || new Date());
         calViewDate.setDate(1);
 
+        let cachedDateStr = null;
+        let cachedDateDisplay = null;
+
         function updateCurrentDateDisplay() {
             const dateStr = currentDateInput.value;
+            
+            // Return cached result if date hasn't changed
+            if (dateStr === cachedDateStr && cachedDateDisplay) {
+                return;
+            }
+            
             if (dateStr) {
                 const [year, month, day] = dateStr.split('-');
                 const dateObj = new Date(year, month - 1, day);
-                currentDateDisplay.textContent = dateObj.toLocaleDateString(undefined, { 
+                const displayText = dateObj.toLocaleDateString(undefined, { 
                     weekday: 'short', 
                     year: 'numeric', 
                     month: 'short', 
                     day: 'numeric' 
                 });
+                currentDateDisplay.textContent = displayText;
+                cachedDateStr = dateStr;
+                cachedDateDisplay = displayText;
             } else {
                 currentDateDisplay.textContent = 'Not set';
+                cachedDateStr = null;
+                cachedDateDisplay = null;
             }
         }
 
-        function weekdayHeaders() {
-            const names = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-            return names.map(n => `<div class="cal-weekday">${n}</div>`).join('');
-        }
+        // Cache weekday headers as they never change
+        const weekdayHeadersHTML = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun']
+            .map(n => `<div class="cal-weekday">${n}</div>`).join('');
 
         function renderCalendar() {
             const year = calViewDate.getFullYear();
@@ -597,7 +702,7 @@
 
             const cells = [];
             // Weekday headers
-            cells.push(weekdayHeaders());
+            cells.push(weekdayHeadersHTML);
 
             // Leading blanks
             for (let i = 1; i < startWeekday; i++) {
@@ -613,39 +718,45 @@
             }
             calGrid.innerHTML = cells.join('');
 
-            // Bind clicks for days
-            calGrid.querySelectorAll('.cal-day').forEach(el => {
-                // Left click - toggle working date
-                el.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const key = el.getAttribute('data-key');
-                    if (workDates.has(key)) {
-                        workDates.delete(key);
-                        el.classList.remove('selected');
-                    } else {
-                        workDates.add(key);
-                        el.classList.add('selected');
-                    }
-                    saveWorkDates(workDates);
-                    recomputeDerived();
-                    updateTick();
-                });
-
-                // Right click - set current date
-                el.addEventListener('contextmenu', (e) => {
-                    e.preventDefault();
-                    const key = el.getAttribute('data-key');
-                    currentDateInput.value = key;
-                    setPref('currentDate', key);
-                    updateCurrentDateDisplay();
-                    recomputeDerived();
-                    updateTick();
-                    renderCalendar(); // Re-render to update current date highlight
-                });
-            });
-
             // Persist month view
             setPref('calendarMonth', fmtDateKey(firstDay));
+        }
+
+        // Event delegation for calendar - setup once
+        function setupCalendarEvents() {
+            // Left click - toggle working date
+            calGrid.addEventListener('click', (e) => {
+                const day = e.target.closest('.cal-day');
+                if (!day) return;
+                e.preventDefault();
+                const key = day.getAttribute('data-key');
+                if (workDates.has(key)) {
+                    workDates.delete(key);
+                    day.classList.remove('selected');
+                } else {
+                    workDates.add(key);
+                    day.classList.add('selected');
+                }
+                saveWorkDates(workDates);
+                recomputeDerived();
+                resetCache();
+                updateTick(); // Will reschedule
+            });
+
+            // Right click - set current date
+            calGrid.addEventListener('contextmenu', (e) => {
+                const day = e.target.closest('.cal-day');
+                if (!day) return;
+                e.preventDefault();
+                const key = day.getAttribute('data-key');
+                currentDateInput.value = key;
+                setPref('currentDate', key);
+                updateCurrentDateDisplay();
+                recomputeDerived();
+                resetCache();
+                updateTick(); // Will reschedule
+                renderCalendar(); // Re-render to update current date highlight
+            });
         }
 
         calPrev.addEventListener('click', () => { calViewDate.setMonth(calViewDate.getMonth() - 1); renderCalendar(); });
@@ -658,16 +769,17 @@
             calViewDate = new Date(today); 
             calViewDate.setDate(1); 
             recomputeDerived();
-            updateTick();
+            resetCache();
+            updateTick(); // Will reschedule
             renderCalendar(); 
         });
 
         // Initial compute and start ticking
         recomputeDerived();
-        updateTick();
-        setInterval(updateTick, 100);
         updateCurrentDateDisplay();
+        setupCalendarEvents(); // Setup event delegation once
         renderCalendar();
+        updateTick(); // Start smart updates - schedules itself based on when value will change
     </script>
 </body>
 </html>
