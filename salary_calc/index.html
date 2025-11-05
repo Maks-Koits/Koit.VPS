@@ -11,7 +11,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            height: 120vh;
             margin: 0;
             background: radial-gradient(1200px 600px at 20% 0%, #323232 0%, #2a2a2a 40%, #222 100%);
             color: #f5f5f5;
@@ -77,6 +77,7 @@
             user-select: none;
             transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.05s ease;
             background: rgba(77, 163, 255, 0.08);
+            z-index: 10;
         }
         .settings-btn:hover {
             background: rgba(77, 163, 255, 0.16);
@@ -116,6 +117,62 @@
         @media (min-width: 520px) {
             .output { grid-template-columns: 1fr 1fr; }
         }
+        /* Calendar */
+        .calendar {
+            margin-top: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            overflow: hidden;
+            background: #2a2a2a;
+        }
+        .cal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            background: rgba(255,255,255,0.03);
+        }
+        .cal-title { font-weight: 600; }
+        .cal-nav {
+            display: flex;
+            gap: 6px;
+        }
+        .cal-btn {
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 6px;
+            border: 1px solid rgba(255,255,255,0.12);
+            background: #303030;
+            color: #eaeaea;
+            font-size: 0.9em;
+            transition: background-color 0.15s ease, border-color 0.15s ease;
+        }
+        .cal-btn:hover { background: #353535; border-color: rgba(255,255,255,0.2); }
+        .cal-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 6px;
+            padding: 10px;
+        }
+        .cal-weekday { text-align: center; color: #bdbdbd; font-size: 0.85em; }
+        .cal-day {
+            aspect-ratio: 1 / 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border-radius: 8px;
+            background: #303030;
+            border: 1px solid rgba(255,255,255,0.08);
+            transition: background-color 0.12s ease, border-color 0.12s ease, color 0.12s ease;
+            user-select: none;
+            color: #eaeaea;
+        }
+        .cal-day.out { opacity: 0.35; cursor: default; }
+        .cal-day:hover { background: #353535; }
+        .cal-day.selected { background: rgba(77,163,255,0.18); border-color: rgba(77,163,255,0.6); color: #cfe5ff; }
+        .cal-legend { padding: 8px 10px; color: #bdbdbd; font-size: 0.85em; border-top: 1px solid rgba(255,255,255,0.06); }
     </style>
 </head>
 <body>
@@ -148,6 +205,21 @@
                 <label for="currentDate">Today's Date</label>
                 <input type="date" id="currentDate" value="">
             </div>
+            <div class="field">
+                <label>Working Dates (select in calendar)</label>
+                <div class="calendar">
+                    <div class="cal-header">
+                        <div class="cal-title" id="calTitle">Month YYYY</div>
+                        <div class="cal-nav">
+                            <button type="button" class="cal-btn" id="calPrev">◀</button>
+                            <button type="button" class="cal-btn" id="calToday">Today</button>
+                            <button type="button" class="cal-btn" id="calNext">▶</button>
+                        </div>
+                    </div>
+                    <div class="cal-grid" id="calGrid"></div>
+                    <div class="cal-legend">Click days to toggle working dates. Selected days count as worked.</div>
+                </div>
+            </div>
         </div>
 
         <div class="output">
@@ -165,7 +237,7 @@
     <script>
         function toggleSettings() {
             const settings = document.getElementById('settings');
-            const willShow = settings.style.display === 'none';
+            const willShow = getComputedStyle(settings).display === 'none';
             settings.style.display = willShow ? 'block' : 'none';
             setPref('settingsVisible', willShow ? '1' : '0');
         }
@@ -216,6 +288,33 @@
         // migrate old cookie values once
         migrateCookiesToLocalStorage(['hourlyRate','workStartTime','workEndTime','lunchStartTime','lunchEndTime','currentDate','settingsVisible']);
 
+        // Work dates storage helpers
+        function fmtDateKey(d) {
+            const y = d.getFullYear();
+            const m = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${y}-${m}-${day}`;
+        }
+
+        function loadWorkDates() {
+            const raw = getPref('workDates');
+            if (!raw) return new Set();
+            try {
+                const arr = JSON.parse(raw);
+                if (Array.isArray(arr)) return new Set(arr);
+            } catch (e) {
+                // try CSV fallback
+                return new Set(String(raw).split(',').map(s => s.trim()).filter(Boolean));
+            }
+            return new Set();
+        }
+
+        function saveWorkDates(set) {
+            setPref('workDates', JSON.stringify(Array.from(set)));
+        }
+
+        const workDates = loadWorkDates();
+
         hourlyRateInput.value = getPref('hourlyRate') || '2.74';
         workStartTimeInput.value = getPref('workStartTime') || '09:00';
         workEndTimeInput.value = getPref('workEndTime') || '18:00';
@@ -223,11 +322,11 @@
         lunchEndTimeInput.value = getPref('lunchEndTime') || '13:00';
         currentDateInput.value = getPref('currentDate') || new Date().toISOString().split('T')[0];
 
-        // restore settings visibility
-        (function restoreSettingsVisibility(){
+        // ensure settings start hidden by default
+        (function ensureSettingsHidden(){
             const settings = document.getElementById('settings');
-            const vis = getPref('settingsVisible');
-            if (vis === '1') settings.style.display = 'block';
+            settings.style.display = 'none';
+            setPref('settingsVisible', '0');
         })();
 
         function parseTimeToSeconds(timeStr) {
@@ -256,7 +355,8 @@
             lunchStartDateTime: null,
             lunchEndDateTime: null,
             currentDateObj: null,
-            isWeekend: false,
+             isWeekend: false,
+             isSelectedWorkday: false,
             totalWorkSeconds: 0,
             baseMonthlyEarnings: 0
         };
@@ -265,15 +365,28 @@
             const dayMs = 24 * 60 * 60 * 1000;
             const monthStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
             const daysElapsed = Math.floor((currentDate - monthStart) / dayMs);
+            const totalWorkSecondsPerDay = parseTimeToSeconds(workEndTime) - parseTimeToSeconds(workStartTime);
+            const lunchBreakSeconds = parseTimeToSeconds(lunchEndTime) - parseTimeToSeconds(lunchStartTime);
+            const effectiveWorkSeconds = Math.max(0, totalWorkSecondsPerDay - lunchBreakSeconds);
+
+            // If user selected work dates, count only those before currentDate
+            if (workDates.size > 0) {
+                let selectedElapsed = 0;
+                for (let i = 0; i < daysElapsed; i++) {
+                    const day = new Date(monthStart.getTime() + i * dayMs);
+                    const key = fmtDateKey(day);
+                    if (workDates.has(key)) selectedElapsed++;
+                }
+                return selectedElapsed * (effectiveWorkSeconds * hourlyPerSecond);
+            }
+
+            // Default: count elapsed weekdays
             let weekdaysElapsed = 0;
             for (let i = 0; i < daysElapsed; i++) {
                 const day = new Date(monthStart.getTime() + i * dayMs);
                 const dow = day.getDay();
                 if (dow > 0 && dow < 6) weekdaysElapsed++;
             }
-            const totalWorkSecondsPerDay = parseTimeToSeconds(workEndTime) - parseTimeToSeconds(workStartTime);
-            const lunchBreakSeconds = parseTimeToSeconds(lunchEndTime) - parseTimeToSeconds(lunchStartTime);
-            const effectiveWorkSeconds = Math.max(0, totalWorkSecondsPerDay - lunchBreakSeconds);
             return weekdaysElapsed * (effectiveWorkSeconds * hourlyPerSecond);
         }
 
@@ -303,6 +416,7 @@
             derived.lunchStartDateTime = lunchStart;
             derived.lunchEndDateTime = lunchEnd;
             derived.isWeekend = currentDate.getDay() === 0 || currentDate.getDay() === 6;
+            derived.isSelectedWorkday = workDates.size > 0 ? workDates.has(fmtDateKey(currentDate)) : true;
 
             derived.totalWorkSeconds = Math.max(0, (workEnd - workStart - (lunchEnd - lunchStart)) / 1000);
 
@@ -319,7 +433,8 @@
         function updateTick() {
             const now = new Date();
             let todayEarnings = 0;
-            if (!derived.isWeekend) {
+            const isWorkingDay = derived.isSelectedWorkday && (!workDates.size ? !derived.isWeekend : true);
+            if (isWorkingDay) {
                 if (now >= derived.workStartDateTime && now < derived.lunchStartDateTime) {
                     const elapsedSeconds = (now - derived.workStartDateTime) / 1000;
                     todayEarnings = elapsedSeconds * derived.hourlyPerSecond;
@@ -358,10 +473,78 @@
         lunchEndTimeInput.addEventListener('change', () => { setPref('lunchEndTime', lunchEndTimeInput.value); recomputeDerived(); updateTick(); });
         currentDateInput.addEventListener('change', () => { setPref('currentDate', currentDateInput.value); recomputeDerived(); updateTick(); });
 
+        // Calendar rendering
+        const calGrid = document.getElementById('calGrid');
+        const calTitle = document.getElementById('calTitle');
+        const calPrev = document.getElementById('calPrev');
+        const calNext = document.getElementById('calNext');
+        const calToday = document.getElementById('calToday');
+        let calViewDate = new Date(getPref('calendarMonth') || currentDateInput.value || new Date());
+        calViewDate.setDate(1);
+
+        function weekdayHeaders() {
+            const names = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+            return names.map(n => `<div class="cal-weekday">${n}</div>`).join('');
+        }
+
+        function renderCalendar() {
+            const year = calViewDate.getFullYear();
+            const month = calViewDate.getMonth();
+            calTitle.textContent = calViewDate.toLocaleString(undefined, { month: 'long', year: 'numeric' });
+
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+            let startWeekday = firstDay.getDay(); // 0=Sun
+            startWeekday = startWeekday === 0 ? 7 : startWeekday; // 1..7, Mon=1
+            const daysInMonth = lastDay.getDate();
+
+            const cells = [];
+            // Weekday headers
+            cells.push(weekdayHeaders());
+
+            // Leading blanks
+            for (let i = 1; i < startWeekday; i++) {
+                cells.push('<div></div>');
+            }
+            // Month days
+            for (let d = 1; d <= daysInMonth; d++) {
+                const dateObj = new Date(year, month, d);
+                const key = fmtDateKey(dateObj);
+                const sel = workDates.has(key) ? ' selected' : '';
+                cells.push(`<div class="cal-day${sel}" data-key="${key}">${d}</div>`);
+            }
+            calGrid.innerHTML = cells.join('');
+
+            // Bind clicks for days
+            calGrid.querySelectorAll('.cal-day').forEach(el => {
+                el.addEventListener('click', () => {
+                    const key = el.getAttribute('data-key');
+                    if (workDates.has(key)) {
+                        workDates.delete(key);
+                        el.classList.remove('selected');
+                    } else {
+                        workDates.add(key);
+                        el.classList.add('selected');
+                    }
+                    saveWorkDates(workDates);
+                    recomputeDerived();
+                    updateTick();
+                });
+            });
+
+            // Persist month view
+            setPref('calendarMonth', fmtDateKey(firstDay));
+        }
+
+        calPrev.addEventListener('click', () => { calViewDate.setMonth(calViewDate.getMonth() - 1); renderCalendar(); });
+        calNext.addEventListener('click', () => { calViewDate.setMonth(calViewDate.getMonth() + 1); renderCalendar(); });
+        calToday.addEventListener('click', () => { calViewDate = new Date(currentDateInput.value || new Date()); calViewDate.setDate(1); renderCalendar(); });
+
         // Initial compute and start ticking
         recomputeDerived();
         updateTick();
         setInterval(updateTick, 100);
+        renderCalendar();
     </script>
 </body>
 </html>
