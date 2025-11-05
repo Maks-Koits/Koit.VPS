@@ -4,70 +4,124 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Real-Time Salary Counter</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' ry='12' fill='%233a3a3a'/%3E%3Ctext x='32' y='44' font-size='40' text-anchor='middle' fill='%23ffffff' font-family='Arial, sans-serif'%3E%24%3C/text%3E%3C/svg%3E">
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, "Helvetica Neue", sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
-            background-color: #2c2c2c;
-            color: #fff;
+            background: radial-gradient(1200px 600px at 20% 0%, #323232 0%, #2a2a2a 40%, #222 100%);
+            color: #f5f5f5;
         }
         .container {
-            max-width: 400px;
-            padding: 20px;
-            background: #3a3a3a;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            border-radius: 8px;
+            max-width: 460px;
+            width: 92%;
+            padding: 24px;
+            background: #2b2b2b;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35), 0 1px 0 rgba(255, 255, 255, 0.03) inset;
+            border-radius: 14px;
             position: relative;
+            border: 1px solid rgba(255, 255, 255, 0.06);
         }
         h2 {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 18px;
+            font-weight: 700;
+            letter-spacing: 0.2px;
         }
         .field {
-            margin-bottom: 15px;
+            margin-bottom: 14px;
         }
         label {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 6px;
+            font-size: 0.92em;
+            color: #cfcfcf;
         }
         input[type="text"], input[type="time"], input[type="date"] {
             width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            padding: 10px 12px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 8px;
             box-sizing: border-box;
-            background-color: #444;
+            background-color: #303030;
             color: #fff;
+            transition: border-color 0.15s ease, background-color 0.15s ease, box-shadow 0.15s ease;
+            outline: none;
+        }
+        input[type="text"]::placeholder {
+            color: #9c9c9c;
         }
         input[type="text"]:focus, input[type="time"]:focus, input[type="date"]:focus {
-            border-color: #007bff;
-        }
-        .output {
-            font-size: 1.2em;
-            text-align: center;
-            margin-top: 20px;
+            border-color: #4da3ff;
+            background-color: #2b2b2b;
+            box-shadow: 0 0 0 3px rgba(77, 163, 255, 0.15);
         }
         #settings {
             display: none;
+            margin-top: 8px;
         }
         .settings-btn {
             position: absolute;
             top: 10px;
             right: 10px;
             cursor: pointer;
-            text-decoration: underline;
-            color: #007bff;
+            color: #9fc9ff;
+            border: 1px solid rgba(159, 201, 255, 0.35);
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-size: 0.9em;
+            user-select: none;
+            transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.05s ease;
+            background: rgba(77, 163, 255, 0.08);
+        }
+        .settings-btn:hover {
+            background: rgba(77, 163, 255, 0.16);
+            border-color: rgba(159, 201, 255, 0.55);
+        }
+        .settings-btn:active {
+            transform: translateY(1px);
+        }
+        .output {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-top: 18px;
+        }
+        .stat {
+            background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 14px 16px;
+            box-shadow: 0 1px 0 rgba(255, 255, 255, 0.03) inset;
+        }
+        .stat-title {
+            color: #cfcfcf;
+            font-size: 0.9em;
+            margin-bottom: 6px;
+        }
+        .stat-value {
+            font-size: 1.8em;
+            font-weight: 700;
+            letter-spacing: 0.3px;
+            font-variant-numeric: tabular-nums; /* align numbers nicely */
+        }
+        .stat-value .currency {
+            color: #9fc9ff;
+            margin-right: 6px;
+        }
+        @media (min-width: 520px) {
+            .output { grid-template-columns: 1fr 1fr; }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h2>Real-Time Salary Counter</h2>
-        <div class="settings-btn" onclick="toggleSettings()">Settings</div>
+        <div class="settings-btn" onclick="toggleSettings()">⚙️ Settings</div>
 
         <div id="settings">
             <div class="field">
@@ -80,7 +134,7 @@
             </div>
             <div class="field">
                 <label for="workEndTime">Work End Time</label>
-                <input type="time" id="workEndTime" value="17:00" step="3600" required>
+                <input type="time" id="workEndTime" value="18:00" step="3600" required>
             </div>
             <div class="field">
                 <label for="lunchStartTime">Lunch Break Start</label>
@@ -97,15 +151,23 @@
         </div>
 
         <div class="output">
-            <p><strong>Today's Earnings:</strong> $<span id="todayEarnings">0.000</span></p>
-            <p><strong>Monthly Earnings:</strong> $<span id="monthlyEarnings">0.000</span></p>
+            <div class="stat">
+                <div class="stat-title">Today's Earnings</div>
+                <div class="stat-value"><span class="currency">$</span><span id="todayEarnings">0.000</span></div>
+            </div>
+            <div class="stat">
+                <div class="stat-title">Monthly Earnings</div>
+                <div class="stat-value"><span class="currency">$</span><span id="monthlyEarnings">0.000</span></div>
+            </div>
         </div>
     </div>
 
     <script>
         function toggleSettings() {
             const settings = document.getElementById('settings');
-            settings.style.display = settings.style.display === 'none' ? 'block' : 'none';
+            const willShow = settings.style.display === 'none';
+            settings.style.display = willShow ? 'block' : 'none';
+            setPref('settingsVisible', willShow ? '1' : '0');
         }
 
         function setCookie(name, value) {
@@ -117,105 +179,189 @@
             return match ? match[2] : '';
         }
 
+        function setPref(key, value) {
+            try {
+                localStorage.setItem(key, String(value));
+            } catch (e) {
+                setCookie(key, String(value));
+            }
+        }
+
+        function getPref(key) {
+            try {
+                const v = localStorage.getItem(key);
+                if (v !== null) return v;
+            } catch (e) { /* fallback to cookies */ }
+            return getCookie(key);
+        }
+
+        function migrateCookiesToLocalStorage(keys) {
+            keys.forEach(k => {
+                const v = getCookie(k);
+                if (v) {
+                    try { localStorage.setItem(k, v); } catch (e) {}
+                }
+            });
+        }
+
         const hourlyRateInput = document.getElementById('hourlyRate');
         const workStartTimeInput = document.getElementById('workStartTime');
         const workEndTimeInput = document.getElementById('workEndTime');
         const lunchStartTimeInput = document.getElementById('lunchStartTime');
         const lunchEndTimeInput = document.getElementById('lunchEndTime');
         const currentDateInput = document.getElementById('currentDate');
+        const todayEarningsEl = document.getElementById('todayEarnings');
+        const monthlyEarningsEl = document.getElementById('monthlyEarnings');
 
-        hourlyRateInput.value = getCookie('hourlyRate') || '2.74';
-        workStartTimeInput.value = getCookie('workStartTime') || '09:00';
-        workEndTimeInput.value = getCookie('workEndTime') || '17:00';
-        lunchStartTimeInput.value = getCookie('lunchStartTime') || '12:00';
-        lunchEndTimeInput.value = getCookie('lunchEndTime') || '13:00';
-        currentDateInput.value = getCookie('currentDate') || new Date().toISOString().split('T')[0];
+        // migrate old cookie values once
+        migrateCookiesToLocalStorage(['hourlyRate','workStartTime','workEndTime','lunchStartTime','lunchEndTime','currentDate','settingsVisible']);
+
+        hourlyRateInput.value = getPref('hourlyRate') || '2.74';
+        workStartTimeInput.value = getPref('workStartTime') || '09:00';
+        workEndTimeInput.value = getPref('workEndTime') || '18:00';
+        lunchStartTimeInput.value = getPref('lunchStartTime') || '12:00';
+        lunchEndTimeInput.value = getPref('lunchEndTime') || '13:00';
+        currentDateInput.value = getPref('currentDate') || new Date().toISOString().split('T')[0];
+
+        // restore settings visibility
+        (function restoreSettingsVisibility(){
+            const settings = document.getElementById('settings');
+            const vis = getPref('settingsVisible');
+            if (vis === '1') settings.style.display = 'block';
+        })();
+
+        function parseTimeToSeconds(timeStr) {
+            const [h, m] = timeStr.split(':').map(Number);
+            return (h * 60 + m) * 60;
+        }
+
+        function evaluateRateExpression(expr) {
+            const normalized = String(expr).replace(',', '.').trim();
+            if (!/^[\d+\-*/().\s]+$/.test(normalized)) {
+                throw new Error('Invalid characters');
+            }
+            // Using Function instead of eval; still preserves arithmetic expressions
+            // eslint-disable-next-line no-new-func
+            const fn = new Function(`return (${normalized})`);
+            const result = Number(fn());
+            if (!isFinite(result)) throw new Error('Invalid expression');
+            return result;
+        }
+
+        const derived = {
+            hourlyRate: 0,
+            hourlyPerSecond: 0,
+            workStartDateTime: null,
+            workEndDateTime: null,
+            lunchStartDateTime: null,
+            lunchEndDateTime: null,
+            currentDateObj: null,
+            isWeekend: false,
+            totalWorkSeconds: 0,
+            baseMonthlyEarnings: 0
+        };
+
+        function computeMonthlyBase(currentDate, hourlyPerSecond, workStartTime, workEndTime, lunchStartTime, lunchEndTime) {
+            const dayMs = 24 * 60 * 60 * 1000;
+            const monthStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+            const daysElapsed = Math.floor((currentDate - monthStart) / dayMs);
+            let weekdaysElapsed = 0;
+            for (let i = 0; i < daysElapsed; i++) {
+                const day = new Date(monthStart.getTime() + i * dayMs);
+                const dow = day.getDay();
+                if (dow > 0 && dow < 6) weekdaysElapsed++;
+            }
+            const totalWorkSecondsPerDay = parseTimeToSeconds(workEndTime) - parseTimeToSeconds(workStartTime);
+            const lunchBreakSeconds = parseTimeToSeconds(lunchEndTime) - parseTimeToSeconds(lunchStartTime);
+            const effectiveWorkSeconds = Math.max(0, totalWorkSecondsPerDay - lunchBreakSeconds);
+            return weekdaysElapsed * (effectiveWorkSeconds * hourlyPerSecond);
+        }
+
+        function recomputeDerived() {
+            // Hourly rate
+            const rate = parseFloat(String(hourlyRateInput.value).replace(',', '.')) || 0;
+            derived.hourlyRate = rate;
+            derived.hourlyPerSecond = rate / 3600;
+
+            // Dates
+            const currentDate = new Date(currentDateInput.value);
+            derived.currentDateObj = currentDate;
+            const workStart = new Date(currentDate);
+            const workEnd = new Date(currentDate);
+            const lunchStart = new Date(currentDate);
+            const lunchEnd = new Date(currentDate);
+            const [wsH, wsM] = workStartTimeInput.value.split(':').map(Number);
+            const [weH, weM] = workEndTimeInput.value.split(':').map(Number);
+            const [lsH, lsM] = lunchStartTimeInput.value.split(':').map(Number);
+            const [leH, leM] = lunchEndTimeInput.value.split(':').map(Number);
+            workStart.setHours(wsH, wsM, 0, 0);
+            workEnd.setHours(weH, weM, 0, 0);
+            lunchStart.setHours(lsH, lsM, 0, 0);
+            lunchEnd.setHours(leH, leM, 0, 0);
+            derived.workStartDateTime = workStart;
+            derived.workEndDateTime = workEnd;
+            derived.lunchStartDateTime = lunchStart;
+            derived.lunchEndDateTime = lunchEnd;
+            derived.isWeekend = currentDate.getDay() === 0 || currentDate.getDay() === 6;
+
+            derived.totalWorkSeconds = Math.max(0, (workEnd - workStart - (lunchEnd - lunchStart)) / 1000);
+
+            derived.baseMonthlyEarnings = computeMonthlyBase(
+                currentDate,
+                derived.hourlyPerSecond,
+                workStartTimeInput.value,
+                workEndTimeInput.value,
+                lunchStartTimeInput.value,
+                lunchEndTimeInput.value
+            );
+        }
+
+        function updateTick() {
+            const now = new Date();
+            let todayEarnings = 0;
+            if (!derived.isWeekend) {
+                if (now >= derived.workStartDateTime && now < derived.lunchStartDateTime) {
+                    const elapsedSeconds = (now - derived.workStartDateTime) / 1000;
+                    todayEarnings = elapsedSeconds * derived.hourlyPerSecond;
+                } else if (now >= derived.lunchStartDateTime && now < derived.lunchEndDateTime) {
+                    const elapsedSeconds = (derived.lunchStartDateTime - derived.workStartDateTime) / 1000;
+                    todayEarnings = elapsedSeconds * derived.hourlyPerSecond;
+                } else if (now >= derived.lunchEndDateTime && now < derived.workEndDateTime) {
+                    const elapsedSeconds = (now - derived.workStartDateTime - (derived.lunchEndDateTime - derived.lunchStartDateTime)) / 1000;
+                    todayEarnings = elapsedSeconds * derived.hourlyPerSecond;
+                } else if (now > derived.workEndDateTime) {
+                    todayEarnings = derived.totalWorkSeconds * derived.hourlyPerSecond;
+                }
+            }
+
+            const monthlyEarnings = derived.baseMonthlyEarnings + todayEarnings;
+            todayEarningsEl.textContent = todayEarnings.toFixed(3);
+            monthlyEarningsEl.textContent = monthlyEarnings.toFixed(3);
+        }
 
         hourlyRateInput.addEventListener('change', () => {
             const value = hourlyRateInput.value;
             try {
-                const evaluatedRate = eval(value);
-                setCookie('hourlyRate', evaluatedRate);
-                hourlyRateInput.value = evaluatedRate;  // Update the input value with the result of the evaluation
+                const evaluatedRate = evaluateRateExpression(value);
+                setPref('hourlyRate', evaluatedRate);
+                hourlyRateInput.value = String(evaluatedRate);
+                recomputeDerived();
+                updateTick();
             } catch (error) {
-                alert("Invalid expression!");
+                alert('Invalid expression!');
             }
         });
 
-        workStartTimeInput.addEventListener('change', () => setCookie('workStartTime', workStartTimeInput.value));
-        workEndTimeInput.addEventListener('change', () => setCookie('workEndTime', workEndTimeInput.value));
-        lunchStartTimeInput.addEventListener('change', () => setCookie('lunchStartTime', lunchStartTimeInput.value));
-        lunchEndTimeInput.addEventListener('change', () => setCookie('lunchEndTime', lunchEndTimeInput.value));
-        currentDateInput.addEventListener('change', () => setCookie('currentDate', currentDateInput.value));
+        workStartTimeInput.addEventListener('change', () => { setPref('workStartTime', workStartTimeInput.value); recomputeDerived(); updateTick(); });
+        workEndTimeInput.addEventListener('change', () => { setPref('workEndTime', workEndTimeInput.value); recomputeDerived(); updateTick(); });
+        lunchStartTimeInput.addEventListener('change', () => { setPref('lunchStartTime', lunchStartTimeInput.value); recomputeDerived(); updateTick(); });
+        lunchEndTimeInput.addEventListener('change', () => { setPref('lunchEndTime', lunchEndTimeInput.value); recomputeDerived(); updateTick(); });
+        currentDateInput.addEventListener('change', () => { setPref('currentDate', currentDateInput.value); recomputeDerived(); updateTick(); });
 
-        function calculateMonthlyEarnings(currentDate, hourlyRate, workStartTime, workEndTime, lunchStartTime, lunchEndTime) {
-            const dayInMillisec = 24 * 60 * 60 * 1000;
-            const monthStartDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
-            const daysElapsed = Math.floor((currentDate - monthStartDate) / dayInMillisec);
-
-            let weekdaysElapsed = 0;
-            for (let i = 0; i < daysElapsed; i++) {
-                const day = new Date(monthStartDate.getTime() + i * dayInMillisec);
-                if (day.getDay() > 0 && day.getDay() < 6) {
-                    weekdaysElapsed++;
-                }
-            }
-
-            const totalWorkSecondsPerDay = (new Date(`1970-01-01T${workEndTime}:00`) - new Date(`1970-01-01T${workStartTime}:00`)) / 1000;
-            const lunchBreakSeconds = (new Date(`1970-01-01T${lunchEndTime}:00`) - new Date(`1970-01-01T${lunchStartTime}:00`)) / 1000;
-            const dailyEarnings = (totalWorkSecondsPerDay - lunchBreakSeconds) * (hourlyRate / 3600);
-
-            return weekdaysElapsed * dailyEarnings;
-        }
-
-        function updateEarnings() {
-            const hourlyRate = parseFloat(hourlyRateInput.value.replace(',', '.')) || 0;
-            const workStartTime = workStartTimeInput.value;
-            const workEndTime = workEndTimeInput.value;
-            const lunchStartTime = lunchStartTimeInput.value;
-            const lunchEndTime = lunchEndTimeInput.value;
-            const currentDate = new Date(currentDateInput.value);
-
-            const currentDateTime = new Date();
-            const workStartDateTime = new Date(currentDate);
-            workStartDateTime.setHours(...workStartTime.split(':').map(Number));
-
-            const workEndDateTime = new Date(currentDate);
-            workEndDateTime.setHours(...workEndTime.split(':').map(Number));
-
-            const lunchStartDateTime = new Date(currentDate);
-            lunchStartDateTime.setHours(...lunchStartTime.split(':').map(Number));
-
-            const lunchEndDateTime = new Date(currentDate);
-            lunchEndDateTime.setHours(...lunchEndTime.split(':').map(Number));
-
-            let todayEarnings = 0;
-
-            // Проверка на выходной день
-            const currentDayOfWeek = currentDate.getDay();
-            if (currentDayOfWeek !== 0 && currentDayOfWeek !== 6) {
-                // Если не выходной, выполняем расчёт заработка
-                if (currentDateTime >= workStartDateTime && currentDateTime < lunchStartDateTime) {
-                    const elapsedSeconds = (currentDateTime - workStartDateTime) / 1000;
-                    todayEarnings = elapsedSeconds * (hourlyRate / 3600);
-                } else if (currentDateTime >= lunchStartDateTime && currentDateTime < lunchEndDateTime) {
-                    todayEarnings = ((lunchStartDateTime - workStartDateTime) / 1000) * (hourlyRate / 3600);
-                } else if (currentDateTime >= lunchEndDateTime && currentDateTime < workEndDateTime) {
-                    const elapsedSeconds = (currentDateTime - workStartDateTime - (lunchEndDateTime - lunchStartDateTime)) / 1000;
-                    todayEarnings = elapsedSeconds * (hourlyRate / 3600);
-                } else if (currentDateTime > workEndDateTime) {
-                    const totalWorkSeconds = (workEndDateTime - workStartDateTime - (lunchEndDateTime - lunchStartDateTime)) / 1000;
-                    todayEarnings = totalWorkSeconds * (hourlyRate / 3600);
-                }
-            }
-
-            const monthlyEarnings = calculateMonthlyEarnings(currentDate, hourlyRate, workStartTime, workEndTime, lunchStartTime, lunchEndTime) + todayEarnings;
-
-            document.getElementById('todayEarnings').textContent = todayEarnings.toFixed(3);
-            document.getElementById('monthlyEarnings').textContent = monthlyEarnings.toFixed(3);
-        }
-
-        setInterval(updateEarnings, 100);
+        // Initial compute and start ticking
+        recomputeDerived();
+        updateTick();
+        setInterval(updateTick, 500);
     </script>
 </body>
 </html>

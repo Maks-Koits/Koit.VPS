@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360" viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet">
+  <!-- Daring, gritty, neon-punk style logo with censored profanity -->
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="45%" r="75%">
+      <stop offset="0%" stop-color="#0a0a0a"/>
+      <stop offset="100%" stop-color="#000000"/>
+    </radialGradient>
+    <linearGradient id="accentYellow" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fde047"/>
+      <stop offset="100%" stop-color="#f59e0b"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="noise">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="1" stitchTiles="stitch" result="turb"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.06"/>
+      </feComponentTransfer>
+      <feBlend mode="overlay" in2="SourceGraphic"/>
+    </filter>
+  </defs>
+
+  <!-- Background with subtle noise -->
+  <rect width="512" height="512" rx="64" fill="url(#bg)"/>
+  <rect width="512" height="512" rx="64" opacity="0.4" filter="url(#noise)"/>
+
+  <!-- Chat-bubble outline (yellow accents) -->
+  <g transform="translate(40,56)">
+    <path d="M64 48h272c31 0 56 25 56 56v132c0 31-25 56-56 56h-116l-60 52c-6 5-16 1-16-7v-45H64c-31 0-56-25-56-56V104c0-31 25-56 56-56z"
+          fill="none" stroke="#f59e0b" stroke-width="14" opacity="0.95"/>
+    <path d="M64 48h272c31 0 56 25 56 56v132c0 31-25 56-56 56h-116l-60 52c-6 5-16 1-16-7v-45H64c-31 0-56-25-56-56V104c0-31 25-56 56-56z"
+          fill="none" stroke="#fde047" stroke-width="6" transform="translate(3,2)" opacity="0.85"/>
+  </g>
+
+  <!-- Centered text inside bubble -->
+  <g filter="url(#glow)">
+    <text x="256" y="270" text-anchor="middle"
+          font-family="Impact, Haettenschweiler, 'Arial Black', Inter, system-ui"
+          font-size="92" letter-spacing="3" fill="url(#accentYellow)" stroke="#f59e0b" stroke-width="2">
+      BLYAT
+    </text>
+  </g>
+
+  <!-- Bold sticker ribbon (black-yellow) -->
+  <g transform="rotate(-8 256 256)">
+    <rect x="80" y="356" width="352" height="68" rx="12" fill="#000000" stroke="#f59e0b" stroke-width="4"/>
+    <text x="256" y="400" text-anchor="middle" font-family="Impact, Haettenschweiler, 'Arial Black', Inter, system-ui" font-size="36" letter-spacing="1.5" fill="#fde047">
+      Е*АНЫЙ СОВЕТ
+    </text>
+  </g>
+
+  <!-- Small badge to hint at swearing -->
+  <g transform="translate(388,88)" filter="url(#glow)">
+    <circle cx="0" cy="0" r="26" fill="#000000" stroke="#f59e0b" stroke-width="3"/>
+    <text x="0" y="8" text-anchor="middle" font-family="'Arial Black', Inter, system-ui" font-size="24" fill="#fde047">@#$%</text>
+  </g>
+
+  <!-- Hidden name (for previews) -->
+  <g aria-hidden="true" opacity="0.0">
+    <text x="256" y="492" text-anchor="middle" font-family="Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial" font-size="22" fill="#ffffff">advice-bot</text>
+  </g>
+</svg>
+
+
