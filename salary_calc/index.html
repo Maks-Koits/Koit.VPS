@@ -193,27 +193,24 @@
                 <input type="text" id="hourlyRate" placeholder="e.g., 2.74">
             </div>
             <div class="field">
-                <label for="workStartTime">Work Start Time (24h format)</label>
+                <label for="workStartTime">Work Start Time</label>
                 <input type="text" id="workStartTime" value="09:00" class="time-input" placeholder="HH:MM" pattern="[0-2][0-9]:[0-5][0-9]" maxlength="5" required>
             </div>
             <div class="field">
-                <label for="workEndTime">Work End Time (24h format)</label>
+                <label for="workEndTime">Work End Time</label>
                 <input type="text" id="workEndTime" value="18:00" class="time-input" placeholder="HH:MM" pattern="[0-2][0-9]:[0-5][0-9]" maxlength="5" required>
             </div>
             <div class="field">
-                <label for="lunchStartTime">Lunch Break Start (24h format)</label>
+                <label for="lunchStartTime">Lunch Break Start</label>
                 <input type="text" id="lunchStartTime" value="12:00" class="time-input" placeholder="HH:MM" pattern="[0-2][0-9]:[0-5][0-9]" maxlength="5">
             </div>
             <div class="field">
-                <label for="lunchEndTime">Lunch Break End (24h format)</label>
+                <label for="lunchEndTime">Lunch Break End</label>
                 <input type="text" id="lunchEndTime" value="13:00" class="time-input" placeholder="HH:MM" pattern="[0-2][0-9]:[0-5][0-9]" maxlength="5">
             </div>
+            <input type="hidden" id="currentDate" value="">
             <div class="field">
-                <label for="currentDate">Today's Date</label>
-                <input type="text" id="currentDate" value="" class="time-input" placeholder="YYYY-MM-DD" readonly style="cursor: pointer;">
-            </div>
-            <div class="field">
-                <label>Calendar</label>
+                <label>Calendar (Current Date: <span id="currentDateDisplay" style="color: #ffd9a6; font-weight: 600;"></span>)</label>
                 <div class="calendar">
                     <div class="cal-header">
                         <div class="cal-title" id="calTitle">Month YYYY</div>
@@ -226,12 +223,12 @@
                     <div class="cal-grid" id="calGrid"></div>
                     <div class="cal-legend">
                         <div style="margin-bottom: 4px;">
-                            <span style="display: inline-block; width: 12px; height: 12px; background: rgba(255,183,77,0.25); border: 1px solid rgba(255,183,77,0.8); border-radius: 3px; margin-right: 6px; vertical-align: middle;"></span>
-                            <span style="vertical-align: middle;">Current date (click to change)</span>
+                            <span style="display: inline-block; width: 12px; height: 12px; background: rgba(77,163,255,0.18); border: 1px solid rgba(77,163,255,0.6); border-radius: 3px; margin-right: 6px; vertical-align: middle;"></span>
+                            <span style="vertical-align: middle;">Working day (click to toggle)</span>
                         </div>
                         <div>
-                            <span style="display: inline-block; width: 12px; height: 12px; background: rgba(77,163,255,0.18); border: 1px solid rgba(77,163,255,0.6); border-radius: 3px; margin-right: 6px; vertical-align: middle;"></span>
-                            <span style="vertical-align: middle;">Working day (right-click to toggle)</span>
+                            <span style="display: inline-block; width: 12px; height: 12px; background: rgba(255,183,77,0.25); border: 1px solid rgba(255,183,77,0.8); border-radius: 3px; margin-right: 6px; vertical-align: middle;"></span>
+                            <span style="vertical-align: middle;">Current date (right-click to change)</span>
                         </div>
                     </div>
                 </div>
@@ -551,17 +548,6 @@
         workEndTimeInput.addEventListener('change', () => { setPref('workEndTime', workEndTimeInput.value); recomputeDerived(); updateTick(); });
         lunchStartTimeInput.addEventListener('change', () => { setPref('lunchStartTime', lunchStartTimeInput.value); recomputeDerived(); updateTick(); });
         lunchEndTimeInput.addEventListener('change', () => { setPref('lunchEndTime', lunchEndTimeInput.value); recomputeDerived(); updateTick(); });
-        
-        // Update calendar when date input clicked
-        currentDateInput.addEventListener('click', () => {
-            const settings = document.getElementById('settings');
-            if (getComputedStyle(settings).display === 'none') {
-                settings.style.display = 'block';
-                setPref('settingsVisible', '1');
-            }
-            // Scroll to calendar
-            document.querySelector('.calendar').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        });
 
         // Calendar rendering
         const calGrid = document.getElementById('calGrid');
@@ -569,8 +555,25 @@
         const calPrev = document.getElementById('calPrev');
         const calNext = document.getElementById('calNext');
         const calToday = document.getElementById('calToday');
+        const currentDateDisplay = document.getElementById('currentDateDisplay');
         let calViewDate = new Date(getPref('calendarMonth') || currentDateInput.value || new Date());
         calViewDate.setDate(1);
+
+        function updateCurrentDateDisplay() {
+            const dateStr = currentDateInput.value;
+            if (dateStr) {
+                const [year, month, day] = dateStr.split('-');
+                const dateObj = new Date(year, month - 1, day);
+                currentDateDisplay.textContent = dateObj.toLocaleDateString(undefined, { 
+                    weekday: 'short', 
+                    year: 'numeric', 
+                    month: 'short', 
+                    day: 'numeric' 
+                });
+            } else {
+                currentDateDisplay.textContent = 'Not set';
+            }
+        }
 
         function weekdayHeaders() {
             const names = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
@@ -610,19 +613,8 @@
 
             // Bind clicks for days
             calGrid.querySelectorAll('.cal-day').forEach(el => {
-                // Left click - set current date
+                // Left click - toggle working date
                 el.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const key = el.getAttribute('data-key');
-                    currentDateInput.value = key;
-                    setPref('currentDate', key);
-                    recomputeDerived();
-                    updateTick();
-                    renderCalendar(); // Re-render to update current date highlight
-                });
-
-                // Right click - toggle working date
-                el.addEventListener('contextmenu', (e) => {
                     e.preventDefault();
                     const key = el.getAttribute('data-key');
                     if (workDates.has(key)) {
@@ -636,6 +628,18 @@
                     recomputeDerived();
                     updateTick();
                 });
+
+                // Right click - set current date
+                el.addEventListener('contextmenu', (e) => {
+                    e.preventDefault();
+                    const key = el.getAttribute('data-key');
+                    currentDateInput.value = key;
+                    setPref('currentDate', key);
+                    updateCurrentDateDisplay();
+                    recomputeDerived();
+                    updateTick();
+                    renderCalendar(); // Re-render to update current date highlight
+                });
             });
 
             // Persist month view
@@ -648,6 +652,7 @@
             const today = new Date();
             currentDateInput.value = fmtDateKey(today);
             setPref('currentDate', currentDateInput.value);
+            updateCurrentDateDisplay();
             calViewDate = new Date(today); 
             calViewDate.setDate(1); 
             recomputeDerived();
@@ -659,6 +664,7 @@
         recomputeDerived();
         updateTick();
         setInterval(updateTick, 100);
+        updateCurrentDateDisplay();
         renderCalendar();
     </script>
 </body>
