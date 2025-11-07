@@ -346,8 +346,8 @@
         const todayEarningsEl = document.getElementById('todayEarnings');
         const monthlyEarningsEl = document.getElementById('monthlyEarnings');
 
-        // migrate old cookie values once
-        migrateCookiesToLocalStorage(['hourlyRate','workStartTime','workEndTime','lunchStartTime','lunchEndTime','currentDate','settingsVisible']);
+        // migrate old cookie values once (excluding currentDate - always use today)
+        migrateCookiesToLocalStorage(['hourlyRate','workStartTime','workEndTime','lunchStartTime','lunchEndTime','settingsVisible']);
 
         // Setup time input formatting and validation
         setupTimeInput(workStartTimeInput);
@@ -385,11 +385,8 @@
         workEndTimeInput.value = getPref('workEndTime') || '18:00';
         lunchStartTimeInput.value = getPref('lunchStartTime') || '12:00';
         lunchEndTimeInput.value = getPref('lunchEndTime') || '13:00';
-        const savedDate = getPref('currentDate');
-        currentDateInput.value = savedDate || fmtDateKey(new Date());
-        if (!savedDate) {
-            setPref('currentDate', currentDateInput.value);
-        }
+        // Always use today's date - don't save/restore from storage
+        currentDateInput.value = fmtDateKey(new Date());
 
         // Ensure settings start hidden
         document.getElementById('settings').style.display = 'none';
@@ -603,7 +600,8 @@
         const calNext = document.getElementById('calNext');
         const calToday = document.getElementById('calToday');
         const currentDateDisplay = document.getElementById('currentDateDisplay');
-        let calViewDate = new Date(getPref('calendarMonth') || currentDateInput.value || new Date());
+        // Initialize calendar view to current month (don't use saved currentDate)
+        let calViewDate = new Date(getPref('calendarMonth') || new Date());
         calViewDate.setDate(1);
 
         let cachedDateStr = null;
@@ -671,7 +669,7 @@
                 if (!day) return;
                 e.preventDefault();
                 currentDateInput.value = day.getAttribute('data-key');
-                setPref('currentDate', currentDateInput.value);
+                // Don't save currentDate - always reset to today on reload
                 updateCurrentDateDisplay();
                 refresh();
                 renderCalendar();
@@ -683,7 +681,7 @@
         calToday.addEventListener('click', () => { 
             const today = new Date();
             currentDateInput.value = fmtDateKey(today);
-            setPref('currentDate', currentDateInput.value);
+            // Don't save currentDate - always reset to today on reload
             updateCurrentDateDisplay();
             calViewDate = new Date(today.getFullYear(), today.getMonth(), 1);
             recomputeDerived();
