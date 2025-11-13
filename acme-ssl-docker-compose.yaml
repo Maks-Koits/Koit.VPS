@@ -67,9 +67,9 @@ services:
     networks:
       - net
 
-  maks-koits-github-io+cv.maks-koit:
+  maks-koits-github-io-cv.maks-koit:
     image: nginx:stable-alpine
-    container_name: maks-koits-site+cv
+    container_name: maks-koits-site-cv
     depends_on:
       - nginx-proxy
     volumes:
