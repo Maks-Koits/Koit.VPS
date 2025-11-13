@@ -69,44 +69,42 @@ services:
     networks:
       - net
 
-  maks-koits-github-io:
+  maks-koits-github-io+cv.maks-koit:
     image: nginx:stable-alpine
-    container_name: 'maks-koits-site'
+    container_name: maks-koits-site+cv
     depends_on:
       - nginx-proxy
     volumes:
-      - /app/Maks-Koits.github.io:/usr/share/nginx/html
-#if file      - /dev/null:/usr/share/nginx/html/.git
-      - /usr/share/nginx/html/.git
+      - /app/Maks-Koits.github.io:/usr/share/nginx/html:ro
       - /etc/localtime:/etc/localtime:ro
-#      - /var/log/nginx:/var/log/nginx
+      - /app/Koit.VPS/config_nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
     environment:
-#      TZ: 'Europe/Minsk'
-      VIRTUAL_HOST: 'maks-koits.site'
-      LETSENCRYPT_HOST: 'maks-koits.site'
+      VIRTUAL_HOST: maks-koits.site,cv.maks-koits.site
+      LETSENCRYPT_HOST: maks-koits.site,cv.maks-koits.site
+      VIRTUAL_PORT: 80
     restart: unless-stopped
     networks:
       - net
 
-  cv.maks-koits.site:
-    image: nginx:stable-alpine
-    container_name: 'cv_maks-koits-site'
-    depends_on:
-      - nginx-proxy
-    volumes:
-      - /app/Koit.VPS/cv_config_nginx/default.conf:/etc/nginx/conf.d/default.conf
-      - /app/Maks-Koits.github.io:/usr/share/nginx/html
-#if file      - /dev/null:/usr/share/nginx/html/.git
-#      - /usr/share/nginx/html/.git
-      - /etc/localtime:/etc/localtime:ro
-#      - /var/log/nginx_cv:/var/log/nginx_cv
-    environment:
-#      TZ: 'Europe/Minsk'
-      VIRTUAL_HOST: 'cv.maks-koits.site'
-      LETSENCRYPT_HOST: 'cv.maks-koits.site'
-    restart: unless-stopped
-    networks:
-      - net
+#  cv.maks-koits.site:
+#    image: nginx:stable-alpine
+#    container_name: 'cv_maks-koits-site'
+#    depends_on:
+#      - nginx-proxy
+#    volumes:
+#      - /app/Koit.VPS/cv_config_nginx/default.conf:/etc/nginx/conf.d/default.conf
+#      - /app/Maks-Koits.github.io:/usr/share/nginx/html
+##if file      - /dev/null:/usr/share/nginx/html/.git
+##      - /usr/share/nginx/html/.git
+#      - /etc/localtime:/etc/localtime:ro
+##      - /var/log/nginx_cv:/var/log/nginx_cv
+#    environment:
+##      TZ: 'Europe/Minsk'
+#      VIRTUAL_HOST: 'cv.maks-koits.site'
+#      LETSENCRYPT_HOST: 'cv.maks-koits.site'
+#    restart: unless-stopped
+#    networks:
+#      - net
 
   salary.maks-koits.site:
     image: nginx:stable-alpine
