@@ -125,7 +125,7 @@ services:
       - net
 
   portainer:
-    image: portainer/portainer-ce
+    image: portainer/portainer-ce:2.20.2
     container_name: 'portainer_maks-koits-site'
     depends_on:
       - nginx-proxy
