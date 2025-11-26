@@ -127,12 +127,11 @@ services:
   portainer:
     image: portainer/portainer-ce:linux-amd64
     container_name: 'portainer_maks-koits-site'
-    command: -H tcp://agent:9001 --tlsskipverify
     depends_on:
       - nginx-proxy
     volumes:
       - /app/portainer_data:/data
-      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/run/docker.sock:/var/run/docker.sock
       - /etc/localtime:/etc/localtime:ro
     environment:
       VIRTUAL_HOST: 'portainer.maks-koits.site'
