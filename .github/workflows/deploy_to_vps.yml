@@ -22,22 +22,28 @@ jobs:
       run: |
         ssh-keyscan -H github.com >> ~/.ssh/known_hosts
 
+    - name: Verify secrets are set
+      env:
+        REMOTE_HOST: ${{ secrets.REMOTE_HOST_TIMEWEB }}
+        REMOTE_USER: ${{ secrets.REMOTE_USER_TIMEWEB }}
+        REMOTE_PORT: ${{ secrets.REMOTE_PORT_TIMEWEB }}
+      run: |
+        if [ -z "$REMOTE_HOST" ] || [ -z "$REMOTE_USER" ] || [ -z "$REMOTE_PORT" ]; then
+          echo "Error: One or more secrets are not set"
+          echo "REMOTE_HOST: ${REMOTE_HOST:+SET}"
+          echo "REMOTE_USER: ${REMOTE_USER:+SET}"
+          echo "REMOTE_PORT: ${REMOTE_PORT:+SET}"
+          exit 1
+        fi
+        echo "All secrets are set"
+
     - name: Deploy to Remote Server
       env:
-          REMOTE_HOST: ${{ secrets.REMOTE_HOST_TIMEWEB }}
-          REMOTE_USER: ${{ secrets.REMOTE_USER_TIMEWEB }}
-          REMOTE_PORT: ${{ secrets.REMOTE_PORT_TIMEWEB }}
-          GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
-          GIT_USER: ${{ secrets.GIT_USER }}
+        REMOTE_HOST: ${{ secrets.REMOTE_HOST_TIMEWEB }}
+        REMOTE_USER: ${{ secrets.REMOTE_USER_TIMEWEB }}
+        REMOTE_PORT: ${{ secrets.REMOTE_PORT_TIMEWEB }}
+        GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
+        GIT_USER: ${{ secrets.GIT_USER }}
       run: |
-        ssh -o StrictHostKeyChecking=no -p $REMOTE_PORT $REMOTE_USER@$REMOTE_HOST \
-        "
-        cd /app/Koit.VPS/monitoring && \
-        docker compose down || true && \
-        cd /app/Koit.VPS/ && \
-        docker compose down || true && \
-        git pull && \
-        docker compose up -d --build && \
-        cd /app/Koit.VPS/monitoring && \
-        docker compose up -d --build && \
-        "
+        echo "Attempting to connect to $REMOTE_USER@$REMOTE_HOST:$REMOTE_PORT"
+        ssh -v -o StrictHostKeyChecking=no -o ConnectTimeout=30 -p $REMOTE_PORT $REMOTE_USER@$REMOTE_HOST "cd /app/Koit.VPS/monitoring && docker compose down || true && cd /app/Koit.VPS/ && docker compose down || true && git pull && docker compose up -d --build && cd /app/Koit.VPS/monitoring && docker compose up -d --build"
