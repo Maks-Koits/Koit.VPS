@@ -30,14 +30,4 @@ jobs:
         GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
         GIT_USER: ${{ secrets.GIT_USER }}
       run: |
-        ssh -o StrictHostKeyChecking=no -p $REMOTE_PORT $REMOTE_USER@$REMOTE_HOST \
-        "
-        cd /app/Koit.VPS/monitoring && \
-        docker compose down || true && \
-        cd /app/Koit.VPS/ && \
-        docker compose down || true && \
-        git pull && \
-        docker compose up -d --build && \
-        cd /app/Koit.VPS/monitoring && \
-        docker compose up -d --build && \
-        "
+        ssh -o StrictHostKeyChecking=no -p $REMOTE_PORT $REMOTE_USER@$REMOTE_HOST 'cd /app/Koit.VPS/monitoring && docker compose down || true && cd /app/Koit.VPS/ && docker compose down || true && git pull && docker compose up -d --build && cd /app/Koit.VPS/monitoring && docker compose up -d --build'
