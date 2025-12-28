@@ -110,6 +110,28 @@ volumes:
 #      - TZ=Europe/Minsk
 #    restart: unless-stopped
 
+#  cadvisor:
+#    image: gcr.io/cadvisor/cadvisor:latest
+#    container_name: 'monitoring-cadvisor'
+#    restart: unless-stopped
+#    volumes:
+#      - /etc/localtime:/etc/localtime:ro
+#      - /etc/timezone:/etc/timezone:ro
+#      - /:/rootfs:ro
+#      - /var/run:/var/run:rw
+#      - /sys:/sys:ro
+#      - /var/lib/docker:/var/lib/docker:ro
+#    devices:
+#      - /dev/kmsg:/dev/kmsg
+#    environment:
+#      TZ: 'Europe/Minsk'
+#      VIRTUAL_HOST: 'cadvisor.maks-koits.cv'
+#      VIRTUAL_PORT: '8080'
+#      LETSENCRYPT_HOST: 'cadvisor.maks-koits.cv'
+#      LETSENCRYPT_EMAIL: 'mix256@gmail.com'
+#    networks:
+#      - net
+
 #volumes:
 #    prometheus_data:
 #    grafana_data:

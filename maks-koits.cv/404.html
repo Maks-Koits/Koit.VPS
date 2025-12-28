@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>404 - Page Not Found | Maksim Bizukoits</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="404 - Page not found. Return to DevOps engineer resume.">
+    <link rel="stylesheet" href="css/system-ui.css">
+    <link rel="stylesheet" href="css/typography.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --terminal-bg: #1e1e1e;
+            --terminal-text: #d4d4d4;
+            --terminal-green: #4ec9b0;
+            --terminal-blue: #569cd6;
+            --terminal-yellow: #dcdcaa;
+            --terminal-red: #f48771;
+            --terminal-purple: #c586c0;
+        }
+        
+        body {
+            font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+            background: var(--terminal-bg);
+            color: var(--terminal-text);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+        }
+        
+        .terminal {
+            background: var(--terminal-bg);
+            border: 1px solid #3c3c3c;
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        }
+        
+        .terminal-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #3c3c3c;
+        }
+        
+        .terminal-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        
+        .terminal-dot.red { background: #ff5f56; }
+        .terminal-dot.yellow { background: #ffbd2e; }
+        .terminal-dot.green { background: #27c93f; }
+        
+        .terminal-title {
+            margin-left: auto;
+            font-size: 0.85em;
+            color: #888;
+        }
+        
+        .command-line {
+            margin-bottom: 1rem;
+        }
+        
+        .prompt {
+            color: var(--terminal-green);
+            font-weight: bold;
+        }
+        
+        .command {
+            color: var(--terminal-text);
+        }
+        
+        .output {
+            color: var(--terminal-red);
+            margin-left: 2rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .error-code {
+            font-size: 4rem;
+            font-weight: bold;
+            color: var(--terminal-red);
+            text-align: center;
+            margin: 2rem 0;
+            text-shadow: 0 0 20px rgba(244, 135, 113, 0.5);
+        }
+        
+        .error-message {
+            color: var(--terminal-yellow);
+            font-size: 1.2em;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .suggestions {
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #3c3c3c;
+        }
+        
+        .suggestions h3 {
+            color: var(--terminal-blue);
+            margin-bottom: 1rem;
+            font-size: 1em;
+        }
+        
+        .suggestions ul {
+            list-style: none;
+            margin-left: 1rem;
+        }
+        
+        .suggestions li {
+            margin-bottom: 0.75rem;
+        }
+        
+        .suggestions a {
+            color: var(--terminal-green);
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+        
+        .suggestions a:hover {
+            color: var(--terminal-blue);
+            text-decoration: underline;
+        }
+        
+        .suggestions a::before {
+            content: "→ ";
+            color: var(--terminal-purple);
+        }
+        
+        .home-button {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--terminal-green);
+            color: var(--terminal-bg);
+            text-decoration: none;
+            border-radius: 4px;
+            font-weight: bold;
+            transition: background 0.2s ease, transform 0.2s ease;
+            text-align: center;
+        }
+        
+        .home-button:hover {
+            background: var(--terminal-blue);
+            transform: translateY(-2px);
+        }
+        
+        .typing {
+            overflow: hidden;
+            border-right: 2px solid var(--terminal-green);
+            white-space: nowrap;
+            animation: typing 3s steps(40, end), blink-caret 0.75s step-end infinite;
+        }
+        
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent; }
+            50% { border-color: var(--terminal-green); }
+        }
+        
+        .code-block {
+            background: #252526;
+            padding: 1rem;
+            border-radius: 4px;
+            margin: 1rem 0;
+            border-left: 3px solid var(--terminal-blue);
+        }
+
+        @media (max-width: 600px) {
+            .error-code {
+                font-size: 3rem;
+            }
+
+            .terminal {
+                padding: 1.5rem;
+            }
+            
+            .command-line {
+                font-size: 0.9em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="terminal">
+            <div class="terminal-header">
+                <div class="terminal-dot red"></div>
+                <div class="terminal-dot yellow"></div>
+                <div class="terminal-dot green"></div>
+                <div class="terminal-title">bash — 404</div>
+            </div>
+            
+            <div class="command-line">
+                <span class="prompt">$</span> <span class="command">curl https://maks-koits.site/{{path}}</span>
+            </div>
+            
+            <div class="output">
+                HTTP/1.1 404 Not Found<br>
+                Content-Type: text/html; charset=utf-8<br>
+                X-Error-Code: PAGE_NOT_FOUND<br>
+                X-Suggestion: Check the URL or return to homepage
+            </div>
+            
+            <div class="error-code">404</div>
+            
+            <div class="error-message typing">
+                Resource not found. The page you're looking for doesn't exist.
+            </div>
+            
+            <div class="code-block">
+                <pre style="color: var(--terminal-yellow); margin: 0;">
+# Possible reasons:
+# 1. URL typo or outdated link
+# 2. Page was moved or deleted
+# 3. Incorrect path configuration
+
+# Solution:
+# → Return to homepage
+# → Check navigation menu
+# → Use search functionality</pre>
+            </div>
+            
+            <div class="suggestions">
+                <h3># Quick Navigation:</h3>
+                <ul>
+                    <li><a href="/">Homepage</a></li>
+                    <li><a href="/#about">About</a></li>
+                    <li><a href="/#contact">Contact</a></li>
+                    <li><a href="/#skills">Skills</a></li>
+                    <li><a href="/#experience">Experience</a></li>
+                    <li><a href="/#education">Education</a></li>
+                    <li><a href="/ru.html">Русская версия</a></li>
+                </ul>
+            </div>
+            
+            <div style="text-align: center;">
+                <a href="/" class="home-button">cd ~/homepage</a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Add typing effect to command
+        document.addEventListener('DOMContentLoaded', () => {
+            const command = document.querySelector('.command');
+            const originalText = command.textContent;
+            command.textContent = '';
+            
+            let i = 0;
+            const typeCommand = () => {
+                if (i < originalText.length) {
+                    command.textContent += originalText.charAt(i);
+                    i++;
+                    setTimeout(typeCommand, 50);
+                }
+            };
+            
+            setTimeout(typeCommand, 500);
+        });
+    </script>
+</body>
+</html>

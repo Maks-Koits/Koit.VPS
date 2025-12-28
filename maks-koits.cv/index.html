@@ -1,0 +1,647 @@
+<!doctype html>
+<html class="no-js" lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>Maksim Bizukoits - DevOps Engineer</title>
+        <meta name="description" content="DevOps engineer with extensive experience in CI/CD automation, cloud infrastructure, and containerization. Specialized in Kubernetes, AWS, Azure, and automation tools.">
+        <meta name="keywords" content="DevOps, Kubernetes, AWS, Azure, CI/CD, Docker, Terraform, Ansible, Infrastructure">
+        <meta name="author" content="Maksim Bizukoits">
+        
+        <!-- Open Graph / Facebook -->
+        <meta property="og:type" content="website">
+        <meta property="og:url" content="https://maks-koits.site/">
+        <meta property="og:title" content="Maksim Bizukoits - DevOps Engineer">
+        <meta property="og:description" content="DevOps engineer with extensive experience in CI/CD automation, cloud infrastructure, and containerization.">
+        
+        <!-- Twitter -->
+        <meta property="twitter:card" content="summary">
+        <meta property="twitter:url" content="https://maks-koits.site/">
+        <meta property="twitter:title" content="Maksim Bizukoits - DevOps Engineer">
+        <meta property="twitter:description" content="DevOps engineer with extensive experience in CI/CD automation, cloud infrastructure, and containerization.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="canonical" href="https://maks-koits.site/" />
+        <link rel="alternate" hreflang="ru" href="https://maks-koits.site/ru.html" />
+        <link rel="alternate" hreflang="en" href="https://maks-koits.site/" />
+
+        <link rel="prefetch" href="css/system-ui.css" as="style" />
+        <link rel="prefetch" href="css/typography.css" as="style" />
+        <link rel="preload" href="css/main.css" as="style" />
+
+        <!-- Place favicon.ico in the root directory -->
+        <link rel="apple-touch-icon" sizes="180x180" href="img/favicons/apple-touch-icon.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="img/favicons/favicon-32x32.png">
+        <link rel="icon" type="image/png" sizes="16x16" href="img/favicons/favicon-16x16.png">
+        <link rel="mask-icon" href="img/favicons/safari-pinned-tab.svg" color="#5bbad5">
+        <link rel="shortcut icon" href="img/favicons/favicon.ico">
+        <meta name="msapplication-config" content="img/favicons/browserconfig.xml">
+        <meta name="theme-color" content="#e3e3e3">
+
+        <link rel="stylesheet" href="css/system-ui.css">
+        <link rel="stylesheet" href="css/typography.css">
+        <link rel="stylesheet" href="css/main.css">
+
+        <style>
+            :root {
+                --bg-color: #ffffff;
+                --text-color: #222;
+                --link-color: #056ca9;
+                --link-hover: #003fbb;
+                --border-color: #e0e0e0;
+                --card-bg: #f9f9f9;
+                --shadow: rgba(0, 0, 0, 0.1);
+            }
+            [data-theme="dark"] {
+                --bg-color: #1a1a1a;
+                --text-color: #e0e0e0;
+                --link-color: #4a9eff;
+                --link-hover: #6bb3ff;
+                --border-color: #333;
+                --card-bg: #2a2a2a;
+                --shadow: rgba(0, 0, 0, 0.3);
+            }
+            html {
+                scroll-behavior: smooth;
+            }
+            body {
+                background-color: var(--bg-color);
+                color: var(--text-color);
+                transition: background-color 0.3s ease, color 0.3s ease;
+            }
+            section + section {
+                margin-top: 2rem;
+            }
+            section h3 small {
+                font-size: 65%;
+            }
+            .top-nav {
+                position: sticky;
+                top: 0;
+                background-color: var(--bg-color);
+                border-bottom: 1px solid var(--border-color);
+                padding: 0.75rem 0;
+                margin-bottom: 1.5rem;
+                z-index: 100;
+                backdrop-filter: blur(10px);
+                background-color: rgba(255, 255, 255, 0.9);
+            }
+            [data-theme="dark"] .top-nav {
+                background-color: rgba(26, 26, 26, 0.9);
+            }
+            .top-nav ul {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 1.5rem;
+                list-style: none;
+                margin: 0;
+                padding: 0;
+            }
+            .top-nav a {
+                text-decoration: none;
+                color: var(--link-color);
+                font-size: 0.9em;
+                padding: 0.25rem 0.5rem;
+                border-radius: 4px;
+                transition: background-color 0.2s ease;
+            }
+            .top-nav a:hover {
+                background-color: var(--card-bg);
+                text-decoration: none;
+            }
+            .lang-switcher {
+                text-align: right;
+                margin-bottom: 1rem;
+                font-size: 0.9em;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .lang-switcher a {
+                text-decoration: none;
+            }
+            .lang-switcher span[aria-current="page"] {
+                font-weight: bold;
+                color: var(--text-color);
+            }
+            .theme-toggle {
+                background: none;
+                border: 1px solid var(--border-color);
+                color: var(--text-color);
+                padding: 0.25rem 0.5rem;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 0.85em;
+                transition: all 0.2s ease;
+            }
+            .theme-toggle:hover {
+                background-color: var(--card-bg);
+            }
+            .contacts {
+                margin-top: 1.5rem;
+            }
+            .contacts p {
+                margin-top: 0.5rem;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            }
+            .contact-icon {
+                display: inline-block;
+                width: 1.2em;
+                text-align: center;
+                font-size: 1.1em;
+            }
+            .download-btn {
+                display: inline-block;
+                margin-top: 0.5rem;
+                padding: 0.5rem 1rem;
+                background-color: var(--link-color);
+                color: white;
+                text-decoration: none;
+                border-radius: 4px;
+                font-weight: 500;
+                transition: background-color 0.2s ease;
+            }
+            .download-btn:hover {
+                background-color: var(--link-hover);
+                text-decoration: none;
+            }
+            .skills-container {
+              display: flex;
+              justify-content: space-between;
+              font-size: 0.8em;
+              gap: 2rem;
+            }
+            .column {
+              flex: 1;
+              min-width: 0;
+              text-align: left;
+            }
+            .column ul {
+                margin-top: 0.5rem;
+            }
+            .column ul ul {
+                margin-top: 0.25rem;
+                margin-left: 1rem;
+            }
+            section.experience article,
+            section.education article {
+                margin-top: 1.5rem;
+                padding: 1.5rem;
+                background-color: var(--card-bg);
+                border-radius: 8px;
+                border: 1px solid var(--border-color);
+                box-shadow: 0 2px 4px var(--shadow);
+                transition: transform 0.2s ease, box-shadow 0.2s ease;
+            }
+            section.experience article:hover,
+            section.education article:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 8px var(--shadow);
+            }
+            section.experience article:first-child,
+            section.education article:first-child {
+                margin-top: 0;
+            }
+            section.experience article header h3 {
+                margin-top: 0;
+                color: var(--link-color);
+            }
+            section.experience article p,
+            section.education article p {
+                line-height: 1.6;
+            }
+            h1, h2, h3, h4, h5, h6 {
+                color: var(--text-color);
+                font-weight: 600;
+                line-height: 1.3;
+            }
+            h2 {
+                margin-top: 2rem;
+            }
+            h3 {
+                margin-top: 1.5rem;
+                margin-bottom: 0.75rem;
+            }
+            p {
+                line-height: 1.7;
+            }
+            a {
+                color: var(--link-color);
+            }
+            a:hover {
+                color: var(--link-hover);
+            }
+            @media only screen and (max-width: 700px) {
+                .skills-container {
+                    flex-direction: column;
+                    gap: 1rem;
+                }
+                .column {
+                    width: 100%;
+                }
+                .top-nav ul {
+                    gap: 0.75rem;
+                    font-size: 0.85em;
+                }
+                section.experience article,
+                section.education article {
+                    padding: 1rem;
+                }
+            }
+            /* Scroll animations */
+            .fade-in {
+                opacity: 0;
+                transform: translateY(20px);
+                transition: opacity 0.6s ease, transform 0.6s ease;
+            }
+            .fade-in.visible {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            /* Print styles */
+            @media print {
+                .lang-switcher,
+                .top-nav,
+                .theme-toggle,
+                .download-btn,
+                .contact-icon {
+                    display: none !important;
+                }
+                body {
+                    background: white !important;
+                    color: #000 !important;
+                    max-width: 100% !important;
+                    padding: 0 !important;
+                }
+                section.experience article,
+                section.education article {
+                    background: white !important;
+                    border: 1px solid #ddd !important;
+                    box-shadow: none !important;
+                    padding: 1rem !important;
+                    margin-bottom: 1rem !important;
+                    page-break-inside: avoid;
+                }
+                section.experience article:hover,
+                section.education article:hover {
+                    transform: none !important;
+                }
+                h1, h2, h3 {
+                    color: #000 !important;
+                    page-break-after: avoid;
+                }
+                a {
+                    color: #000 !important;
+                    text-decoration: underline !important;
+                }
+                a[href^="http"]:after {
+                    content: " (" attr(href) ")";
+                    font-size: 0.8em;
+                    color: #666;
+                }
+                a[href^="mailto"]:after {
+                    content: " (" attr(href) ")";
+                    font-size: 0.8em;
+                    color: #666;
+                }
+                a[href^="#"]:after {
+                    content: "";
+                }
+                .mainpage-header {
+                    page-break-after: avoid;
+                    margin-bottom: 1rem;
+                }
+                .mainpage-header__avatar img {
+                    max-width: 80px;
+                }
+                .skills-container {
+                    page-break-inside: avoid;
+                }
+                @page {
+                    margin: 1.5cm;
+                }
+            }
+            /* Back to top button */
+            .back-to-top {
+                position: fixed;
+                bottom: 2rem;
+                right: 2rem;
+                background-color: var(--link-color);
+                color: white;
+                width: 3rem;
+                height: 3rem;
+                border-radius: 50%;
+                display: none;
+                align-items: center;
+                justify-content: center;
+                text-decoration: none;
+                font-size: 1.5rem;
+                box-shadow: 0 2px 8px var(--shadow);
+                z-index: 1000;
+                transition: all 0.3s ease;
+            }
+            .back-to-top:hover {
+                background-color: var(--link-hover);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px var(--shadow);
+            }
+            .back-to-top.visible {
+                display: flex;
+            }
+            /* Skip to main content link for accessibility */
+            .skip-link {
+                position: absolute;
+                top: -40px;
+                left: 0;
+                background: var(--link-color);
+                color: white;
+                padding: 8px;
+                text-decoration: none;
+                z-index: 100;
+            }
+            .skip-link:focus {
+                top: 0;
+            }
+        </style>
+    </head>
+
+    <body>
+
+        <nav class="lang-switcher">
+            <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+            <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.25rem;">
+                <div>
+                    <a href="ru.html" aria-label="Switch to Russian">RU</a> | <span aria-current="page">EN</span>
+                </div>
+                <div style="font-size: 0.75em; color: var(--text-color); opacity: 0.7;">
+                    Last updated: <time id="last-updated" datetime="2025-11-13">November 13, 2025</time>
+                </div>
+            </div>
+        </nav>
+
+        <nav class="top-nav">
+            <ul>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+                <li><a href="#skills">Skills</a></li>
+                <li><a href="#experience">Experience</a></li>
+                <li><a href="#education">Education</a></li>
+            </ul>
+        </nav>
+
+        <header class="mainpage-header">
+            <div class="mainpage-header__avatar"><img src="img/avatar.jpg" width="100" height="100" alt="Maksim Bizukoits" loading="lazy" /></div>
+            <h2>Maksim Bizukoits</h2>
+        </header>
+
+        <main>
+            <section id="about">
+            <h3>DevOps engineer</h3>
+            <p style="font-size: 0.75em;">I am a DevOps engineer with extensive experience in CI/CD automation (GitLab
+                CI/CD, Jenkins, Azure DevOps) and infrastructure management in cloud (AWS,
+                Azure, private clouds) and on-premises environments. Skilled in
+                containerization (Docker, Kubernetes) and deployment automation using Helm,
+                Terraform and Ansible.
+                Detail-oriented, adaptable, and always eager to learn new technologies while
+                collaborating with development teams.
+            </p>
+            </section>
+
+            <section id="contact" class="contacts">
+                <h3>Contact</h3>
+                <p><span class="contact-icon">📱</span><b>Telegram:</b> <a href="https://t.me/mb_devops" target="_blank" rel="noopener noreferrer">t.me/mb_devops</a></p>
+                <p><span class="contact-icon">✉️</span><b>Email:</b> <a href="mailto:bizukoits.maksim@gmail.com">bizukoits.maksim@gmail.com</a></p>
+                <p><span class="contact-icon">💼</span><b>LinkedIn:</b> <a href="https://www.linkedin.com/in/max-koit" target="_blank" rel="noopener noreferrer">linkedin.com/in/max-koit</a></p>
+                <p><span class="contact-icon">📄</span><b>Resume (PDF):</b> <a href="https://cv.maks-koits.site" target="_blank" rel="noopener noreferrer">cv.maks-koits.site</a></p>
+                <a href="https://cv.maks-koits.site" target="_blank" rel="noopener noreferrer" class="download-btn">📥 Download Resume</a>
+            </section>
+
+            <section id="skills" class="skills">
+                <h3>Stack and Hard Skills</h3>
+            <div class="skills-container">
+              <div class="column">
+                    <ul>
+                <li><b>Operating Systems:</b> Linux, Windows.</li>
+                <li><b>Containerization & Orchestration:</b> Docker, Docker Compose, Kubernetes (K8s), Red Hat OpenShift, Minikube, Helm, Argo CD, AWS ECS/EKS.</li>
+                <li><b>Virtualization:</b> VirtualBox, VMware, Proxmox.</li>
+                <li><b>Scripting:</b> Bash, Python, PowerShell.</li>
+                <li><b>Networking:</b> OSI model, DNS, TCP/UDP, HTTP/S, FTP, VPN, CDN, Service Mesh (Istio).</li>
+                <li><b>Web Servers:</b> Nginx, Apache, Traefik.</li>
+                <li><b>Databases:</b> PostgreSQL, MySQL, Cassandra.</li>
+                <li><b>SCM/VCS:</b> Git (GitHub, GitLab, Bitbucket).</li>
+                <li><b>CI/CD:</b> GitLab CI/CD, Jenkins, GitHub Actions, Azure DevOps, TeamCity.</li>
+                    </ul>
+              </div>
+              <div class="column">
+                    <ul>
+                <li><b>Configuration Management & IaC:</b> Terraform, Ansible.</li>
+                      <li><b>Cloud Platforms:</b>
+                        <ul>
+                <li><b>AWS:</b> EC2, IAM, S3, RDS, ECS, VPC, EKS, SNS, CloudFront, ECR, Route 53, Lambda, etc.</li>
+                <li><b>Azure:</b> VM, ACR, CDN, AKS, App Service, SQL Databases, Storage Accounts, Resource Groups, Virtual Networks, etc.</li>
+                <li><b>On-premises:</b> any VMs.</li>
+                        </ul>
+                      </li>
+                <li><b>Monitoring & Logging:</b> Prometheus, Grafana, VictoriaMetrics, Loki, Promtail, ELK/EFK, cAdvisor, Zabbix.</li>
+                <li><b>Message Brokers & Streaming Data:</b> Apache Kafka, Debezium.</li>
+                <li><b>Artifact & Image Registries/Storage:</b> Amazon ECR, Azure ACR, Nexus, MinIO, Harbor.</li>
+                    </ul>
+              </div>
+            </div>
+            </section>
+
+            <section id="experience" class="experience">
+            <h3>Experience</h3>
+                <article>
+                <header>
+                        <h3>DevOps engineer at <a href="https://Playsdev.com" target="_blank" rel="noopener noreferrer">Playsdev</a>
+                        <br/><small>November 2022 - Present</small></h3>
+                    <p>An outsourcing company specializing in providing DevOps services.</p>
+                    <p><strong>Responsibilities:</strong></p>
+                    </header>
+                <ul style="font-size: 0.8em;">
+                    Project work with third-party organizations as a DevOps engineer to implement DevOps practices and ensure smooth CI/CD processes. Development and support of cloud infrastructure.
+                    <li>Project 1. Travel application.</li>
+                    <p> Migrated test infrastructure from AWS to on-premises VMs, set up dev, test, and prod environments.
+                        Deployed and managed Kubernetes clusters on VMs, configured access via an external load balancer.
+                        Optimized Dockerfiles for Python microservices, migrated from Docker Compose to Kubernetes using Helm charts.
+                        Set up monitoring (Prometheus + VictoriaMetrics + Grafana), logging (Loki + Promtail), and alerting in Telegram.
+                        Deployed self-hosted GitLab in Kubernetes and automated CI/CD pipelines in GitLab.
+                        Administered MinIO, Harbor, PostgreSQL, Redis, Kafka, Cassandra, and Debezium CDC.
+                        Wrote infrastructure documentation.
+                    </p>
+                    <li>Project 2. Fintech.</li>
+                    <p>
+                        Developed and optimized Dockerfiles for Java and NodeJS applications.
+                        Created CI/CD pipelines in Jenkins for building, testing, and deploying applications to Nexus and OpenShift.
+                        Managed repositories in Bitbucket, Nexus, Confluence, SonarQube, and Vault.
+                        Configured, deployed, and debugged microservices in OpenShift.
+                        Set up Istio for internal traffic routing, migrated to newer service mesh versions.
+                        Configured sidecar containers for monitoring (exporters) and logging (Fluentbit).
+                        Conducted load testing with Apache JMeter, visualized results in Grafana.
+                        Wrote internal documentation and trained teams
+                    </p>
+                    <li>Project 3. Migrating infrastructure to AWS.</li>
+                    <p>
+                        Writing Ansible playbooks for deploying and configuring servers and services;
+                        Migrating infrastructure from the customer's facilities to AWS, writing Terraform to set up environments and test benches;
+                        Setting up and managing a managed Kubernetes cluster;
+                        Creating and configuring Helm charts for deploying applications to Kubernetes;
+                        Setting up Prometheus and Grafana to monitor nodes and microservice loads and alerts;
+                        Deploying and configuring EFK to collect and store logs;
+                        Setting up and configuring self-hosted GitLab;
+                        Migrating code from Github to Gitlab;
+                        Migrating and refining CI/CD from the customer's Jenkins to self-hosted Gitlab;
+                        Conducting load testing and optimizing the performance of applications running in a Kubernetes cluster;
+                        Started the transition to GitOps in the form of ArgoCD;
+                        Configuring WireGuard for developer access to test environments;
+                        Supporting the development team.
+                    </p>
+                    <li>Project 4. Group of commercial sites.</li>
+                    <p>
+                        Migrated AWS-based websites to Azure, ensuring minimal downtime.
+                        Developed CI/CD pipelines in Azure DevOps for building and deploying WordPress containers.
+                        Used Terraform to provision cloud infrastructure (CDN, storage, databases, registry).
+                        Configured Azure Monitor for performance tracking and alerting.
+                        Managed DNS, Cloudflare security settings, and optimized PHP servers for DDoS protection.
+                        Conducted performance testing and optimized cloud costs.
+                        Provided ongoing developer support.
+                    </p>
+                </ul>
+                </article>
+                <article>
+                <header>
+                        <h3>EPAM Course Student
+                        <br/><small>September 2022 - November 2022</small></h3>
+                    <p>"DevOps Fundamentals, EPAM, online".</p>
+                </header>
+                </article>
+                <article>
+                <header>
+                        <h3>System Administrator
+                        <br/><small>February 2022 - October 2022</small></h3>
+                    <p>Maintenance and support of a group of sites, rolling out releases in manual mode.</p>
+                </header>
+                </article>
+            </section>
+
+            <section id="education" class="education">
+            <h3>Education</h3>
+                <article>
+                <header>
+                    <h3>Belarusian National Technical University, Minsk
+                    <br /><small>2007—2012</small></h3>
+                </header>
+                <p>Bachelor's Degree in Mechanical Engineering and Design.</p>
+                </article>
+            </section>
+
+            <section class="other-experience">
+                <h3>Previous Experience</h3>
+                <p><small>2012—2022: Worked as a design engineer in various positions, involved in the entire
+                        cycle of product development, from customer communication and technical
+                        specification drafting to installation supervision.
+                        Performed user administration, support, and software configuration tasks.
+                  </small></p>
+            </section>
+        </main>
+        <a href="#about" class="back-to-top" id="back-to-top" aria-label="Back to top">↑</a>
+        <script>
+            // Theme toggle functionality
+            const themeToggle = document.getElementById('theme-toggle');
+            const html = document.documentElement;
+            
+            // Check for saved theme preference or default to light mode
+            const currentTheme = localStorage.getItem('theme') || 
+                (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            
+            // Apply theme
+            if (currentTheme === 'dark') {
+                html.setAttribute('data-theme', 'dark');
+                themeToggle.textContent = '☀️';
+            } else {
+                html.setAttribute('data-theme', 'light');
+                themeToggle.textContent = '🌙';
+            }
+            
+            // Toggle theme on button click
+            themeToggle.addEventListener('click', () => {
+                const currentTheme = html.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                
+                html.setAttribute('data-theme', newTheme);
+                themeToggle.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+                localStorage.setItem('theme', newTheme);
+            });
+            
+            // Listen for system theme changes
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+                if (!localStorage.getItem('theme')) {
+                    html.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+                    themeToggle.textContent = e.matches ? '☀️' : '🌙';
+                }
+            });
+            
+            // Back to top button
+            const backToTop = document.getElementById('back-to-top');
+            window.addEventListener('scroll', () => {
+                if (window.pageYOffset > 300) {
+                    backToTop.classList.add('visible');
+                } else {
+                    backToTop.classList.remove('visible');
+                }
+            });
+            
+            // Scroll animations
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, observerOptions);
+            
+            // Observe all sections
+            document.querySelectorAll('section').forEach(section => {
+                section.classList.add('fade-in');
+                observer.observe(section);
+            });
+            
+        </script>
+        <script type="application/ld+json">
+        {
+          "@context": "https://schema.org",
+          "@type": "Person",
+          "name": "Maksim Bizukoits",
+          "jobTitle": "DevOps Engineer",
+          "email": "bizukoits.maksim@gmail.com",
+          "url": "https://maks-koits.site",
+          "sameAs": [
+            "https://www.linkedin.com/in/max-koit",
+            "https://t.me/mb_devops"
+          ],
+          "knowsAbout": [
+            "DevOps",
+            "Kubernetes",
+            "AWS",
+            "Azure",
+            "CI/CD",
+            "Docker",
+            "Terraform",
+            "Ansible"
+          ],
+          "alumniOf": {
+            "@type": "EducationalOrganization",
+            "name": "Belarusian National Technical University"
+          }
+        }
+        </script>
+    </body>
+</html>

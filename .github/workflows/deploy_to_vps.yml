@@ -1,0 +1,54 @@
+name: SSH Deployment Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup SSH Agent
+      uses: webfactory/ssh-agent@v0.9.0
+      with:
+        ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY_TIMEWEB }}
+
+    - name: Add GitHub to known_hosts
+      run: |
+        ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+
+    - name: Deploy to Remote Server
+      env:
+          REMOTE_HOST: ${{ secrets.REMOTE_HOST_TIMEWEB }}
+          REMOTE_USER: ${{ secrets.REMOTE_USER_TIMEWEB }}
+          REMOTE_PORT: ${{ secrets.REMOTE_PORT_TIMEWEB }}
+          GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
+          GIT_USER: ${{ secrets.GIT_USER }}
+
+#      run: |
+#        ssh -o StrictHostKeyChecking=no -p $REMOTE_PORT $REMOTE_USER@$REMOTE_HOST \
+#        "
+#        cd /app/Maks-Koits.github.io/ && \
+#        echo "https://Maks-Koits:${GIT_TOKEN}@github.com" > /root/.git-credentials && \
+#        git config --global credential.helper 'store --file=/root/.git-credentials' && \
+#        git pull
+#        "
+
+      run: |
+        ssh -o StrictHostKeyChecking=no -p $REMOTE_PORT $REMOTE_USER@$REMOTE_HOST \
+        "
+        set -e && \
+        cd /app/Koit.VPS/monitoring && \
+        docker compose down || true && \
+        cd /app/Koit.VPS/ && \
+        docker compose down || true && \
+        git pull && \
+        docker compose up -d --build && \
+        cd /app/Koit.VPS/monitoring && \
+        docker compose up -d --build && \
+        "

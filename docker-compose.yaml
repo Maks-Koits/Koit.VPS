@@ -2,7 +2,7 @@
 services:
   nginx-proxy:
     image: nginxproxy/nginx-proxy:alpine
-    container_name: 'nginx_proxy_maks-koits-cv'
+    container_name: 'maks-koits-cv-nginx-proxy'
     volumes:
       - /app/config/html:/usr/share/nginx/html
       - /app/config/dhparam:/etc/nginx/dhparam
@@ -22,31 +22,9 @@ services:
 #      - 9100:9100
 #      - 9443:9443
 
-#  cadvisor:
-#    image: gcr.io/cadvisor/cadvisor:latest
-#    container_name: 'cadvisor'
-#    restart: always
-#    volumes:
-#      - /etc/localtime:/etc/localtime:ro
-#      - /etc/timezone:/etc/timezone:ro
-#      - /:/rootfs:ro
-#      - /var/run:/var/run:rw
-#      - /sys:/sys:ro
-#      - /var/lib/docker:/var/lib/docker:ro
-#    devices:
-#      - /dev/kmsg:/dev/kmsg
-#    environment:
-#      TZ: 'Europe/Minsk'
-#      VIRTUAL_HOST: 'cadvisor.maks-koits.cv'
-#      VIRTUAL_PORT: '8080'
-#      LETSENCRYPT_HOST: 'cadvisor.maks-koits.cv'
-#      LETSENCRYPT_EMAIL: 'mix256@gmail.com'
-#    networks:
-#      - net
-
   acme:
     image: nginxproxy/acme-companion:latest
-    container_name: 'nginx_proxy_acme_maks-koits-cv'
+    container_name: 'maks-koits-cv-nginx-proxy-acme'
     depends_on:
       - nginx-proxy
     volumes:
@@ -57,23 +35,22 @@ services:
       - /app/config/conf:/etc/nginx/conf.d
       - /var/run/docker.sock:/tmp/docker.sock:ro
       - /etc/localtime:/etc/localtime:ro
-
       - /app/config/acme:/etc/acme.sh
       - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
-      NGINX_PROXY_CONTAINER: 'nginx_proxy_maks-koits-cv'
+      NGINX_PROXY_CONTAINER: 'maks-koits-cv-nginx-proxy'
       DEFAULT_EMAIL: 'mix256@gmail.com'
     restart: always
     networks:
       - net
 
-  maks-koits-github-io-cv.maks-koit:
+  maks-koits-cv.maks-koit:
     image: nginx:stable-alpine
-    container_name: maks-koits-cv-cv
+    container_name: 'maks-koits-cv'
     depends_on:
       - nginx-proxy
     volumes:
-      - /app/Maks-Koits.github.io:/usr/share/nginx/html:ro
+      - /app/Koit.VPS/maks-koits.cv:/usr/share/nginx/html:ro
       - /etc/localtime:/etc/localtime:ro
       - /app/Koit.VPS/config_nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
     environment:
@@ -84,29 +61,9 @@ services:
     networks:
       - net
 
-#  cv.maks-koits.cv:
-#    image: nginx:stable-alpine
-#    container_name: 'cv_maks-koits-cv'
-#    depends_on:
-#      - nginx-proxy
-#    volumes:
-#      - /app/Koit.VPS/cv_config_nginx/default.conf:/etc/nginx/conf.d/default.conf
-#      - /app/Maks-Koits.github.io:/usr/share/nginx/html
-##if file      - /dev/null:/usr/share/nginx/html/.git
-##      - /usr/share/nginx/html/.git
-#      - /etc/localtime:/etc/localtime:ro
-##      - /var/log/nginx_cv:/var/log/nginx_cv
-#    environment:
-##      TZ: 'Europe/Minsk'
-#      VIRTUAL_HOST: 'cv.maks-koits.cv'
-#      LETSENCRYPT_HOST: 'cv.maks-koits.cv'
-#    restart: unless-stopped
-#    networks:
-#      - net
-
   salary.maks-koits.cv:
     image: nginx:stable-alpine
-    container_name: 'salary_maks-koits-cv'
+    container_name: 'maks-koits-cv-salary'
     depends_on:
       - nginx-proxy
     volumes:
@@ -126,7 +83,7 @@ services:
 
   portainer:
     image: portainer/portainer-ce
-    container_name: 'portainer_maks-koits-cv'
+    container_name: 'maks-koits-cv-portainer'
     depends_on:
       - nginx-proxy
     volumes:
@@ -138,6 +95,28 @@ services:
       VIRTUAL_PORT: '9000'
       LETSENCRYPT_HOST: 'portainer.maks-koits.cv'
       LETSENCRYPT_EMAIL: 'mix256@gmail.com'
+    restart: unless-stopped
+    networks:
+      - net
+
+  logoped-polina-bogdan-bot:
+    build:
+      context: ./Logoped_Polina_Bogdan_bot
+      dockerfile: Dockerfile
+    container_name: 'logoped-polina-bogdan-bot'
+    env_file:
+      - ./Logoped_Polina_Bogdan_bot/.env
+    restart: unless-stopped
+    networks:
+      - net
+
+  advice-bot:
+    build:
+      context: ./advice_bot
+      dockerfile: Dockerfile
+    container_name: 'advice-bot'
+    env_file:
+      - ./advice_bot/.env
     restart: unless-stopped
     networks:
       - net
