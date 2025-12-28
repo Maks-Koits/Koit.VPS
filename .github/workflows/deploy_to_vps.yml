@@ -32,7 +32,6 @@ jobs:
       run: |
         ssh -o StrictHostKeyChecking=no -p $REMOTE_PORT $REMOTE_USER@$REMOTE_HOST \
         "
-        set -e && \
         cd /app/Koit.VPS/monitoring && \
         docker compose down || true && \
         cd /app/Koit.VPS/ && \
