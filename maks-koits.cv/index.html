@@ -3,37 +3,42 @@
     <head>
         <meta charset="utf-8">
         <meta http-equiv="x-ua-compatible" content="ie=edge">
-        <title>Maksim Bizukoits - DevOps Engineer</title>
-        <meta name="description" content="DevOps engineer with extensive experience in CI/CD automation, cloud infrastructure, and containerization. Specialized in Kubernetes, AWS, Azure, and automation tools.">
+        <title>Maksim Bizukoits - DevOps/SRE Engineer</title>
+        <meta name="description" content="DevOps/SRE engineer with 3+ years of expertise in CI/CD automation, infrastructure management, and cloud migrations across AWS, Azure, and on-premises environments.">
         <meta name="keywords" content="DevOps, Kubernetes, AWS, Azure, CI/CD, Docker, Terraform, Ansible, Infrastructure">
         <meta name="author" content="Maksim Bizukoits">
         
         <!-- Open Graph / Facebook -->
         <meta property="og:type" content="website">
-        <meta property="og:url" content="https://maks-koits.site/">
-        <meta property="og:title" content="Maksim Bizukoits - DevOps Engineer">
-        <meta property="og:description" content="DevOps engineer with extensive experience in CI/CD automation, cloud infrastructure, and containerization.">
+        <meta property="og:url" content="https://maks-koits.cv/">
+        <meta property="og:title" content="Maksim Bizukoits - DevOps/SRE Engineer">
+        <meta property="og:description" content="DevOps/SRE engineer with 3+ years of expertise in CI/CD automation, infrastructure management, and cloud migrations across AWS, Azure, and on-premises environments.">
+        <meta property="og:image" content="https://maks-koits.cv/img/avatar.jpg?v=20250125">
+        <meta property="og:image:width" content="100">
+        <meta property="og:image:height" content="100">
+        <meta property="og:image:type" content="image/jpeg">
         
         <!-- Twitter -->
         <meta property="twitter:card" content="summary">
-        <meta property="twitter:url" content="https://maks-koits.site/">
-        <meta property="twitter:title" content="Maksim Bizukoits - DevOps Engineer">
-        <meta property="twitter:description" content="DevOps engineer with extensive experience in CI/CD automation, cloud infrastructure, and containerization.">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="canonical" href="https://maks-koits.site/" />
-        <link rel="alternate" hreflang="ru" href="https://maks-koits.site/ru.html" />
-        <link rel="alternate" hreflang="en" href="https://maks-koits.site/" />
+        <meta property="twitter:url" content="https://maks-koits.cv/">
+        <meta property="twitter:title" content="Maksim Bizukoits - DevOps/SRE Engineer">
+        <meta property="twitter:description" content="DevOps/SRE engineer with 3+ years of expertise in CI/CD automation, infrastructure management, and cloud migrations across AWS, Azure, and on-premises environments.">
+        <meta property="twitter:image" content="https://maks-koits.cv/img/avatar.jpg?v=20250125">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes, viewport-fit=cover">
+        <link rel="canonical" href="https://maks-koits.cv/" />
+        <link rel="alternate" hreflang="ru" href="https://maks-koits.cv/ru.html" />
+        <link rel="alternate" hreflang="en" href="https://maks-koits.cv/" />
 
         <link rel="prefetch" href="css/system-ui.css" as="style" />
         <link rel="prefetch" href="css/typography.css" as="style" />
         <link rel="preload" href="css/main.css" as="style" />
 
         <!-- Place favicon.ico in the root directory -->
-        <link rel="apple-touch-icon" sizes="180x180" href="img/favicons/apple-touch-icon.png">
-        <link rel="icon" type="image/png" sizes="32x32" href="img/favicons/favicon-32x32.png">
-        <link rel="icon" type="image/png" sizes="16x16" href="img/favicons/favicon-16x16.png">
-        <link rel="mask-icon" href="img/favicons/safari-pinned-tab.svg" color="#5bbad5">
-        <link rel="shortcut icon" href="img/favicons/favicon.ico">
+        <link rel="apple-touch-icon" sizes="180x180" href="img/favicons/apple-touch-icon.png?v=20250125">
+        <link rel="icon" type="image/png" sizes="32x32" href="img/favicons/favicon-32x32.png?v=20250125">
+        <link rel="icon" type="image/png" sizes="16x16" href="img/favicons/favicon-16x16.png?v=20250125">
+        <link rel="shortcut icon" href="img/favicons/favicon.ico?v=20250125">
+        <link rel="manifest" href="img/favicons/site.webmanifest?v=20250125">
         <meta name="msapplication-config" content="img/favicons/browserconfig.xml">
         <meta name="theme-color" content="#e3e3e3">
 
@@ -62,11 +67,16 @@
             }
             html {
                 scroll-behavior: smooth;
+                -webkit-text-size-adjust: 100%;
+                -webkit-tap-highlight-color: transparent;
             }
             body {
                 background-color: var(--bg-color);
                 color: var(--text-color);
                 transition: background-color 0.3s ease, color 0.3s ease;
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
+                overflow-x: hidden;
             }
             section + section {
                 margin-top: 2rem;
@@ -83,6 +93,7 @@
                 margin-bottom: 1.5rem;
                 z-index: 100;
                 backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px);
                 background-color: rgba(255, 255, 255, 0.9);
             }
             [data-theme="dark"] .top-nav {
@@ -145,6 +156,7 @@
                 display: flex;
                 align-items: center;
                 gap: 0.5rem;
+                word-break: break-word;
             }
             .contact-icon {
                 display: inline-block;
@@ -213,7 +225,7 @@
                 line-height: 1.6;
             }
             h1, h2, h3, h4, h5, h6 {
-                color: var(--text-color);
+                color: var(--link-color);
                 font-weight: 600;
                 line-height: 1.3;
             }
@@ -233,21 +245,186 @@
             a:hover {
                 color: var(--link-hover);
             }
+            /* Mobile optimizations for Safari */
+            @supports (-webkit-touch-callout: none) {
+                /* Safari-specific styles */
+                body {
+                    -webkit-font-smoothing: antialiased;
+                    -webkit-tap-highlight-color: transparent;
+                }
+                .top-nav a,
+                .download-btn,
+                .theme-toggle {
+                    -webkit-tap-highlight-color: rgba(0, 0, 0, 0.1);
+                }
+            }
+            
+            /* Mobile styles */
             @media only screen and (max-width: 700px) {
+                body {
+                    font-size: 16px; /* Prevent iOS zoom on input focus */
+                    padding: 0.5rem;
+                }
+                
+                .mainpage-header {
+                    margin-bottom: 1rem;
+                }
+                
+                .mainpage-header__avatar img {
+                    width: 80px;
+                    height: 80px;
+                }
+                
+                h2 {
+                    font-size: 1.5rem;
+                    margin-top: 1rem;
+                }
+                
+                h3 {
+                    font-size: 1.2rem;
+                    margin-top: 1rem;
+                    margin-bottom: 0.5rem;
+                }
+                
+                .lang-switcher {
+                    font-size: 0.85em;
+                    padding: 0.5rem 0;
+                    margin-bottom: 0.75rem;
+                }
+                
+                .top-nav {
+                    padding: 0.5rem 0;
+                    margin-bottom: 1rem;
+                    position: -webkit-sticky; /* Safari support */
+                    position: sticky;
+                }
+                
+                .top-nav ul {
+                    gap: 0.5rem;
+                    font-size: 0.8em;
+                    padding: 0 0.5rem;
+                }
+                
+                .top-nav a {
+                    padding: 0.4rem 0.6rem;
+                    font-size: 0.85em;
+                    min-height: 44px; /* iOS touch target */
+                    display: inline-flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+                
+                .theme-toggle {
+                    min-width: 44px;
+                    min-height: 44px;
+                    padding: 0.4rem 0.6rem;
+                }
+                
                 .skills-container {
                     flex-direction: column;
                     gap: 1rem;
                 }
+                
                 .column {
                     width: 100%;
                 }
-                .top-nav ul {
-                    gap: 0.75rem;
-                    font-size: 0.85em;
+                
+                .column ul {
+                    font-size: 0.9em;
+                    padding-left: 1.2rem;
                 }
+                
+                section {
+                    margin-top: 1.5rem;
+                }
+                
                 section.experience article,
                 section.education article {
                     padding: 1rem;
+                    margin-top: 1rem;
+                }
+                
+                section.experience article p,
+                section.education article p {
+                    font-size: 0.9em;
+                    line-height: 1.6;
+                }
+                
+                .contacts p {
+                    font-size: 0.9em;
+                    flex-wrap: wrap;
+                }
+                
+                .download-btn {
+                    width: auto;
+                    max-width: 100%;
+                    display: inline-block;
+                    text-align: center;
+                    padding: 0.75rem 1.5rem;
+                    min-height: 44px;
+                    font-size: 0.9em;
+                }
+                
+                .back-to-top {
+                    width: 2.5rem;
+                    height: 2.5rem;
+                    bottom: 1.5rem;
+                    right: 1rem;
+                    font-size: 1.2rem;
+                }
+                
+                p {
+                    font-size: 0.95em;
+                    line-height: 1.7;
+                }
+                
+                #about p {
+                    font-size: 0.85em;
+                }
+            }
+            
+            /* Small mobile devices */
+            @media only screen and (max-width: 480px) {
+                body {
+                    padding: 0.25rem;
+                }
+                
+                h2 {
+                    font-size: 1.3rem;
+                }
+                
+                h3 {
+                    font-size: 1.1rem;
+                }
+                
+                .top-nav ul {
+                    gap: 0.25rem;
+                    font-size: 0.75em;
+                }
+                
+                .top-nav a {
+                    padding: 0.3rem 0.5rem;
+                    font-size: 0.8em;
+                }
+                
+                section.experience article,
+                section.education article {
+                    padding: 0.75rem;
+                }
+                
+                .column ul {
+                    font-size: 0.85em;
+                }
+            }
+            
+            /* Landscape orientation on mobile */
+            @media only screen and (max-width: 700px) and (orientation: landscape) {
+                .top-nav {
+                    padding: 0.4rem 0;
+                }
+                
+                .top-nav ul {
+                    gap: 0.75rem;
                 }
             }
             /* Scroll animations */
@@ -376,7 +553,7 @@
                     <a href="ru.html" aria-label="Switch to Russian">RU</a> | <span aria-current="page">EN</span>
                 </div>
                 <div style="font-size: 0.75em; color: var(--text-color); opacity: 0.7;">
-                    Last updated: <time id="last-updated" datetime="2025-11-13">November 13, 2025</time>
+                    Last updated: <time id="last-updated" datetime="2025-11-25">November 25, 2025</time>
                 </div>
             </div>
         </nav>
@@ -388,25 +565,20 @@
                 <li><a href="#skills">Skills</a></li>
                 <li><a href="#experience">Experience</a></li>
                 <li><a href="#education">Education</a></li>
+                <li><a href="#languages">Languages</a></li>
+                <li><a href="#interests">Interests</a></li>
             </ul>
         </nav>
 
         <header class="mainpage-header">
-            <div class="mainpage-header__avatar"><img src="img/avatar.jpg" width="100" height="100" alt="Maksim Bizukoits" loading="lazy" /></div>
+            <div class="mainpage-header__avatar"><img src="img/avatar.jpg?v=20250125" width="100" height="100" alt="Maksim Bizukoits" loading="lazy" /></div>
             <h2>Maksim Bizukoits</h2>
         </header>
 
         <main>
             <section id="about">
-            <h3>DevOps engineer</h3>
-            <p style="font-size: 0.75em;">I am a DevOps engineer with extensive experience in CI/CD automation (GitLab
-                CI/CD, Jenkins, Azure DevOps) and infrastructure management in cloud (AWS,
-                Azure, private clouds) and on-premises environments. Skilled in
-                containerization (Docker, Kubernetes) and deployment automation using Helm,
-                Terraform and Ansible.
-                Detail-oriented, adaptable, and always eager to learn new technologies while
-                collaborating with development teams.
-            </p>
+            <h3>DevOps/SRE engineer</h3>
+            <p style="font-size: 0.75em;">DevOps/SRE engineer with 3+ years of expertise in CI/CD automation, infrastructure management, and cloud migrations across AWS, Azure, and on-premises environments. Proficient in Kubernetes orchestration, containerization, Infrastructure as Code (Terraform, Ansible), and observability stack implementation. Successfully migrated infrastructure between cloud providers, optimized system performance, and reduced operational costs. Strong collaborator with development teams, focused on automation, reliability, and continuous improvement.</p>
             </section>
 
             <section id="contact" class="contacts">
@@ -414,8 +586,8 @@
                 <p><span class="contact-icon">📱</span><b>Telegram:</b> <a href="https://t.me/mb_devops" target="_blank" rel="noopener noreferrer">t.me/mb_devops</a></p>
                 <p><span class="contact-icon">✉️</span><b>Email:</b> <a href="mailto:bizukoits.maksim@gmail.com">bizukoits.maksim@gmail.com</a></p>
                 <p><span class="contact-icon">💼</span><b>LinkedIn:</b> <a href="https://www.linkedin.com/in/max-koit" target="_blank" rel="noopener noreferrer">linkedin.com/in/max-koit</a></p>
-                <p><span class="contact-icon">📄</span><b>Resume (PDF):</b> <a href="https://cv.maks-koits.site" target="_blank" rel="noopener noreferrer">cv.maks-koits.site</a></p>
-                <a href="https://cv.maks-koits.site" target="_blank" rel="noopener noreferrer" class="download-btn">📥 Download Resume</a>
+                <p><span class="contact-icon">📄</span><b>Resume (PDF):</b> <a href="https://cv.maks-koits.cv" target="_blank" rel="noopener noreferrer">cv.maks-koits.cv</a></p>
+                <a href="https://cv.maks-koits.cv" target="_blank" rel="noopener noreferrer" class="download-btn">📥 Download Resume</a>
             </section>
 
             <section id="skills" class="skills">
@@ -423,30 +595,30 @@
             <div class="skills-container">
               <div class="column">
                     <ul>
-                <li><b>Operating Systems:</b> Linux, Windows.</li>
-                <li><b>Containerization & Orchestration:</b> Docker, Docker Compose, Kubernetes (K8s), Red Hat OpenShift, Minikube, Helm, Argo CD, AWS ECS/EKS.</li>
-                <li><b>Virtualization:</b> VirtualBox, VMware, Proxmox.</li>
-                <li><b>Scripting:</b> Bash, Python, PowerShell.</li>
-                <li><b>Networking:</b> OSI model, DNS, TCP/UDP, HTTP/S, FTP, VPN, CDN, Service Mesh (Istio).</li>
-                <li><b>Web Servers:</b> Nginx, Apache, Traefik.</li>
-                <li><b>Databases:</b> PostgreSQL, MySQL, Cassandra.</li>
-                <li><b>SCM/VCS:</b> Git (GitHub, GitLab, Bitbucket).</li>
-                <li><b>CI/CD:</b> GitLab CI/CD, Jenkins, GitHub Actions, Azure DevOps, TeamCity.</li>
+                <li><b>Operating Systems:</b> Linux, Windows</li>
+                <li><b>Containerization & Orchestration:</b> Docker, Docker Compose, Kubernetes (K8s), Red Hat OpenShift (+Istio service mesh), Minikube (local testing), Helm, Argo CD, AWS ECS/EKS</li>
+                <li><b>Virtualization:</b> VirtualBox, VMware, Proxmox</li>
+                <li><b>Scripting & Programming:</b> Bash, Python</li>
+                <li><b>Networking:</b> OSI model, DNS, TCP/UDP, HTTP/S, FTP, VPN (WireGuard, OpenVPN), CDN, Service Mesh (Istio)</li>
+                <li><b>Web/proxy servers:</b> Nginx, Apache, Traefik, PHP-FPM</li>
+                <li><b>Databases:</b> PostgreSQL, MySQL, Cassandra, Redis</li>
+                <li><b>SCM/VCS:</b> Git (GitHub, GitLab, Bitbucket)</li>
+                <li><b>CI/CD:</b> GitLab CI/CD, Jenkins, GitHub Actions, Azure DevOps, TeamCity</li>
                     </ul>
               </div>
               <div class="column">
                     <ul>
-                <li><b>Configuration Management & IaC:</b> Terraform, Ansible.</li>
+                <li><b>Configuration Management & IaC:</b> Terraform, Ansible</li>
                       <li><b>Cloud Platforms:</b>
                         <ul>
                 <li><b>AWS:</b> EC2, IAM, S3, RDS, ECS, VPC, EKS, SNS, CloudFront, ECR, Route 53, Lambda, etc.</li>
                 <li><b>Azure:</b> VM, ACR, CDN, AKS, App Service, SQL Databases, Storage Accounts, Resource Groups, Virtual Networks, etc.</li>
-                <li><b>On-premises:</b> any VMs.</li>
+                <li><b>On-premises:</b> any VMs</li>
                         </ul>
                       </li>
-                <li><b>Monitoring & Logging:</b> Prometheus, Grafana, VictoriaMetrics, Loki, Promtail, ELK/EFK, cAdvisor, Zabbix.</li>
-                <li><b>Message Brokers & Streaming Data:</b> Apache Kafka, Debezium.</li>
-                <li><b>Artifact & Image Registries/Storage:</b> Amazon ECR, Azure ACR, Nexus, MinIO, Harbor.</li>
+                <li><b>Observability:</b> Prometheus, Grafana, VictoriaMetrics, Loki, Promtail, ELK/EFK, cAdvisor, Jaeger, Sentry</li>
+                <li><b>Message Brokers & Streaming Data:</b> Apache Kafka + Debezium, RabbitMQ</li>
+                <li><b>Artifact & Image Registries / Storage:</b> Amazon ECR, Azure ACR, Nexus, MinIO, Harbor, Docker Hub</li>
                     </ul>
               </div>
             </div>
@@ -456,73 +628,64 @@
             <h3>Experience</h3>
                 <article>
                 <header>
-                        <h3>DevOps engineer at <a href="https://Playsdev.com" target="_blank" rel="noopener noreferrer">Playsdev</a>
+                        <h3>DevOps/SRE Engineer at <a href="https://Playsdev.com" target="_blank" rel="noopener noreferrer">Playsdev</a>
                         <br/><small>November 2022 - Present</small></h3>
                     <p>An outsourcing company specializing in providing DevOps services.</p>
-                    <p><strong>Responsibilities:</strong></p>
                     </header>
-                <ul style="font-size: 0.8em;">
-                    Project work with third-party organizations as a DevOps engineer to implement DevOps practices and ensure smooth CI/CD processes. Development and support of cloud infrastructure.
-                    <li>Project 1. Travel application.</li>
-                    <p> Migrated test infrastructure from AWS to on-premises VMs, set up dev, test, and prod environments.
-                        Deployed and managed Kubernetes clusters on VMs, configured access via an external load balancer.
-                        Optimized Dockerfiles for Python microservices, migrated from Docker Compose to Kubernetes using Helm charts.
-                        Set up monitoring (Prometheus + VictoriaMetrics + Grafana), logging (Loki + Promtail), and alerting in Telegram.
-                        Deployed self-hosted GitLab in Kubernetes and automated CI/CD pipelines in GitLab.
-                        Administered MinIO, Harbor, PostgreSQL, Redis, Kafka, Cassandra, and Debezium CDC.
-                        Wrote infrastructure documentation.
-                    </p>
-                    <li>Project 2. Fintech.</li>
-                    <p>
-                        Developed and optimized Dockerfiles for Java and NodeJS applications.
-                        Created CI/CD pipelines in Jenkins for building, testing, and deploying applications to Nexus and OpenShift.
-                        Managed repositories in Bitbucket, Nexus, Confluence, SonarQube, and Vault.
-                        Configured, deployed, and debugged microservices in OpenShift.
-                        Set up Istio for internal traffic routing, migrated to newer service mesh versions.
-                        Configured sidecar containers for monitoring (exporters) and logging (Fluentbit).
-                        Conducted load testing with Apache JMeter, visualized results in Grafana.
-                        Wrote internal documentation and trained teams
-                    </p>
-                    <li>Project 3. Migrating infrastructure to AWS.</li>
-                    <p>
-                        Writing Ansible playbooks for deploying and configuring servers and services;
-                        Migrating infrastructure from the customer's facilities to AWS, writing Terraform to set up environments and test benches;
-                        Setting up and managing a managed Kubernetes cluster;
-                        Creating and configuring Helm charts for deploying applications to Kubernetes;
-                        Setting up Prometheus and Grafana to monitor nodes and microservice loads and alerts;
-                        Deploying and configuring EFK to collect and store logs;
-                        Setting up and configuring self-hosted GitLab;
-                        Migrating code from Github to Gitlab;
-                        Migrating and refining CI/CD from the customer's Jenkins to self-hosted Gitlab;
-                        Conducting load testing and optimizing the performance of applications running in a Kubernetes cluster;
-                        Started the transition to GitOps in the form of ArgoCD;
-                        Configuring WireGuard for developer access to test environments;
-                        Supporting the development team.
-                    </p>
-                    <li>Project 4. Group of commercial sites.</li>
-                    <p>
-                        Migrated AWS-based websites to Azure, ensuring minimal downtime.
-                        Developed CI/CD pipelines in Azure DevOps for building and deploying WordPress containers.
-                        Used Terraform to provision cloud infrastructure (CDN, storage, databases, registry).
-                        Configured Azure Monitor for performance tracking and alerting.
-                        Managed DNS, Cloudflare security settings, and optimized PHP servers for DDoS protection.
-                        Conducted performance testing and optimized cloud costs.
-                        Provided ongoing developer support.
-                    </p>
-                </ul>
-                </article>
-                <article>
-                <header>
-                        <h3>EPAM Course Student
-                        <br/><small>September 2022 - November 2022</small></h3>
-                    <p>"DevOps Fundamentals, EPAM, online".</p>
-                </header>
+                    <p style="font-size: 0.8em; margin-top: 1rem;"><strong>Non-project Activities:</strong></p>
+                    <p style="font-size: 0.8em;">Conducted screening interviews for internship positions, conducted internal interviews, candidate selection, mentoring and assisting in training interns.</p>
+                    
+                    <p style="font-size: 0.8em; margin-top: 1rem;"><strong>Project 0. SRE Engineer, Insurance Company.</strong></p>
+                    <p style="font-size: 0.8em;">Performed the role of CI/CD engineer, responsible for application deployment, CI/CD pipeline maintenance, monitoring and logging infrastructure. Identified system bottlenecks and performance issues, optimized Java applications (JVM tuning, memory optimization), and provided technical support to development teams. Handled incident tickets and conducted root cause analysis for issues from both system and business perspectives. Maintained high availability and reliability of production systems.</p>
+                    
+                    <p style="font-size: 0.8em; margin-top: 1rem;"><strong>Project 1. DevOps Engineer, Mobile Travel Application.</strong></p>
+                    <p style="font-size: 0.8em;">Migrated test infrastructure from AWS to on-premises VMs, set up dev, test, and production environments with zero downtime.<br/>
+                    Deployed and managed Kubernetes cluster on VMs, configured access via an external load balancer with high availability.<br/>
+                    Optimized Dockerfiles for Python microservices (reduced image size by ~30%), migrated from Docker Compose to Kubernetes using Helm charts.<br/>
+                    Set up comprehensive monitoring stack (Prometheus + VictoriaMetrics + Grafana), logging (Loki + Promtail + ELK), and alerting via Telegram.<br/>
+                    Deployed self-hosted GitLab in Kubernetes and automated CI/CD pipelines in GitLab, reducing deployment time significantly through library and dependency caching.<br/>
+                    Deployed and administered MinIO, Harbor, PostgreSQL, Redis, Kafka, Cassandra, Debezium CDC, Jaeger, Sentry, and EFK stack.<br/>
+                    Wrote comprehensive infrastructure documentation and runbooks for team knowledge sharing.</p>
+                    
+                    <p style="font-size: 0.8em; margin-top: 1rem;"><strong>Project 2. DevOps Engineer, Fintech.</strong></p>
+                    <p style="font-size: 0.8em;">Developed and optimized Dockerfiles for Java and Node.js applications, implementing multi-stage builds and best practices.<br/>
+                    Created and maintained CI/CD pipelines in Jenkins for building, testing, and deploying applications to Nexus and OpenShift.<br/>
+                    Managed repositories in Bitbucket, Nexus, Confluence, SonarQube, and HashiCorp Vault for secrets management.<br/>
+                    Configured, deployed, and debugged microservices in OpenShift, ensuring scalability and reliability.<br/>
+                    Set up Istio service mesh for internal traffic routing, migrated to newer service mesh versions with zero downtime.<br/>
+                    Configured sidecar containers for monitoring (Prometheus exporters) and logging (Fluent Bit).<br/>
+                    Conducted load testing with Apache JMeter, visualized results in Grafana, and provided performance recommendations.<br/>
+                    Wrote internal documentation and conducted team training sessions on DevOps practices and tools.</p>
+                    
+                    <p style="font-size: 0.8em; margin-top: 1rem;"><strong>Project 3. DevOps Engineer, Infrastructure Migration to AWS.</strong></p>
+                    <p style="font-size: 0.8em;">Wrote Ansible playbooks for deploying and configuring servers and services.<br/>
+                    Migrated infrastructure from the customer's facilities to AWS, wrote Terraform code to set up environments and test benches.<br/>
+                    Set up and managed a managed Kubernetes cluster (EKS).<br/>
+                    Created and configured Helm charts for deploying applications to Kubernetes.<br/>
+                    Set up Prometheus and Grafana to monitor nodes and microservice loads and alerts.<br/>
+                    Deployed and configured EFK stack to collect and store logs.<br/>
+                    Set up and configured self-hosted GitLab.<br/>
+                    Migrated code from GitHub to GitLab.<br/>
+                    Migrated and refined CI/CD pipelines from the customer's Jenkins to self-hosted GitLab.<br/>
+                    Conducted load testing and optimized the performance of applications running in a Kubernetes cluster.<br/>
+                    Initiated the transition to GitOps using ArgoCD.<br/>
+                    Configured WireGuard VPN for developer access to test environments.<br/>
+                    Provided ongoing support to the development team.</p>
+                    
+                    <p style="font-size: 0.8em; margin-top: 1rem;"><strong>Project 4. DevOps Engineer, Group of Commercial Websites.</strong></p>
+                    <p style="font-size: 0.8em;">Migrated AWS-based websites to Azure, ensuring minimal downtime during migration.<br/>
+                    Developed CI/CD pipelines in Azure DevOps for building and deploying WordPress containers with automated testing.<br/>
+                    Used Terraform to provision and manage cloud infrastructure (CDN, storage, databases, container registry) as code.<br/>
+                    Configured Azure Monitor for performance tracking and alerting, reducing incident response time.<br/>
+                    Managed DNS, Cloudflare security settings (WAF rules, DDoS protection), and optimized PHP servers for performance and DDoS protection.<br/>
+                    Conducted performance testing and optimized cloud costs, achieving ~30% cost reduction.<br/>
+                    Provided ongoing developer support and troubleshooting, maintaining 99.9% uptime SLA.</p>
                 </article>
                 <article>
                 <header>
                         <h3>System Administrator
                         <br/><small>February 2022 - October 2022</small></h3>
-                    <p>Maintenance and support of a group of sites, rolling out releases in manual mode.</p>
+                    <p style="font-size: 0.8em;">Maintained and supported a group of websites, performed manual release deployments and server administration.</p>
                 </header>
                 </article>
             </section>
@@ -539,12 +702,36 @@
             </section>
 
             <section class="other-experience">
-                <h3>Previous Experience</h3>
-                <p><small>2012—2022: Worked as a design engineer in various positions, involved in the entire
-                        cycle of product development, from customer communication and technical
-                        specification drafting to installation supervision.
-                        Performed user administration, support, and software configuration tasks.
-                  </small></p>
+                <h3>Additional Experience & Education</h3>
+                <article>
+                <header>
+                        <h3>Certifications & Training
+                        <br/><small>September 2022 - November 2022</small></h3>
+                    <p style="font-size: 0.8em;"><strong>DevOps Fundamentals | EPAM Online Courses</strong><br/>
+                    Organized and refreshed DevOps knowledge, covering CI/CD, containerization, and cloud technologies.</p>
+                </header>
+                </article>
+                <article>
+                <header>
+                        <h3>Previous Experience
+                        <br/><small>August 2012 – July 2021</small></h3>
+                    <p style="font-size: 0.8em;">Worked as a design engineer, involved in the entire product development cycle from customer communication and technical specification drafting to installation supervision. Performed user administration, support, and software configuration tasks.</p>
+                </header>
+                </article>
+            </section>
+            
+            <section id="languages">
+                <h3>Languages</h3>
+                <ul>
+                    <li><b>Russian</b> - Native</li>
+                    <li><b>German</b> - Basic</li>
+                    <li><b>English</b> - Intermediate</li>
+                </ul>
+            </section>
+            
+            <section id="interests">
+                <h3>Interests</h3>
+                <p>Gym, reading, kayaking, planning to take up moto gymkhana and moto touring.</p>
             </section>
         </main>
         <a href="#about" class="back-to-top" id="back-to-top" aria-label="Back to top">↑</a>
@@ -620,9 +807,9 @@
           "@context": "https://schema.org",
           "@type": "Person",
           "name": "Maksim Bizukoits",
-          "jobTitle": "DevOps Engineer",
+          "jobTitle": "DevOps/SRE Engineer",
           "email": "bizukoits.maksim@gmail.com",
-          "url": "https://maks-koits.site",
+          "url": "https://maks-koits.cv",
           "sameAs": [
             "https://www.linkedin.com/in/max-koit",
             "https://t.me/mb_devops"
