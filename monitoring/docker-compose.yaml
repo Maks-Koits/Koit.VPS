@@ -1,5 +1,4 @@
 ---
-version: "3.9"
 services:
   prometheus:
     image: prom/prometheus:latest
@@ -18,7 +17,7 @@ services:
     ports:
       - '9090:9090'
     environment:
-      TZ: "Europe/Minsk"
+      - TZ=Europe/Minsk
     restart: unless-stopped
     networks:
       - monitoring
@@ -89,6 +88,9 @@ services:
 networks:
   monitoring:
 #    driver: host
+  net:
+    name: net
+    external: true
 
 volumes:
     prometheus_data:
