@@ -119,7 +119,13 @@ STATS_TEMPLATE = """
             font-size: 14px;
         }
         .refresh-btn:hover { background: #2980b9; }
+        #map { height: 500px; width: 100%; border-radius: 8px; margin: 20px 0; }
+        .map-container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .ip-info { font-size: 12px; color: #666; }
+        .ip-info strong { color: #333; }
     </style>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </head>
 <body>
     <div class="container">
@@ -143,6 +149,38 @@ STATS_TEMPLATE = """
                 <div class="value">{{ countries_count }}</div>
             </div>
         </div>
+
+        <h2 style="margin: 30px 0 20px 0;">🗺️ Карта посещений</h2>
+        <div class="map-container">
+            <div id="map"></div>
+        </div>
+        <script>
+            var map = L.map('map').setView([20, 0], 2);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+            
+            var markers = [];
+            {% for visit in recent_visits %}
+            {% if visit.latitude and visit.longitude %}
+            var marker = L.marker([{{ visit.latitude }}, {{ visit.longitude }}]).addTo(map);
+            marker.bindPopup(`
+                <strong>IP:</strong> {{ visit.ip }}<br>
+                <strong>Страна:</strong> {{ visit.country }}<br>
+                <strong>Город:</strong> {{ visit.city or 'N/A' }}<br>
+                <strong>Регион:</strong> {{ visit.region or 'N/A' }}<br>
+                <strong>Провайдер:</strong> {{ visit.isp or 'N/A' }}<br>
+                <strong>Время:</strong> {{ visit.timestamp }}
+            `);
+            markers.push(marker);
+            {% endif %}
+            {% endfor %}
+            
+            if (markers.length > 0) {
+                var group = new L.featureGroup(markers);
+                map.fitBounds(group.getBounds().pad(0.1));
+            }
+        </script>
 
         <h2 style="margin: 30px 0 20px 0;">🌍 Посещения по странам</h2>
         <table>
@@ -192,19 +230,42 @@ STATS_TEMPLATE = """
                 <tr>
                     <th>Время</th>
                     <th>IP адрес</th>
-                    <th>Страна</th>
+                    <th>Местоположение</th>
+                    <th>Провайдер</th>
                     <th>Страница</th>
-                    <th>User Agent</th>
                 </tr>
             </thead>
             <tbody>
                 {% for visit in recent_visits %}
                 <tr>
                     <td>{{ visit.timestamp }}</td>
-                    <td>{{ visit.ip }}</td>
-                    <td>{{ visit.country }}</td>
+                    <td>
+                        <strong>{{ visit.ip }}</strong>
+                        {% if visit.asn %}
+                        <br><span class="ip-info">AS{{ visit.asn }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <strong>{{ visit.country }}</strong>
+                        {% if visit.region %}
+                        <br><span class="ip-info">{{ visit.region }}</span>
+                        {% endif %}
+                        {% if visit.city %}
+                        <br><span class="ip-info">{{ visit.city }}</span>
+                        {% endif %}
+                        {% if visit.latitude and visit.longitude %}
+                        <br><span class="ip-info">📍 {{ "%.4f"|format(visit.latitude) }}, {{ "%.4f"|format(visit.longitude) }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if visit.isp %}
+                        <strong>{{ visit.isp }}</strong>
+                        {% endif %}
+                        {% if visit.org and visit.org != visit.isp %}
+                        <br><span class="ip-info">{{ visit.org }}</span>
+                        {% endif %}
+                    </td>
                     <td>{{ visit.path }}</td>
-                    <td style="font-size: 12px; max-width: 300px; overflow: hidden; text-overflow: ellipsis;">{{ visit.user_agent }}</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -247,7 +308,14 @@ def init_db():
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 ip_address TEXT NOT NULL,
                 country TEXT,
+                country_code TEXT,
+                region TEXT,
                 city TEXT,
+                latitude REAL,
+                longitude REAL,
+                isp TEXT,
+                org TEXT,
+                asn TEXT,
                 path TEXT NOT NULL,
                 referer TEXT,
                 user_agent TEXT,
@@ -258,6 +326,36 @@ def init_db():
                 timezone TEXT
             )
         ''')
+        
+        # Добавляем новые колонки если их нет (для существующих БД)
+        try:
+            cursor.execute('ALTER TABLE visits ADD COLUMN country_code TEXT')
+        except:
+            pass
+        try:
+            cursor.execute('ALTER TABLE visits ADD COLUMN region TEXT')
+        except:
+            pass
+        try:
+            cursor.execute('ALTER TABLE visits ADD COLUMN latitude REAL')
+        except:
+            pass
+        try:
+            cursor.execute('ALTER TABLE visits ADD COLUMN longitude REAL')
+        except:
+            pass
+        try:
+            cursor.execute('ALTER TABLE visits ADD COLUMN isp TEXT')
+        except:
+            pass
+        try:
+            cursor.execute('ALTER TABLE visits ADD COLUMN org TEXT')
+        except:
+            pass
+        try:
+            cursor.execute('ALTER TABLE visits ADD COLUMN asn TEXT')
+        except:
+            pass
         
         # Индексы для быстрого поиска
         cursor.execute('CREATE INDEX IF NOT EXISTS idx_ip ON visits(ip_address)')
@@ -280,28 +378,63 @@ def get_db():
     return conn
 
 
-def get_country_by_ip(ip_address):
+def get_geo_info_by_ip(ip_address):
     """
-    Определение страны по IP адресу
+    Определение геолокации и информации об IP адресе
     Использует бесплатный API ip-api.com (без регистрации, до 45 запросов/минуту)
-    Для production лучше использовать GeoIP2 или платный сервис
+    Возвращает словарь с полной информацией: страна, город, координаты, провайдер и т.д.
     """
     try:
         # Пропускаем локальные IP
         ip = ipaddress.ip_address(ip_address)
         if ip.is_private or ip.is_loopback or ip.is_link_local:
-            return "Local", None
+            return {
+                'country': 'Local',
+                'country_code': None,
+                'region': None,
+                'city': None,
+                'latitude': None,
+                'longitude': None,
+                'isp': None,
+                'org': None,
+                'asn': None
+            }
         
         import requests
-        response = requests.get(f'http://ip-api.com/json/{ip_address}?fields=status,country,countryCode,city', timeout=2)
+        # Запрашиваем полную информацию об IP
+        response = requests.get(
+            f'http://ip-api.com/json/{ip_address}?fields=status,country,countryCode,regionName,city,lat,lon,isp,org,as,query',
+            timeout=3
+        )
+        
         if response.status_code == 200:
             data = response.json()
             if data.get('status') == 'success':
-                return data.get('country', 'Unknown'), data.get('city')
+                return {
+                    'country': data.get('country', 'Unknown'),
+                    'country_code': data.get('countryCode'),
+                    'region': data.get('regionName'),
+                    'city': data.get('city'),
+                    'latitude': data.get('lat'),
+                    'longitude': data.get('lon'),
+                    'isp': data.get('isp'),
+                    'org': data.get('org'),
+                    'asn': data.get('as', '').replace('AS', '') if data.get('as') else None
+                }
     except Exception as e:
-        logger.warning(f"Ошибка определения страны для {ip_address}: {e}")
+        logger.warning(f"Ошибка определения геолокации для {ip_address}: {e}")
     
-    return "Unknown", None
+    return {
+        'country': 'Unknown',
+        'country_code': None,
+        'region': None,
+        'city': None,
+        'latitude': None,
+        'longitude': None,
+        'isp': None,
+        'org': None,
+        'asn': None
+    }
 
 
 @app.route('/track', methods=['POST', 'OPTIONS'])
@@ -329,20 +462,28 @@ def track():
             request.remote_addr
         )
         
-        # Определяем страну
-        country, city = get_country_by_ip(ip_address)
+        # Получаем полную геоинформацию об IP
+        geo_info = get_geo_info_by_ip(ip_address)
         
         # Сохраняем посещение
         conn = get_db()
         cursor = conn.cursor()
         cursor.execute('''
             INSERT INTO visits 
-            (ip_address, country, city, path, referer, user_agent, language, screen_width, screen_height, timezone)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            (ip_address, country, country_code, region, city, latitude, longitude, isp, org, asn,
+             path, referer, user_agent, language, screen_width, screen_height, timezone)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ''', (
             ip_address,
-            country,
-            city,
+            geo_info.get('country'),
+            geo_info.get('country_code'),
+            geo_info.get('region'),
+            geo_info.get('city'),
+            geo_info.get('latitude'),
+            geo_info.get('longitude'),
+            geo_info.get('isp'),
+            geo_info.get('org'),
+            geo_info.get('asn'),
             data.get('path', '/'),
             data.get('referer', request.headers.get('Referer', '')),
             data.get('userAgent', request.headers.get('User-Agent', '')),
@@ -354,7 +495,7 @@ def track():
         conn.commit()
         conn.close()
         
-        logger.info(f"Visit tracked: IP={ip_address}, Path={data.get('path', '/')}, Country={country}")
+        logger.info(f"Visit tracked: IP={ip_address}, Path={data.get('path', '/')}, Country={geo_info.get('country')}, City={geo_info.get('city')}, ISP={geo_info.get('isp')}")
         return jsonify({'status': 'ok'}), 200
     except Exception as e:
         logger.error(f"Ошибка при сохранении посещения: {e}")
@@ -408,17 +549,26 @@ def stats():
         ''')
         pages = [dict(row) for row in cursor.fetchall()]
         
-        # Последние посещения
+        # Последние посещения с полной геоинформацией
         cursor.execute('''
             SELECT 
                 timestamp,
                 ip_address as ip,
                 country,
+                country_code,
+                region,
+                city,
+                latitude,
+                longitude,
+                isp,
+                org,
+                asn,
                 path,
                 user_agent
             FROM visits
+            WHERE latitude IS NOT NULL AND longitude IS NOT NULL
             ORDER BY timestamp DESC
-            LIMIT 50
+            LIMIT 100
         ''')
         recent_visits = [dict(row) for row in cursor.fetchall()]
         
