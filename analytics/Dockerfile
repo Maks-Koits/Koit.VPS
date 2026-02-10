@@ -6,6 +6,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY app.py .
+COPY clear_db.py .
 
 # Создаем директорию для данных
 RUN mkdir -p /data
