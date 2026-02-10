@@ -829,7 +829,47 @@
           }
         }
         </script>
-        <!-- Analytics tracker -->
-        <script src="js/tracker.js"></script>
+        <!-- Analytics tracker (встроен для избежания блокировки) -->
+        <script>
+        (function() {
+            'use strict';
+            const ANALYTICS_URL = window.location.origin + '/api/track';
+            const trackData = {
+                path: window.location.pathname + window.location.search,
+                referer: document.referrer,
+                userAgent: navigator.userAgent,
+                language: navigator.language || navigator.userLanguage,
+                screenWidth: window.screen.width,
+                screenHeight: window.screen.height,
+                timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                timestamp: new Date().toISOString()
+            };
+            function sendTracking() {
+                const data = JSON.stringify(trackData);
+                fetch(ANALYTICS_URL, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: data,
+                    keepalive: true,
+                    mode: 'cors',
+                    credentials: 'omit'
+                }).then(function(response) {
+                    if (!response.ok) {
+                        console.warn('Analytics tracking failed:', response.status);
+                    }
+                }).catch(function(err) {
+                    console.warn('Analytics tracking error:', err);
+                });
+            }
+            if (document.readyState === 'complete') {
+                sendTracking();
+            } else {
+                window.addEventListener('load', sendTracking);
+            }
+            window.addEventListener('beforeunload', function() {
+                sendTracking();
+            });
+        })();
+        </script>
     </body>
 </html>
