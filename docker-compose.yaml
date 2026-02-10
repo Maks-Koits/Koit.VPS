@@ -129,7 +129,7 @@ services:
     depends_on:
       - nginx-proxy
     volumes:
-      - /app/analytics_data:/data
+      - /app/Koit.VPS/analytics_data:/data
       - /etc/localtime:/etc/localtime:ro
     environment:
       VIRTUAL_HOST: 'analytics.maks-koits.cv'
