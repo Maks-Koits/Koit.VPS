@@ -240,34 +240,37 @@ def init_db():
         conn = sqlite3.connect(db_path, timeout=10.0)
         cursor = conn.cursor()
         logger.info(f"Подключение к БД установлено: {db_path}")
-    
-    # Таблица посещений
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS visits (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            ip_address TEXT NOT NULL,
-            country TEXT,
-            city TEXT,
-            path TEXT NOT NULL,
-            referer TEXT,
-            user_agent TEXT,
-            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-            language TEXT,
-            screen_width INTEGER,
-            screen_height INTEGER,
-            timezone TEXT
-        )
-    ''')
-    
-    # Индексы для быстрого поиска
-    cursor.execute('CREATE INDEX IF NOT EXISTS idx_ip ON visits(ip_address)')
-    cursor.execute('CREATE INDEX IF NOT EXISTS idx_timestamp ON visits(timestamp)')
-    cursor.execute('CREATE INDEX IF NOT EXISTS idx_country ON visits(country)')
-    cursor.execute('CREATE INDEX IF NOT EXISTS idx_path ON visits(path)')
-    
-    conn.commit()
-    conn.close()
-    logger.info(f"База данных инициализирована: {db_path}")
+        
+        # Таблица посещений
+        cursor.execute('''
+            CREATE TABLE IF NOT EXISTS visits (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                ip_address TEXT NOT NULL,
+                country TEXT,
+                city TEXT,
+                path TEXT NOT NULL,
+                referer TEXT,
+                user_agent TEXT,
+                timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+                language TEXT,
+                screen_width INTEGER,
+                screen_height INTEGER,
+                timezone TEXT
+            )
+        ''')
+        
+        # Индексы для быстрого поиска
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_ip ON visits(ip_address)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_timestamp ON visits(timestamp)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_country ON visits(country)')
+        cursor.execute('CREATE INDEX IF NOT EXISTS idx_path ON visits(path)')
+        
+        conn.commit()
+        conn.close()
+        logger.info(f"База данных инициализирована: {db_path}")
+    except Exception as e:
+        logger.error(f"Ошибка инициализации БД {db_path}: {e}")
+        raise
 
 
 def get_db():
