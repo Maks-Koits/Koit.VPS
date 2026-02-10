@@ -218,10 +218,28 @@ STATS_TEMPLATE = """
 def init_db():
     """Инициализация базы данных"""
     db_path = app.config['DATABASE']
-    os.makedirs(os.path.dirname(db_path), exist_ok=True)
+    db_dir = os.path.dirname(db_path)
     
-    conn = sqlite3.connect(db_path)
-    cursor = conn.cursor()
+    # Создаем директорию с правами на запись
+    try:
+        if db_dir and db_dir != '.':
+            os.makedirs(db_dir, exist_ok=True, mode=0o755)
+            logger.info(f"Директория БД создана/проверена: {db_dir}")
+        else:
+            db_path = '/data/analytics.db'
+            db_dir = '/data'
+            os.makedirs(db_dir, exist_ok=True, mode=0o755)
+            logger.info(f"Используем стандартный путь: {db_path}")
+    except Exception as e:
+        logger.error(f"Ошибка создания директории {db_dir}: {e}")
+        # Пробуем создать в текущей директории как fallback
+        db_path = '/tmp/analytics.db'
+        logger.warning(f"Используем fallback путь: {db_path}")
+    
+    try:
+        conn = sqlite3.connect(db_path, timeout=10.0)
+        cursor = conn.cursor()
+        logger.info(f"Подключение к БД установлено: {db_path}")
     
     # Таблица посещений
     cursor.execute('''
@@ -333,6 +351,7 @@ def track():
         conn.commit()
         conn.close()
         
+        logger.info(f"Visit tracked: IP={ip_address}, Path={data.get('path', '/')}, Country={country}")
         return jsonify({'status': 'ok'}), 200
     except Exception as e:
         logger.error(f"Ошибка при сохранении посещения: {e}")

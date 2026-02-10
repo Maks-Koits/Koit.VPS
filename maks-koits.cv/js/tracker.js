@@ -7,7 +7,8 @@
     'use strict';
     
     // URL сервера аналитики
-    const ANALYTICS_URL = 'https://analytics.maks-koits.cv/track';
+    // Используем прокси через основной сайт, чтобы избежать блокировки блокировщиками
+    const ANALYTICS_URL = window.location.origin + '/api/track';
     
     // Собираем данные о посещении
     const trackData = {
@@ -21,28 +22,27 @@
         timestamp: new Date().toISOString()
     };
     
-    // Отправляем данные (используем sendBeacon для надежности)
+    // Отправляем данные (используем fetch с keepalive для надежности)
     function sendTracking() {
         const data = JSON.stringify(trackData);
         
-        if (navigator.sendBeacon) {
-            // Используем sendBeacon для отправки перед закрытием страницы
-            // sendBeacon требует Blob или FormData
-            const blob = new Blob([data], { type: 'application/json' });
-            navigator.sendBeacon(ANALYTICS_URL, blob);
-        } else {
-            // Fallback на fetch
-            fetch(ANALYTICS_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: data,
-                keepalive: true
-            }).catch(function(err) {
-                console.warn('Analytics tracking failed:', err);
-            });
-        }
+        // Используем fetch с keepalive для надежной отправки
+        fetch(ANALYTICS_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: data,
+            keepalive: true,
+            mode: 'cors',
+            credentials: 'omit'
+        }).then(function(response) {
+            if (!response.ok) {
+                console.warn('Analytics tracking failed:', response.status, response.statusText);
+            }
+        }).catch(function(err) {
+            console.warn('Analytics tracking error:', err);
+        });
     }
     
     // Отслеживаем загрузку страницы
