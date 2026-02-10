@@ -157,9 +157,9 @@ STATS_TEMPLATE = """
             <tbody>
                 {% for country in countries %}
                 <tr>
-                    <td>{{ country.name }}</td>
+                    <td>{{ country.country }}</td>
                     <td><span class="badge badge-primary">{{ country.visits }}</span></td>
-                    <td><span class="badge badge-success">{{ country.unique_ips }}</span></td>
+                    <td><span class="badge badge-success">{{ country.unique_ip_count }}</span></td>
                     <td>{{ country.last_visit }}</td>
                 </tr>
                 {% endfor %}
@@ -180,7 +180,7 @@ STATS_TEMPLATE = """
                 <tr>
                     <td>{{ page.path }}</td>
                     <td><span class="badge badge-primary">{{ page.visits }}</span></td>
-                    <td><span class="badge badge-success">{{ page.unique_visitors }}</span></td>
+                    <td><span class="badge badge-success">{{ page.unique_visitor_count }}</span></td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -350,8 +350,8 @@ def stats():
         cursor.execute('SELECT COUNT(*) as total FROM visits')
         total_visits = cursor.fetchone()['total']
         
-        cursor.execute('SELECT COUNT(DISTINCT ip_address) as unique FROM visits')
-        unique_visitors = cursor.fetchone()['unique']
+        cursor.execute('SELECT COUNT(DISTINCT ip_address) as unique_count FROM visits')
+        unique_visitors = cursor.fetchone()['unique_count']
         
         today = datetime.now().date()
         cursor.execute('SELECT COUNT(*) as today FROM visits WHERE DATE(timestamp) = ?', (today,))
@@ -362,7 +362,7 @@ def stats():
             SELECT 
                 country,
                 COUNT(*) as visits,
-                COUNT(DISTINCT ip_address) as unique_ips,
+                COUNT(DISTINCT ip_address) as unique_ip_count,
                 MAX(timestamp) as last_visit
             FROM visits
             WHERE country IS NOT NULL AND country != 'Local'
@@ -378,7 +378,7 @@ def stats():
             SELECT 
                 path,
                 COUNT(*) as visits,
-                COUNT(DISTINCT ip_address) as unique_visitors
+                COUNT(DISTINCT ip_address) as unique_visitor_count
             FROM visits
             GROUP BY path
             ORDER BY visits DESC
@@ -431,7 +431,7 @@ def api_stats():
             SELECT 
                 DATE(timestamp) as date,
                 COUNT(*) as visits,
-                COUNT(DISTINCT ip_address) as unique_visitors
+                COUNT(DISTINCT ip_address) as unique_visitor_count
             FROM visits
             WHERE timestamp >= ?
             GROUP BY DATE(timestamp)
@@ -444,7 +444,7 @@ def api_stats():
             SELECT 
                 country,
                 COUNT(*) as visits,
-                COUNT(DISTINCT ip_address) as unique_ips
+                COUNT(DISTINCT ip_address) as unique_ip_count
             FROM visits
             WHERE country IS NOT NULL AND country != 'Local' AND timestamp >= ?
             GROUP BY country
