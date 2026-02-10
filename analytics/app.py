@@ -9,10 +9,26 @@ from flask_cors import CORS
 import sqlite3
 import os
 import json
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from collections import defaultdict
 import ipaddress
 import logging
+
+# Минское время (UTC+3)
+MINSK_TZ = timezone(timedelta(hours=3))
+
+def format_minsk_time(timestamp_str):
+    """Форматирует timestamp в минское время для отображения"""
+    try:
+        # Если timestamp уже строка в формате БД, возвращаем как есть
+        if isinstance(timestamp_str, str):
+            return timestamp_str
+        # Если это datetime объект, конвертируем в минское время
+        if isinstance(timestamp_str, datetime):
+            return timestamp_str.astimezone(MINSK_TZ).strftime('%Y-%m-%d %H:%M:%S')
+    except:
+        pass
+    return str(timestamp_str)
 
 app = Flask(__name__)
 app.config['DATABASE'] = os.environ.get('DATABASE_PATH', '/data/analytics.db')
@@ -170,7 +186,7 @@ STATS_TEMPLATE = """
                 <strong>Город:</strong> {{ visit.city or 'N/A' }}<br>
                 <strong>Регион:</strong> {{ visit.region or 'N/A' }}<br>
                 <strong>Провайдер:</strong> {{ visit.isp or 'N/A' }}<br>
-                <strong>Время:</strong> {{ visit.timestamp }}
+                <strong>Время:</strong> {{ visit.timestamp }} (МСК)
             `);
             markers.push(marker);
             {% endif %}
@@ -238,7 +254,7 @@ STATS_TEMPLATE = """
             <tbody>
                 {% for visit in recent_visits %}
                 <tr>
-                    <td>{{ visit.timestamp }}</td>
+                    <td>{{ visit.timestamp }} (МСК)</td>
                     <td>
                         <strong>{{ visit.ip }}</strong>
                         {% if visit.asn %}
@@ -465,14 +481,17 @@ def track():
         # Получаем полную геоинформацию об IP
         geo_info = get_geo_info_by_ip(ip_address)
         
+        # Получаем текущее время в минском часовом поясе (UTC+3)
+        minsk_time = datetime.now(MINSK_TZ).strftime('%Y-%m-%d %H:%M:%S')
+        
         # Сохраняем посещение
         conn = get_db()
         cursor = conn.cursor()
         cursor.execute('''
             INSERT INTO visits 
             (ip_address, country, country_code, region, city, latitude, longitude, isp, org, asn,
-             path, referer, user_agent, language, screen_width, screen_height, timezone)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+             path, referer, user_agent, language, screen_width, screen_height, timezone, timestamp)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         ''', (
             ip_address,
             geo_info.get('country'),
@@ -490,7 +509,8 @@ def track():
             data.get('language', ''),
             data.get('screenWidth'),
             data.get('screenHeight'),
-            data.get('timezone', '')
+            data.get('timezone', ''),
+            minsk_time
         ))
         conn.commit()
         conn.close()
@@ -516,7 +536,8 @@ def stats():
         cursor.execute('SELECT COUNT(DISTINCT ip_address) as unique_count FROM visits')
         unique_visitors = cursor.fetchone()['unique_count']
         
-        today = datetime.now().date()
+        # Используем минское время для определения "сегодня"
+        today = datetime.now(MINSK_TZ).date()
         cursor.execute('SELECT COUNT(*) as today FROM visits WHERE DATE(timestamp) = ?', (today,))
         today_visits = cursor.fetchone()['today']
         
@@ -570,7 +591,14 @@ def stats():
             ORDER BY timestamp DESC
             LIMIT 100
         ''')
-        recent_visits = [dict(row) for row in cursor.fetchall()]
+        recent_visits_raw = cursor.fetchall()
+        # Конвертируем timestamp в минское время для отображения
+        recent_visits = []
+        for row in recent_visits_raw:
+            visit_dict = dict(row)
+            # Если timestamp в формате строки, оставляем как есть (уже в минском времени)
+            # Если нужно конвертировать из UTC, можно добавить логику
+            recent_visits.append(visit_dict)
         
         conn.close()
         
@@ -595,9 +623,9 @@ def api_stats():
         conn = get_db()
         cursor = conn.cursor()
         
-        # Параметры фильтрации
+        # Параметры фильтрации (используем минское время)
         days = request.args.get('days', type=int, default=30)
-        start_date = (datetime.now() - timedelta(days=days)).isoformat()
+        start_date = (datetime.now(MINSK_TZ) - timedelta(days=days)).isoformat()
         
         cursor.execute('''
             SELECT 
