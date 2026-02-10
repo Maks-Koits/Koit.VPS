@@ -121,6 +121,28 @@ services:
     networks:
       - net
 
+  analytics:
+    build:
+      context: ./analytics
+      dockerfile: Dockerfile
+    container_name: 'maks-koits-cv-analytics'
+    depends_on:
+      - nginx-proxy
+    volumes:
+      - /app/analytics_data:/data
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      VIRTUAL_HOST: 'analytics.maks-koits.cv'
+      VIRTUAL_PORT: '5000'
+      LETSENCRYPT_HOST: 'analytics.maks-koits.cv'
+      LETSENCRYPT_EMAIL: 'mix256@gmail.com'
+      DATABASE_PATH: '/data/analytics.db'
+      PORT: '5000'
+      LOG_LEVEL: 'INFO'
+    restart: unless-stopped
+    networks:
+      - net
+
 #  agent:
 #    image: portainer/agent:linux-amd64
 #    container_name: 'agent_portainer_maks-koits.cv'
