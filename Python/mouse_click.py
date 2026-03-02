@@ -7,6 +7,7 @@
     python mouse_click.py --x 100 --y 200 --button right --double
     python mouse_click.py --x 100 --y 200 --interval 5  # Клик каждые 5 секунд
     python mouse_click.py --x 100 --y 200 --interval 2 --count 10  # 10 кликов с интервалом 2 секунды
+    python mouse_click.py --x 92 --y 162 --interval 420
 """
 
 import argparse 
