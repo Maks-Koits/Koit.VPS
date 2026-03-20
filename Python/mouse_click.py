@@ -1,5 +1,5 @@
 """
-Скрипт для эмуляции нажатия мыши в определённое место на экране (Windows)
+Скрипт для эмуляции нажатия мыши в определённое место на экране (Linux/Windows)
 
 Использование:
     python mouse_click.py --x 100 --y 200
@@ -21,8 +21,8 @@ except ImportError:
     PYAUTOGUI_AVAILABLE = False
 
 try:
-    import win32api
-    import win32con
+    import win32api  # type: ignore
+    import win32con  # type: ignore
     WIN32_AVAILABLE = True
 except ImportError:
     WIN32_AVAILABLE = False
@@ -43,6 +43,7 @@ def click_with_pyautogui(x, y, button='left', double=False, delay=0.1, silent=Fa
     if not PYAUTOGUI_AVAILABLE:
         raise ImportError("pyautogui не установлена. Установите: pip install pyautogui")
     
+    # Движение курсора до клика.
     # Перемещаем курсор
     pyautogui.moveTo(x, y, duration=0.1)
     
@@ -169,7 +170,7 @@ def click_repeat(x, y, interval, method='pyautogui', button='left', count=None):
 
 def main():
     parser = argparse.ArgumentParser(
-        description='Эмуляция нажатия мыши в определённое место на экране (Windows)',
+        description='Эмуляция нажатия мыши в определённое место на экране (Linux/Windows)',
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Примеры использования:
@@ -221,16 +222,29 @@ def main():
     # Выбор метода
     method = args.method
     if method == 'auto':
+        # На Linux/Windows чаще всего работает `pyautogui`.
+        # `win32api` поддерживается только на Windows.
         if PYAUTOGUI_AVAILABLE:
             method = 'pyautogui'
         elif WIN32_AVAILABLE:
             method = 'win32api'
         else:
             print("Ошибка: Не установлены необходимые библиотеки!")
-            print("Установите одну из библиотек:")
+            print("Установите `pyautogui` (рекомендуется):")
             print("  pip install pyautogui")
-            print("  или")
+            print("Для Windows также можно (опционально):")
             print("  pip install pywin32")
+            sys.exit(1)
+    else:
+        # Если пользователь явно выбрал backend, сразу проверим доступность,
+        # чтобы ошибка была понятнее.
+        if method == 'pyautogui' and not PYAUTOGUI_AVAILABLE:
+            print("Ошибка: backend `pyautogui` выбран, но `pyautogui` не установлена.")
+            print("Установите: pip install pyautogui")
+            sys.exit(1)
+        if method == 'win32api' and not WIN32_AVAILABLE:
+            print("Ошибка: backend `win32api` выбран, но `pywin32`/Windows API недоступны.")
+            print("Установите на Windows: pip install pywin32")
             sys.exit(1)
     
     # Проверка режима работы
@@ -257,6 +271,8 @@ def main():
                 click_with_win32api(args.x, args.y, args.button, args.double, args.delay)
         except Exception as e:
             print(f"Ошибка при выполнении клика: {e}")
+            if method == 'pyautogui' and sys.platform.startswith('linux'):
+                print("Подсказка: на Linux `pyautogui` обычно требует запущенную графическую сессию (X11/Wayland).")
             sys.exit(1)
 
 
