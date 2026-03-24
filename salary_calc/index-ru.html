@@ -515,6 +515,7 @@
         let lastTodayEarnings = null;
         let lastMonthlyEarnings = null;
         let updateTimer = null;
+        let screenWakeLock = null;
 
         // Calculate current earnings based on time
         function calculateEarnings(now) {
@@ -718,12 +719,37 @@
             renderCalendar(); 
         });
 
+        async function requestScreenWakeLock() {
+            if (!('wakeLock' in navigator)) return;
+            try {
+                if (document.visibilityState !== 'visible') return;
+                if (!screenWakeLock) {
+                    screenWakeLock = await navigator.wakeLock.request('screen');
+                    screenWakeLock.addEventListener('release', () => {
+                        screenWakeLock = null;
+                    });
+                }
+            } catch (error) {
+                // Некоторые браузеры ТВ блокируют wake lock до действия пользователя.
+                console.debug('Wake Lock недоступен:', error && error.message ? error.message : error);
+            }
+        }
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                requestScreenWakeLock();
+            }
+        });
+        document.addEventListener('click', requestScreenWakeLock, { passive: true });
+        document.addEventListener('keydown', requestScreenWakeLock, { passive: true });
+
         // Initial compute and start ticking
         recomputeDerived();
         updateCurrentDateDisplay();
         setupCalendarEvents(); // Setup event delegation once
         renderCalendar();
         updateTick(); // Start smart updates - schedules itself based on when value will change
+        requestScreenWakeLock();
     </script>
 </body>
 </html>
