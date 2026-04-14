@@ -31,14 +31,14 @@ scrape_configs:
       - targets:
         - monitoring-node-exporter:9100
   - job_name: 'cadvisor'
-    scrape_interval: 15s
+    scrape_interval: 30s
     static_configs:
       - targets:
         - monitoring-cadvisor:8080
-  - job_name: 'timeweb'
-    scrape_interval: 15s
-    # metrics_path defaults to '/metrics'
-    # scheme defaults to 'http'.
-    static_configs:
-      - targets:
-        - node-exporter.maks-koits.cv
+#  - job_name: 'timeweb'
+#    scrape_interval: 15s
+#    # metrics_path defaults to '/metrics'
+#    # scheme defaults to 'http'.
+#    static_configs:
+#      - targets:
+#        - node-exporter.maks-koits.cv
