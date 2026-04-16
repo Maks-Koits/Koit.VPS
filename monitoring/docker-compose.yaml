@@ -30,10 +30,10 @@ services:
     ports:
       - '3000:3000'
     volumes:
-      - grafana_data:/var/lib/grafana
-      - ./grafana/dashboards/dashboard.yaml:/etc/grafana/provisioning/dashboards/dashboard.yaml
-      - ./grafana/dashboards:/var/lib/grafana/dashboards
-      - ./grafana/provisioning/datasources/datasource.yaml:/etc/grafana/provisioning/datasources/datasource.yaml
+      - grafana_data:/var/lib/grafana:rw
+      - ./grafana/dashboards/dashboard.yaml:/etc/grafana/provisioning/dashboards/dashboard.yaml:rw
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:rw
+      - ./grafana/provisioning/datasources/datasource.yaml:/etc/grafana/provisioning/datasources/datasource.yaml:rw
     env_file:
       - ./grafana/config.monitoring
     environment:
