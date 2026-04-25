@@ -1,0 +1,32 @@
+{
+  "manifest_version": 3,
+  "name": "AV.BY BYN to USD",
+  "version": "1.0.0",
+  "description": "Converts AV.BY ad prices from BYN to USD using NBRB exchange rate.",
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "*://*.av.by/*",
+    "https://api.nbrb.by/*",
+    "https://www.nbrb.by/*",
+    "https://open.er-api.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.av.by/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "css": [
+        "styles.css"
+      ],
+      "run_at": "document_idle"
+    }
+  ]
+}
