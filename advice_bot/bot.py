@@ -1,11 +1,13 @@
 import os
 import logging
 import time
+from html import escape
 from typing import Optional
 
 import requests
 from dotenv import load_dotenv
-from telegram import Update, ReplyKeyboardMarkup, KeyboardButton
+from telegram import BotCommand, Update, ReplyKeyboardMarkup, KeyboardButton
+from telegram.constants import BotCommandScopeAllGroupChats
 from telegram.ext import Application, CommandHandler, MessageHandler, ContextTypes, filters
 from telegram.error import NetworkError, RetryAfter, TimedOut
 
@@ -81,10 +83,11 @@ async def handle_mention(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     bot_username = bot_info.username
     bot_username_lower = bot_username.lower()
     
-    # Проверяем, упоминается ли бот в сообщении
+    # Проверяем, упоминается ли бот в сообщении (в т.ч. /команда@bot для групп)
     if update.message and update.message.text:
         message_text = update.message.text.lower()
-        if f"@{bot_username_lower}" in message_text or f"/start@{bot_username_lower}" in message_text:
+        at_bot = f"@{bot_username_lower}"
+        if at_bot in message_text or f"/start{at_bot}" in message_text:
             await send_advice(update, context)
 
 
@@ -95,6 +98,32 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 async def advice_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     """Команда /advice для получения совета"""
     await send_advice(update, context)
+
+
+async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Подсказка: в группе с несколькими ботами команды нужно адресовать этому боту через @."""
+    me = await context.bot.get_me()
+    uname = me.username or "этот_бот"
+    u = escape(uname)
+    text = (
+        "В группе, где несколько ботов, общая команда без @ может попасть другому боту.\n\n"
+        "Чтобы вызвать именно этого бота, после слэша добавьте @ и его username:\n"
+        f"• <code>/advice@{u}</code>\n"
+        f"• <code>/sovet@{u}</code>\n"
+        f"• <code>/start@{u}</code>\n"
+        f"• <code>/help@{u}</code>\n\n"
+        "Так Telegram отправляет команду только этому боту."
+    )
+    await update.effective_chat.send_message(text, parse_mode="HTML")
+
+
+async def post_init(application: Application) -> None:
+    commands = [
+        BotCommand("advice", "Совет"),
+        BotCommand("sovet", "Совет"),
+    ]
+    await application.bot.set_my_commands(commands)
+    await application.bot.set_my_commands(commands, scope=BotCommandScopeAllGroupChats())
 
 
 def main() -> None:
@@ -117,6 +146,7 @@ def main() -> None:
             application = (
                 Application.builder()
                 .token(token)
+                .post_init(post_init)
                 .connect_timeout(30.0)  # Увеличенный таймаут подключения
                 .read_timeout(30.0)     # Увеличенный таймаут чтения
                 .write_timeout(30.0)     # Увеличенный таймаут записи
@@ -124,9 +154,7 @@ def main() -> None:
                 .build()
             )
 
-            application.add_handler(CommandHandler("start", start))
             application.add_handler(CommandHandler("advice", advice_command))
-            application.add_handler(CommandHandler("sovet", advice_command))
             # Любое текстовое сообщение вызывает получение совета (для личных чатов)
             application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND & filters.ChatType.PRIVATE, send_advice))
             # Обработка упоминаний бота в групповых чатах
