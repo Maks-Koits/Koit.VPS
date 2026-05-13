@@ -6,8 +6,7 @@ from typing import Optional
 
 import requests
 from dotenv import load_dotenv
-from telegram import BotCommand, Update, ReplyKeyboardMarkup, KeyboardButton
-from telegram.constants import BotCommandScopeAllGroupChats
+from telegram import BotCommand, BotCommandScopeAllGroupChats, Update, ReplyKeyboardMarkup, KeyboardButton
 from telegram.ext import Application, CommandHandler, MessageHandler, ContextTypes, filters
 from telegram.error import NetworkError, RetryAfter, TimedOut
 
