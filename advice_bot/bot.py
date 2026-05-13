@@ -109,8 +109,6 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
         "Чтобы вызвать именно этого бота, после слэша добавьте @ и его username:\n"
         f"• <code>/advice@{u}</code>\n"
         f"• <code>/sovet@{u}</code>\n"
-        f"• <code>/start@{u}</code>\n"
-        f"• <code>/help@{u}</code>\n\n"
         "Так Telegram отправляет команду только этому боту."
     )
     await update.effective_chat.send_message(text, parse_mode="HTML")
@@ -118,7 +116,7 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE) -> No
 
 async def post_init(application: Application) -> None:
     commands = [
-        BotCommand("advice", "Совет"),
+        BotCommand("advice", "Advice"),
         BotCommand("sovet", "Совет"),
     ]
     await application.bot.set_my_commands(commands)
