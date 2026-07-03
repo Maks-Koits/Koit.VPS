@@ -1,7 +1,7 @@
 ---
 services:
   nginx-proxy:
-    image: nginxproxy/nginx-proxy:alpine
+    image: nginxproxy/nginx-proxy:latest
     container_name: 'maks-koits-cv-nginx-proxy'
     volumes:
       - /app/config/html:/usr/share/nginx/html
@@ -45,7 +45,7 @@ services:
       - net
 
   maks-koits-cv.maks-koit:
-    image: nginx:stable-alpine
+    image: nginx:latest
     container_name: 'maks-koits-cv'
     depends_on:
       - nginx-proxy
@@ -62,7 +62,7 @@ services:
       - net
 
   salary.maks-koits.cv:
-    image: nginx:stable-alpine
+    image: nginx:latest
     container_name: 'maks-koits-cv-salary'
     depends_on:
       - nginx-proxy
