@@ -1,7 +1,9 @@
+import asyncio
+import os
+
 from aiogram import Bot, Dispatcher
 from aiogram.filters import Command, CommandStart
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, Message
-import os
 
 API_TOKEN = os.environ['API_TOKEN']
 
@@ -48,5 +50,11 @@ async def process_other_command(message: Message):
                          reply_markup=keyboard)
 
 
+async def main() -> None:
+    # polling (getUpdates) конфликтует с активным webhook
+    await bot.delete_webhook(drop_pending_updates=True)
+    await dp.start_polling(bot)
+
+
 if __name__ == '__main__':
-    dp.run_polling(bot)
+    asyncio.run(main())
