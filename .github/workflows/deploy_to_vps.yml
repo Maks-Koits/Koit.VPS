@@ -40,7 +40,7 @@ jobs:
           cd /app/Koit.VPS/monitoring
           docker compose up -d --build --wait
 
-          docker image prune -f &
+          docker image prune -f
           
-          cd /app/bash/ && bash swap.sh
+          bash /app/Koit.VPS/bash/swap.sh || true
         '
