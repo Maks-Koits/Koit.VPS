@@ -39,8 +39,8 @@ jobs:
              docker compose down || true && \
              git pull && \
              docker compose pull || true && \
-             docker compose up --force-recreate -d --build && \
+             docker compose up --force-recreate -d --build --wait && \
              cd /app/Koit.VPS/monitoring && \
              docker compose pull || true && \
-             docker compose up -d --build && \
+             docker compose up ---force-recreate -d --build --wait && \
              docker image prune -f'
