@@ -70,7 +70,7 @@ services:
     command:
       - --docker_only=true
       - --housekeeping_interval=10s
-      - --disable_metrics=perf_event,oom_event
+      - --disable_metrics=perf_event,oom_event,referenced_memory
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
