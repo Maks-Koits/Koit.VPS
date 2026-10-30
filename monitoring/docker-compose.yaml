@@ -23,7 +23,7 @@ services:
       - monitoring
 
   grafana:
-    image: grafana/grafana:latest
+    image: grafana/grafana:latest-slim
     container_name: 'monitoring-grafana'
     depends_on:
       - prometheus
