@@ -41,4 +41,6 @@ jobs:
           docker compose up -d --build --wait
 
           docker image prune -f &
+          
+          cd /app/bash/ && bash swap.sh
         '
