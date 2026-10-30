@@ -43,4 +43,4 @@ jobs:
              cd /app/Koit.VPS/monitoring && \
              docker compose pull || true && \
              docker compose up --force-recreate -d --build --wait && \
-             docker image prune -f'
+             docker image prune -a -f'
