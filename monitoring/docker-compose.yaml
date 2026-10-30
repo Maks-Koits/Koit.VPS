@@ -65,16 +65,23 @@ services:
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:latest
     container_name: 'monitoring-cadvisor'
+    privileged: true
     restart: unless-stopped
+    command:
+      - --docker_only=true
+      - --housekeeping_interval=10s
+      - --disable_metrics=perf_event,oom_event
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
       - /:/rootfs:ro
-      - /var/run:/var/run:rw
+      - /var/run:/var/run:ro
       - /sys:/sys:ro
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
       - /var/lib/docker:/var/lib/docker:ro
+      - /dev/disk:/dev/disk:ro
     devices:
-      - /dev/kmsg:/dev/kmsg
+      - /dev/kmsg
     environment:
       TZ: 'Europe/Minsk'
       VIRTUAL_HOST: 'cadvisor.maks-koits.cv'
