@@ -5,9 +5,10 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
-# System deps (certs, locales optionally)
+# System deps + zlib1g security update (CVE-2026-76844 / DSA-6613-1)
 RUN apt-get update -y && apt-get install -y --no-install-recommends \
     ca-certificates \
+ && apt-get install -y --only-upgrade --no-install-recommends zlib1g \
  && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt ./
