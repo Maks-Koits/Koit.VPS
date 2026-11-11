@@ -151,7 +151,10 @@ def main() -> None:
                 .build()
             )
 
+            application.add_handler(CommandHandler("start", start))
             application.add_handler(CommandHandler("advice", advice_command))
+            application.add_handler(CommandHandler("sovet", advice_command))
+            application.add_handler(CommandHandler("help", help_command))
             # Любое текстовое сообщение вызывает получение совета (для личных чатов)
             application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND & filters.ChatType.PRIVATE, send_advice))
             # Обработка упоминаний бота в групповых чатах
