@@ -63,19 +63,16 @@ services:
     networks:
       - monitoring
 
-  docker-exporter:
-    image: ghcr.io/dlepaux/docker-exporter:latest
-    container_name: 'monitoring-docker-exporter'
+  logporter:
+    image: lifailon/logporter:latest
+    container_name: 'monitoring-logporter'
     restart: unless-stopped
-    group_add:
-      - '${DOCKER_GID:-990}'
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /var/run/docker.sock:/var/run/docker.sock
     ports:
-      - '9713:9713'
+      - '9333:9333'
     environment:
       - TZ=Europe/Minsk
-      - LOG_LEVEL=info
     networks:
       - monitoring
 
@@ -83,7 +80,7 @@ services:
     image: victoriametrics/victoria-metrics:latest
     container_name: 'monitoring-victoriametrics'
     depends_on:
-      - docker-exporter
+      - logporter
     volumes:
       - ./victoriametrics/scrape.yaml:/etc/victoriametrics/scrape.yaml:ro
       - victoriametrics_data:/victoria-metrics-data

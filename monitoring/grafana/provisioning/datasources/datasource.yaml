@@ -7,3 +7,12 @@ datasources:
    type: prometheus                      # type of the data source
    url: 'http://monitoring-prometheus:9090'       # url of the prom instance
 #   version: 1                            # well, versioning
+-  access: proxy
+   editable: true
+   is_default: false
+   name: VictoriaMetrics
+   type: prometheus
+   url: 'http://monitoring-victoriametrics:8428'
+   jsonData:
+     httpMethod: POST
+     prometheusType: VictoriaMetrics
