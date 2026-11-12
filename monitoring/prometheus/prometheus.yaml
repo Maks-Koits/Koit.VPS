@@ -35,6 +35,13 @@ scrape_configs:
     static_configs:
       - targets:
         - monitoring-cadvisor:8080
+
+  - job_name: logporter
+    scrape_interval: 15s
+    scrape_timeout: 2s
+    static_configs:
+      - targets:
+          - monitoring-logporter:9333
 #  - job_name: 'timeweb'
 #    scrape_interval: 15s
 #    # metrics_path defaults to '/metrics'
