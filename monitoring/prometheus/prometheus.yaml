@@ -15,15 +15,6 @@ rule_files:
   # - "first.rules"
   # - "second.rules"
 
-# alert
-#alerting:
-#  alertmanagers:
-#  - scheme: http
-#    static_configs:
-#    - targets:
-#      - "localhost:9093"
-
-# A scrape configuration containing exactly one endpoint to scrape:
 scrape_configs:
   - job_name: 'prometheus'
     scrape_interval: 15s
@@ -42,10 +33,3 @@ scrape_configs:
     static_configs:
       - targets:
           - monitoring-logporter:9333
-#  - job_name: 'timeweb'
-#    scrape_interval: 15s
-#    # metrics_path defaults to '/metrics'
-#    # scheme defaults to 'http'.
-#    static_configs:
-#      - targets:
-#        - node-exporter.maks-koits.cv
