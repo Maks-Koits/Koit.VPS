@@ -73,6 +73,8 @@ services:
       - '9713:9713'
     environment:
       - TZ=Europe/Minsk
+      - DOCKER_METRICS_PORT=9713
+      - DOCKER_METRICS_CACHE=30
     networks:
       - monitoring
 
