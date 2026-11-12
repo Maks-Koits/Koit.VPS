@@ -68,7 +68,7 @@ services:
     container_name: 'monitoring-docker-exporter'
     restart: unless-stopped
     group_add:
-      - '${DOCKER_GID:-999}'
+      - '${DOCKER_GID:-990}'
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
     ports:
