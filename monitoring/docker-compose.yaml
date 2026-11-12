@@ -12,6 +12,7 @@ services:
       - '--web.console.libraries=/usr/share/prometheus/console_libraries'
       - '--web.console.templates=/usr/share/prometheus/consoles'
       - '--web.enable-lifecycle'
+      - '--web.enable-admin-api'
       - '--storage.tsdb.retention.size=3GB'
       - '--storage.tsdb.wal-compression'
     ports:
@@ -62,6 +63,43 @@ services:
     networks:
       - monitoring
 
+  docker-exporter:
+    image: ghcr.io/dlepaux/docker-exporter:latest
+    container_name: 'monitoring-docker-exporter'
+    restart: unless-stopped
+    group_add:
+      - '${DOCKER_GID:-999}'
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    ports:
+      - '9713:9713'
+    environment:
+      - TZ=Europe/Minsk
+      - LOG_LEVEL=info
+    networks:
+      - monitoring
+
+  victoriametrics:
+    image: victoriametrics/victoria-metrics:latest
+    container_name: 'monitoring-victoriametrics'
+    depends_on:
+      - docker-exporter
+    volumes:
+      - ./victoriametrics/scrape.yaml:/etc/victoriametrics/scrape.yaml:ro
+      - victoriametrics_data:/victoria-metrics-data
+    command:
+      - '-storageDataPath=/victoria-metrics-data'
+      - '-retentionPeriod=365d'
+      - '-promscrape.config=/etc/victoriametrics/scrape.yaml'
+      - '-httpListenAddr=:8428'
+    ports:
+      - '8428:8428'
+    environment:
+      - TZ=Europe/Minsk
+    restart: unless-stopped
+    networks:
+      - monitoring
+
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:latest
     container_name: 'monitoring-cadvisor'
@@ -102,6 +140,7 @@ networks:
 volumes:
     prometheus_data:
     grafana_data:
+    victoriametrics_data:
 
 
 #  alertmanager:
