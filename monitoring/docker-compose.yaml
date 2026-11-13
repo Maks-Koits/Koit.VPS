@@ -12,7 +12,6 @@ services:
       - '-retentionPeriod=365d'
       - '-promscrape.config=/etc/victoriametrics/scrape.yaml'
       - '-httpListenAddr=:8428'
-      - '-precisionBits=8'
     ports:
       - '8428:8428'
     environment:
