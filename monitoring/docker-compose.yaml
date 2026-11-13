@@ -80,12 +80,13 @@ services:
       - DOCKER_METRICS_CACHE=30
       - DOCKER_HOST=tcp://docker-proxy:2375
     networks:
+      - net
       - monitoring
 
   docker-proxy:
     image: lscr.io/linuxserver/socket-proxy:latest
     container_name: docker-proxy
-    restart: always
+    restart: unless-stopped
     environment:
       - CONTAINERS=1
       - INFO=1
@@ -99,8 +100,6 @@ services:
   victoriametrics:
     image: victoriametrics/victoria-metrics:latest
     container_name: 'monitoring-victoriametrics'
-    depends_on:
-      - logporter
     volumes:
       - ./victoriametrics/scrape.yaml:/etc/victoriametrics/scrape.yaml:ro
       - victoriametrics_data:/victoria-metrics-data
