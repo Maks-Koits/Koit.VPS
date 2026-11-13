@@ -30,9 +30,9 @@ services:
       - '3000:3000'
     volumes:
       - grafana_data:/var/lib/grafana:rw
-      - ./grafana/provisioning/dashboards/dashboard.yaml:/etc/grafana/provisioning/dashboards/dashboard.yaml:ro
+      - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
       - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
-      - ./grafana/provisioning/datasources/datasource.yaml:/etc/grafana/provisioning/datasources/datasource.yaml:ro
+      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
       - ./grafana/provisioning/alerting:/etc/grafana/provisioning/alerting:ro
     env_file:
       - ./grafana/config.monitoring
