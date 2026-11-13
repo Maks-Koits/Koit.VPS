@@ -37,7 +37,14 @@ services:
     env_file:
       - ./grafana/config.monitoring
     environment:
-      - TZ=Europe/Minsk
+      GF_SERVER_ROOT_URL: 'https://grafana.maks-koits.cv/'
+      GF_SERVER_DOMAIN: 'grafana.maks-koits.cv'
+      TZ: 'Europe/Minsk'
+      VIRTUAL_HOST: 'grafana.maks-koits.cv'
+      VIRTUAL_PORT: '3000'
+      VIRTUAL_NETWORK: 'net'
+      LETSENCRYPT_HOST: 'grafana.maks-koits.cv'
+      LETSENCRYPT_EMAIL: 'mix256@gmail.com'
     restart: unless-stopped
     networks:
       - monitoring

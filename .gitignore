@@ -3,3 +3,4 @@
 .idea
 venv
 vscode.env
+monitoring/grafana/config.monitoring
