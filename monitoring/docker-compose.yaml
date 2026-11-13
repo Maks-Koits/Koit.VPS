@@ -1,22 +1,20 @@
 ---
 services:
-  prometheus:
-    image: prom/prometheus:latest
-    container_name: 'monitoring-prometheus'
+
+  victoriametrics:
+    image: victoriametrics/victoria-metrics:latest
+    container_name: 'monitoring-victoriametrics'
     volumes:
-      - ./prometheus/prometheus.yaml:/etc/prometheus/prometheus.yaml
-      - prometheus_data:/prometheus
+      - ./victoriametrics/scrape.yaml:/etc/victoriametrics/scrape.yaml:ro
+      - victoriametrics_data:/victoria-metrics-data
     command:
-      - '--config.file=/etc/prometheus/prometheus.yaml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
-      - '--web.console.templates=/usr/share/prometheus/consoles'
-      - '--web.enable-lifecycle'
-      - '--web.enable-admin-api'
-      - '--storage.tsdb.retention.size=3GB'
-      - '--storage.tsdb.wal-compression'
+      - '-storageDataPath=/victoria-metrics-data'
+      - '-retentionPeriod=365d'
+      - '-promscrape.config=/etc/victoriametrics/scrape.yaml'
+      - '-httpListenAddr=:8428'
+      - '-precisionBits=8'
     ports:
-      - '9090:9090'
+      - '8428:8428'
     environment:
       - TZ=Europe/Minsk
     restart: unless-stopped
@@ -27,14 +25,15 @@ services:
     image: grafana/grafana:latest-slim
     container_name: 'monitoring-grafana'
     depends_on:
-      - prometheus
+      - victoriametrics
     ports:
       - '3000:3000'
     volumes:
       - grafana_data:/var/lib/grafana:rw
-      - ./grafana/dashboards/dashboard.yaml:/etc/grafana/provisioning/dashboards/dashboard.yaml:rw
-      - ./grafana/dashboards:/var/lib/grafana/dashboards:rw
-      - ./grafana/provisioning/datasources/datasource.yaml:/etc/grafana/provisioning/datasources/datasource.yaml:rw
+      - ./grafana/provisioning/dashboards/dashboard.yaml:/etc/grafana/provisioning/dashboards/dashboard.yaml:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - ./grafana/provisioning/datasources/datasource.yaml:/etc/grafana/provisioning/datasources/datasource.yaml:ro
+      - ./grafana/provisioning/alerting:/etc/grafana/provisioning/alerting:ro
     env_file:
       - ./grafana/config.monitoring
     environment:
@@ -42,6 +41,7 @@ services:
     restart: unless-stopped
     networks:
       - monitoring
+      - net
 
   node-exporter:
     image: prom/node-exporter:latest
@@ -78,106 +78,12 @@ services:
       - net
       - monitoring
 
-  victoriametrics:
-    image: victoriametrics/victoria-metrics:latest
-    container_name: 'monitoring-victoriametrics'
-    volumes:
-      - ./victoriametrics/scrape.yaml:/etc/victoriametrics/scrape.yaml:ro
-      - victoriametrics_data:/victoria-metrics-data
-    command:
-      - '-storageDataPath=/victoria-metrics-data'
-      - '-retentionPeriod=365d'
-      - '-promscrape.config=/etc/victoriametrics/scrape.yaml'
-      - '-httpListenAddr=:8428'
-    ports:
-      - '8428:8428'
-    environment:
-      - TZ=Europe/Minsk
-    restart: unless-stopped
-    networks:
-      - monitoring
-
-  cadvisor:
-    image: gcr.io/cadvisor/cadvisor:latest
-    container_name: 'monitoring-cadvisor'
-    privileged: true
-    restart: unless-stopped
-    command:
-      - --docker_only=true
-      - --housekeeping_interval=10s
-      - --disable_metrics=perf_event,oom_event,referenced_memory
-    volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /etc/timezone:/etc/timezone:ro
-      - /:/rootfs:ro
-      - /var/run:/var/run:ro
-      - /sys:/sys:ro
-      - /sys/fs/cgroup:/sys/fs/cgroup:ro
-      - /var/lib/docker:/var/lib/docker:ro
-      - /dev/disk:/dev/disk:ro
-    devices:
-      - /dev/kmsg
-    environment:
-      TZ: 'Europe/Minsk'
-      VIRTUAL_HOST: 'cadvisor.maks-koits.cv'
-      VIRTUAL_PORT: '8080'
-      LETSENCRYPT_HOST: 'cadvisor.maks-koits.cv'
-      LETSENCRYPT_EMAIL: 'mix256@gmail.com'
-    networks:
-      - net
-      - monitoring
-
 networks:
   monitoring:
-#    driver: host
   net:
     name: net
     external: true
 
 volumes:
-    prometheus_data:
     grafana_data:
     victoriametrics_data:
-
-
-#  alertmanager:
-#    image: prom/alertmanager:v0.25.0
-#    ports:
-#      - 9093:9093
-#    volumes:
-#      - ./alertmanager/:/alertmanager
-#      - ./alertmanager/:/etc/alertmanager/
-#      - ./alertmanager/templates:/etc/alertmanager/templates
-#    command:
-#      - '--config.file=/etc/alertmanager/config.yml'
-#      - '--storage.path=/alertmanager'
-#    environment:
-#      - TZ=Europe/Minsk
-#    restart: unless-stopped
-
-#  loki:
-#    image: grafana/loki:main-380caba
-#    ports:
-#      - 3100:3100
-#    volumes:
-#      - ./loki/:/etc/loki/
-#    command:
-#      - '--config.file=/etc/loki/loki-config.yml'
-#    environment:
-#      - TZ=Europe/Minsk
-#    restart: unless-stopped
-#
-#  promtail:
-#    image: grafana/promtail:main-380caba
-#    volumes:
-#      - /var/log:/var/log:ro
-#      - ./promtail/:/etc/promtail/
-#    command:
-#      - '--config.file=/etc/promtail/promtail-config.yml'
-#    environment:
-#      - TZ=Europe/Minsk
-#    restart: unless-stopped
-
-#volumes:
-#    prometheus_data:
-#    grafana_data:

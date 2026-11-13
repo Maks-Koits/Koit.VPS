@@ -1,0 +1,154 @@
+apiVersion: 1
+groups:
+    - orgId: 1
+      name: discord
+      folder: alerts
+      interval: 1m
+      rules:
+        - uid: ag3iwlpdoszr4d
+          title: CPU_ALERT
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: eg42tgddkhs00b
+              model:
+                datasource:
+                    type: prometheus
+                    uid: eg42tgddkhs00b
+                editorMode: builder
+                expr: sum(rate(node_cpu_seconds_total{mode=~"user|system|irq|steal|iowait|nice|softirq"}[$__rate_interval]))
+                instant: false
+                interval: ""
+                intervalMs: 15000
+                legendFormat: __auto
+                maxDataPoints: 43200
+                range: true
+                refId: A
+            - refId: reducer
+              queryType: expression
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0
+                            - 0
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params: []
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    name: Expression
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                reducer: last
+                refId: reducer
+                type: reduce
+            - refId: C
+              queryType: expression
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 0.7
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: reducer
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          dashboardUid: rYdddlPWk2
+          panelId: 20
+          noDataState: NoData
+          execErrState: Error
+          for: 3m
+          annotations:
+            __dashboardUid__: rYdddlPWk2
+            __panelId__: "20"
+            description: CPU ебошит 70+%
+            summary: CPU ебошит 70+%
+          isPaused: false
+          notification_settings:
+            receiver: discord
+        - uid: cg3iyacvniolcf
+          title: DISK
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: eg42tgddkhs00b
+              model:
+                datasource:
+                    type: prometheus
+                    uid: eg42tgddkhs00b
+                editorMode: code
+                expr: "100 * (\r\n  1\r\n  - node_filesystem_avail_bytes{\r\n      device=\"/dev/mapper/ubuntu--vg-ubuntu--lv\",\r\n      fstype=\"ext4\",\r\n      instance=\"monitoring-node-exporter:9100\",\r\n      mountpoint=\"/\"\r\n    }\r\n  / node_filesystem_size_bytes{\r\n      device=\"/dev/mapper/ubuntu--vg-ubuntu--lv\",\r\n      fstype=\"ext4\",\r\n      instance=\"monitoring-node-exporter:9100\",\r\n      mountpoint=\"/\"\r\n    }\r\n)"
+                instant: true
+                intervalMs: 1000
+                legendFormat: __auto
+                maxDataPoints: 43200
+                range: false
+                refId: A
+            - refId: C
+              queryType: expression
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 85
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                      unloadEvaluator:
+                        params:
+                            - 80
+                        type: lt
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          noDataState: NoData
+          execErrState: Error
+          annotations:
+            summary: Места мало, меньше 15%
+          isPaused: false
+          notification_settings:
+            receiver: discord
