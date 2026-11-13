@@ -28,6 +28,7 @@ docker run --rm \
   prometheus \
   --prom-snapshot="/prometheus/snapshots/${NAME}" \
   --vm-addr="${VM_URL}" \
+  --disable-progress-bar \
   -s
 
 docker exec monitoring-prometheus rm -rf "/prometheus/snapshots/${NAME}"
