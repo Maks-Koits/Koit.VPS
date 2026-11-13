@@ -8,7 +8,7 @@ scrape_configs:
     scrape_timeout: 4s
     static_configs:
       - targets:
-          - monitoring-logporter:9713
+          - monitoring-logporter:9333
 
   - job_name: prometheus
     scrape_interval: 15s
