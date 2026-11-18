@@ -17,6 +17,8 @@ import sys
 try:
     import pyautogui
     PYAUTOGUI_AVAILABLE = True
+    # Угол экрана не должен обрывать цикл. Остановка — Ctrl+C.
+    pyautogui.FAILSAFE = False
 except ImportError:
     PYAUTOGUI_AVAILABLE = False
 
