@@ -46,7 +46,7 @@
                         "disableTextWrap": false,
                         "editorMode": "code",
                         "exemplar": false,
-                        "expr": "sum by (hostname, containerName) (\r\n  rate(docker_cpu_usage_total{hostname=~\"$Hostname\", composeProject=~\"$ComposeProject\", containerName=~\"$ContainerName\"}[$__rate_interval])\r\n)",
+                        "expr": "sum by (hostname, containerName) (\r\n  rate(docker_cpu_usage_total{hostname=~\"$Hostname\", containerName=~\"$ContainerName\"}[$__rate_interval])\r\n)",
                         "fullMetaSearch": false,
                         "includeNullMetadata": true,
                         "instant": false,
@@ -273,7 +273,7 @@
                         "disableTextWrap": false,
                         "editorMode": "code",
                         "exemplar": false,
-                        "expr": "sum by (hostname, containerName) (\r\n  rate(docker_io_read_bytes{hostname=~\"$Hostname\", composeProject=~\"$ComposeProject\", containerName=~\"$ContainerName\"}[1m])\r\n)",
+                        "expr": "sum by (hostname, containerName) (\r\n  rate(docker_io_read_bytes{hostname=~\"$Hostname\", containerName=~\"$ContainerName\"}[1m])\r\n)",
                         "fullMetaSearch": false,
                         "includeNullMetadata": true,
                         "instant": false,
@@ -410,7 +410,7 @@
                         "disableTextWrap": false,
                         "editorMode": "code",
                         "exemplar": false,
-                        "expr": "sum by (hostname, containerName) (\r\n  rate(docker_io_write_bytes{hostname=~\"$Hostname\", composeProject=~\"$ComposeProject\", containerName=~\"$ContainerName\"}[1m])\r\n)",
+                        "expr": "sum by (hostname, containerName) (\r\n  rate(docker_io_write_bytes{hostname=~\"$Hostname\", containerName=~\"$ContainerName\"}[1m])\r\n)",
                         "fullMetaSearch": false,
                         "includeNullMetadata": true,
                         "instant": false,
@@ -545,7 +545,7 @@
                         "disableTextWrap": false,
                         "editorMode": "code",
                         "exemplar": false,
-                        "expr": "sum by (hostname, containerName) (\r\n  rate(docker_network_received_bytes{hostname=~\"$Hostname\", composeProject=~\"$ComposeProject\", containerName=~\"$ContainerName\"}[1m])\r\n)",
+                        "expr": "sum by (hostname, containerName) (\r\n  rate(docker_network_received_bytes{hostname=~\"$Hostname\", containerName=~\"$ContainerName\"}[1m])\r\n)",
                         "fullMetaSearch": false,
                         "includeNullMetadata": true,
                         "instant": false,
@@ -680,7 +680,7 @@
                         "disableTextWrap": false,
                         "editorMode": "code",
                         "exemplar": false,
-                        "expr": "sum by (hostname, containerName) (\r\n  rate(docker_network_transmit_bytes{hostname=~\"$Hostname\", composeProject=~\"$ComposeProject\", containerName=~\"$ContainerName\"}[1m])\r\n)",
+                        "expr": "sum by (hostname, containerName) (\r\n  rate(docker_network_transmit_bytes{hostname=~\"$Hostname\", containerName=~\"$ContainerName\"}[1m])\r\n)",
                         "fullMetaSearch": false,
                         "includeNullMetadata": true,
                         "instant": false,
@@ -818,7 +818,7 @@
                         "disableTextWrap": false,
                         "editorMode": "code",
                         "exemplar": false,
-                        "expr": "sum by (hostname, containerName) (\r\n  rate(docker_network_received_packages{hostname=~\"$Hostname\", composeProject=~\"$ComposeProject\", containerName=~\"$ContainerName\"}[$__rate_interval])\r\n)",
+                        "expr": "sum by (hostname, containerName) (\r\n  rate(docker_network_received_packages{hostname=~\"$Hostname\", containerName=~\"$ContainerName\"}[$__rate_interval])\r\n)",
                         "fullMetaSearch": false,
                         "includeNullMetadata": true,
                         "instant": false,
@@ -953,7 +953,7 @@
                         "disableTextWrap": false,
                         "editorMode": "code",
                         "exemplar": false,
-                        "expr": "sum by (hostname, containerName) (\r\n  rate(docker_network_transmit_packages{hostname=~\"$Hostname\", composeProject=~\"$ComposeProject\", containerName=~\"$ContainerName\"}[$__rate_interval])\r\n)",
+                        "expr": "sum by (hostname, containerName) (\r\n  rate(docker_network_transmit_packages{hostname=~\"$Hostname\", containerName=~\"$ContainerName\"}[$__rate_interval])\r\n)",
                         "fullMetaSearch": false,
                         "includeNullMetadata": true,
                         "instant": false,
@@ -1088,7 +1088,7 @@
                         "disableTextWrap": false,
                         "editorMode": "code",
                         "exemplar": false,
-                        "expr": "sum by (hostname, containerName) (\r\n  docker_process_pids_count{hostname=~\"$Hostname\", composeProject=~\"$ComposeProject\", containerName=~\"$ContainerName\"}\r\n)",
+                        "expr": "sum by (hostname, containerName) (\r\n  docker_process_pids_count{hostname=~\"$Hostname\", containerName=~\"$ContainerName\"}\r\n)",
                         "fullMetaSearch": false,
                         "includeNullMetadata": true,
                         "instant": false,
@@ -1225,7 +1225,7 @@
                         "disableTextWrap": false,
                         "editorMode": "code",
                         "exemplar": false,
-                        "expr": "sum by (hostname, containerName) (\r\n  rate(docker_cpu_usage_user{hostname=~\"$Hostname\", composeProject=~\"$ComposeProject\", containerName=~\"$ContainerName\"}[$__rate_interval])\r\n)",
+                        "expr": "sum by (hostname, containerName) (\r\n  rate(docker_cpu_usage_user{hostname=~\"$Hostname\", containerName=~\"$ContainerName\"}[$__rate_interval])\r\n)",
                         "fullMetaSearch": false,
                         "includeNullMetadata": true,
                         "instant": false,
@@ -1360,7 +1360,7 @@
                         "disableTextWrap": false,
                         "editorMode": "code",
                         "exemplar": false,
-                        "expr": "sum by (hostname, containerName) (\r\n  rate(docker_cpu_usage_kernel{hostname=~\"$Hostname\", composeProject=~\"$ComposeProject\", containerName=~\"$ContainerName\"}[$__rate_interval])\r\n)",
+                        "expr": "sum by (hostname, containerName) (\r\n  rate(docker_cpu_usage_kernel{hostname=~\"$Hostname\", containerName=~\"$ContainerName\"}[$__rate_interval])\r\n)",
                         "fullMetaSearch": false,
                         "includeNullMetadata": true,
                         "instant": false,
@@ -1676,7 +1676,7 @@
                       "spec": {
                         "editorMode": "code",
                         "exemplar": false,
-                        "expr": "sort(\r\n  max by (containerName, hostname, composeProject,containerState) (\r\n    time() - docker_started_time{hostname=~\"$Hostname\", composeProject=~\"$ComposeProject\", containerName=~\"$ContainerName\"}\r\n  )\r\n)",
+                        "expr": "sort(\r\n  max by (containerName, hostname, composeProject,containerState) (\r\n    time() - docker_started_time{hostname=~\"$Hostname\", containerName=~\"$ContainerName\"}\r\n  )\r\n)",
                         "instant": true,
                         "interval": "",
                         "legendFormat": "{{containerName}} ({{hostname}}): {{containerState}}",
@@ -2774,7 +2774,7 @@
                       "spec": {
                         "editorMode": "code",
                         "exemplar": false,
-                        "expr": "sort_desc(\r\n    docker_volume_mounts{hostname=~\"$Hostname\", composeProject=~\"$ComposeProject\", containerName=~\"$ContainerName\"}\r\n)",
+                        "expr": "sort_desc(\r\n    docker_volume_mounts{hostname=~\"$Hostname\", containerName=~\"$ContainerName\"}\r\n)",
                         "instant": true,
                         "legendFormat": "{{containerName}} ({{hostname}})",
                         "range": false
@@ -2871,7 +2871,7 @@
                       "spec": {
                         "editorMode": "code",
                         "exemplar": false,
-                        "expr": "sort_desc(\r\n    docker_bind_mounts{hostname=~\"$Hostname\", composeProject=~\"$ComposeProject\", containerName=~\"$ContainerName\"}\r\n)",
+                        "expr": "sort_desc(\r\n    docker_bind_mounts{hostname=~\"$Hostname\", containerName=~\"$ContainerName\"}\r\n)",
                         "instant": true,
                         "legendFormat": "{{containerName}} ({{hostname}})",
                         "range": false
@@ -2969,7 +2969,7 @@
                         "disableTextWrap": false,
                         "editorMode": "code",
                         "exemplar": false,
-                        "expr": "(\r\n  sum by (hostname, containerName) (\r\n    docker_memory_usage{hostname=~\"$Hostname\", composeProject=~\"$ComposeProject\", containerName=~\"$ContainerName\"}\r\n  )\r\n  / \r\n  sum by (hostname, containerName) (\r\n    docker_memory_current_limit{hostname=~\"$Hostname\", composeProject=~\"$ComposeProject\", containerName=~\"$ContainerName\"}\r\n  )\r\n) * 100",
+                        "expr": "(\r\n  sum by (hostname, containerName) (\r\n    docker_memory_usage{hostname=~\"$Hostname\", containerName=~\"$ContainerName\"}\r\n  )\r\n  / \r\n  sum by (hostname, containerName) (\r\n    docker_memory_current_limit{hostname=~\"$Hostname\", containerName=~\"$ContainerName\"}\r\n  )\r\n) * 100",
                         "fullMetaSearch": false,
                         "includeNullMetadata": true,
                         "instant": false,
@@ -3106,7 +3106,7 @@
                         "disableTextWrap": false,
                         "editorMode": "code",
                         "exemplar": false,
-                        "expr": "sum by (hostname, containerName) (\r\n  docker_memory_usage{hostname=~\"$Hostname\", composeProject=~\"$ComposeProject\", containerName=~\"$ContainerName\"}\r\n)",
+                        "expr": "sum by (hostname, containerName) (\r\n  docker_memory_usage{hostname=~\"$Hostname\", containerName=~\"$ContainerName\"}\r\n)",
                         "fullMetaSearch": false,
                         "includeNullMetadata": true,
                         "instant": false,
@@ -3418,7 +3418,7 @@
                       "spec": {
                         "editorMode": "code",
                         "exemplar": false,
-                        "expr": "sort_desc(\r\n    docker_size_rw{hostname=~\"$Hostname\", composeProject=~\"$ComposeProject\", containerName=~\"$ContainerName\"}\r\n)",
+                        "expr": "sort_desc(\r\n    docker_size_rw{hostname=~\"$Hostname\", containerName=~\"$ContainerName\"}\r\n)",
                         "instant": true,
                         "legendFormat": "{{containerName}} ({{hostname}})",
                         "range": false
@@ -3516,7 +3516,7 @@
                       "spec": {
                         "editorMode": "code",
                         "exemplar": false,
-                        "expr": "sort_desc(\r\n    docker_size_root_fs{hostname=~\"$Hostname\", composeProject=~\"$ComposeProject\", containerName=~\"$ContainerName\"}\r\n)",
+                        "expr": "sort_desc(\r\n    docker_size_root_fs{hostname=~\"$Hostname\", containerName=~\"$ContainerName\"}\r\n)",
                         "instant": true,
                         "legendFormat": "{{containerName}} ({{hostname}})",
                         "range": false
@@ -3614,7 +3614,7 @@
                       "spec": {
                         "editorMode": "code",
                         "exemplar": false,
-                        "expr": "sort_desc(\r\n  max by (hostname, containerName, composeProject, containerState) (\r\n    docker_exit_code{hostname=~\"$Hostname\", composeProject=~\"$ComposeProject\", containerName=~\"$ContainerName\"}\r\n  )\r\n)",
+                        "expr": "sort_desc(\r\n  max by (hostname, containerName, composeProject, containerState) (\r\n    docker_exit_code{hostname=~\"$Hostname\", containerName=~\"$ContainerName\"}\r\n  )\r\n)",
                         "format": "table",
                         "instant": true,
                         "legendFormat": "Exit Code",
@@ -3759,7 +3759,7 @@
                       "spec": {
                         "editorMode": "code",
                         "exemplar": false,
-                        "expr": "sort(\r\n  max by (hostname, containerName, composeProject, containerState) (\r\n    docker_memory_inspect_limit{hostname=~\"$Hostname\", composeProject=~\"$ComposeProject\", containerName=~\"$ContainerName\"}\r\n  )\r\n)",
+                        "expr": "sort(\r\n  max by (hostname, containerName, composeProject, containerState) (\r\n    docker_memory_inspect_limit{hostname=~\"$Hostname\", containerName=~\"$ContainerName\"}\r\n  )\r\n)",
                         "format": "table",
                         "instant": true,
                         "legendFormat": "Exit Code",
@@ -3870,7 +3870,7 @@
                       "spec": {
                         "editorMode": "code",
                         "exemplar": false,
-                        "expr": "sort(\r\n  max by (hostname, containerName, composeProject, containerState) (\r\n    docker_container_healthy{hostname=~\"$Hostname\", composeProject=~\"$ComposeProject\", containerName=~\"$ContainerName\"}\r\n  )\r\n)",
+                        "expr": "sort(\r\n  max by (hostname, containerName, composeProject, containerState) (\r\n    docker_container_healthy{hostname=~\"$Hostname\", containerName=~\"$ContainerName\"}\r\n  )\r\n)",
                         "format": "table",
                         "instant": true,
                         "legendFormat": "Exit Code",
@@ -4001,7 +4001,7 @@
                       "spec": {
                         "editorMode": "code",
                         "exemplar": false,
-                        "expr": "sort_desc(\r\n  max by (hostname, containerName, composeProject, containerState) (\r\n    docker_oom_killed{hostname=~\"$Hostname\", composeProject=~\"$ComposeProject\", containerName=~\"$ContainerName\"}\r\n  )\r\n)",
+                        "expr": "sort_desc(\r\n  max by (hostname, containerName, composeProject, containerState) (\r\n    docker_oom_killed{hostname=~\"$Hostname\", containerName=~\"$ContainerName\"}\r\n  )\r\n)",
                         "format": "table",
                         "instant": true,
                         "legendFormat": "Exit Code",
@@ -5750,38 +5750,6 @@
             "spec": {
               "qryType": 1,
               "query": "label_values(docker_cpu_usage_total,hostname)",
-              "refId": "PrometheusVariableQueryEditor-VariableQuery"
-            },
-            "version": "v0"
-          },
-          "refresh": "onDashboardLoad",
-          "regex": "",
-          "regexApplyTo": "value",
-          "skipUrlSync": false,
-          "sort": "disabled"
-        }
-      },
-      {
-        "kind": "QueryVariable",
-        "spec": {
-          "allowCustomValue": false,
-          "current": {
-            "text": "All",
-            "value": "$__all"
-          },
-          "definition": "label_values(docker_cpu_usage_total{hostname=~\"$Hostname\"},composeProject)",
-          "hide": "dontHide",
-          "includeAll": true,
-          "multi": true,
-          "name": "ComposeProject",
-          "options": [],
-          "query": {
-            "datasource": {"type": "prometheus", "uid": "eg42tgddkhs00b"},
-            "group": "prometheus",
-            "kind": "DataQuery",
-            "spec": {
-              "qryType": 1,
-              "query": "label_values(docker_cpu_usage_total{hostname=~\"$Hostname\"},composeProject)",
               "refId": "PrometheusVariableQueryEditor-VariableQuery"
             },
             "version": "v0"
