@@ -8,7 +8,7 @@ on:
       - main
 
   schedule:
-    - cron: '55 18 * * *'
+    - cron: '25 19 * * *'
 
 jobs:
   deploy:
@@ -16,10 +16,10 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
 
     - name: Setup SSH Agent
-      uses: webfactory/ssh-agent@v0.9.0
+      uses: webfactory/ssh-agent@v0.10.0
       with:
         ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY_TIMEWEB }}
 
