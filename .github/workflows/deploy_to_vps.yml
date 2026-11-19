@@ -1,11 +1,14 @@
 name: SSH Deployment Pipeline
 
 on:
+  workflow_dispatch:
+
   push:
     branches:
       - main
+
   schedule:
-    - cron: '40 21 * * *'
+    - cron: '45 18 * * *'
 
 jobs:
   deploy:
