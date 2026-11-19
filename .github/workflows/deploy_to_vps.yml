@@ -31,14 +31,16 @@ jobs:
         GIT_USER: ${{ secrets.GIT_USER }}
       run: |
         ssh -o StrictHostKeyChecking=no -p $REMOTE_PORT $REMOTE_USER@$REMOTE_HOST '
-          cd /app/Koit.VPS/ && git pull && docker compose pull || true
-          cd /app/Koit.VPS/monitoring && docker compose pull || true
+          cd /app/Koit.VPS/ && git pull
+        
+          cd /app/Koit.VPS/ && docker compose pull --ignore-buildable || true
+          cd /app/Koit.VPS/monitoring && docker compose pull --ignore-buildable || true
 
           cd /app/Koit.VPS/
-          docker compose up -d --build --wait
+          docker compose up -d --build --pull always --wait
 
           cd /app/Koit.VPS/monitoring
-          docker compose up -d --build --wait
+          docker compose up -d --build --pull always --wait
 
           docker image prune -f
           
