@@ -8,7 +8,7 @@ on:
       - main
 
   schedule:
-    - cron: '25 5 * * *'
+    - cron: '25 17 * * *'
 
 jobs:
   deploy:
